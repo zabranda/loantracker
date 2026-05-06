@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Czech Corporate Loans Market — Deal Tracker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/theme/mermaid.min.css" integrity="sha384-DEJDGyvWh5zxGo8M0lwbXg53b7G69ZYhuHQQS43nlOkTpBwS0rwwVhqWOgIidpcw" crossorigin="anonymous" />
+<script src="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/gridjs.umd.js" integrity="sha384-/XXDzxe4FsGiAe50i/u9pY/Vy/uX654MHB1xoc1BJNnH1WXHhqHga9g3q5tF4gj7" crossorigin="anonymous"></script>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #f8f7f4;
+    color: #1a1a1a;
+    line-height: 1.45;
+    font-size: 14px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px 60px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: #6b6863; font-size: 13px; margin-bottom: 20px; }
+  .panel {
+    background: #ffffff;
+    border: 1px solid #e8e5df;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .panel h2 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: #2a2a2a;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .stats { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
+  .stat {
+    background: #ffffff;
+    border: 1px solid #e8e5df;
+    border-radius: 10px;
+    padding: 12px 16px;
+    flex: 1;
+    min-width: 160px;
+  }
+  .stat .label { color: #6b6863; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .stat .value { font-size: 20px; font-weight: 600; }
+  .stat .sub { font-size: 11px; color: #8a857d; margin: 2px 0 0; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chip {
+    background: #ffffff;
+    border: 1px solid #d6d2cb;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.12s ease;
+    color: #2a2a2a;
+  }
+  .chip:hover { border-color: #b8b3aa; }
+  .chip.active { background: #1a1a1a; border-color: #1a1a1a; color: #ffffff; }
+  .gridjs-container { font-size: 13px; }
+  .gridjs-table { font-size: 13px; }
+  .gridjs-th { background: #f3f1ec !important; font-weight: 600 !important; }
+  .gridjs-td a { color: #1d4ed8; text-decoration: none; }
+  .gridjs-td a:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+  .badge-syn { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
+  .badge-lbo { background: #fff0e6; color: #8a3d10; border-color: #f5cfb6; }
+  .badge-refi { background: #ecf7ed; color: #1f5e2a; border-color: #c4e2c8; }
+  .badge-re { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
+  .actions {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  button.primary {
+    background: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  button.primary:hover { background: #333; }
+  button.primary:disabled { opacity: 0.55; cursor: wait; }
+  .news-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .news-item {
+    border-left: 3px solid #d6d2cb;
+    padding: 6px 12px;
+  }
+  .news-item .title { font-weight: 500; margin-bottom: 2px; }
+  .news-item .title a { color: #1a1a1a; text-decoration: none; }
+  .news-item .title a:hover { text-decoration: underline; }
+  .news-item .meta { color: #8a857d; font-size: 12px; }
+  .empty { color: #8a857d; font-style: italic; padding: 8px 0; }
+  .footer { color: #8a857d; font-size: 11px; margin-top: 24px; padding-top: 12px; border-top: 1px solid #e8e5df; }
+  details summary { cursor: pointer; font-size: 12px; color: #6b6863; padding: 6px 0; }
+  details[open] summary { margin-bottom: 8px; }
+  .query-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+  .query-row input {
+    flex: 1; min-width: 240px;
+    padding: 6px 10px; font-size: 12px;
+    border: 1px solid #d6d2cb; border-radius: 6px;
+    font-family: inherit;
+  }
+  .status-msg { font-size: 12px; color: #6b6863; }
+  .status-msg.error { color: #b91c1c; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Czech Corporate Loans Market — Deal Tracker</h1>
+  <div class="sub">Syndicated, LBO, refinancing, and CRE deals involving Czech borrowers/assets, 2021 – Q1 2026. Filters and refresh below.</div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="panel">
+    <h2>Filter by deal type</h2>
+    <div class="filters" id="filters"></div>
+    <h2 style="margin-top: 16px;">Filter by year</h2>
+    <div class="filters" id="yearFilters"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Confirmed transactions</h2>
+    <div id="table"></div>
+  </div>
+
+  <div class="footer">
+    Curated from public sources (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie, plus issuer press releases from Allwyn / CTP / EPH / Penta / Accolade / CPI Property Group / ČEZ). Coverage is best-effort and not exhaustive — private club deals not publicly announced are excluded. Not investment advice.
+  </div>
+</div>
+
+<script>
+// ---- Curated baseline deal list (2021 – Q1 2026) ----
+// Each deal: { borrower, type, amount, currency, value_eur (mm), lenders, date, year, purpose, source }
+const DEALS = [
+  // ===== 2026 =====
+  { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "USD 1,640m", currency: "USD", value_eur: 1500, lenders: "TLB syndicate (SOFR + 250bps)", date: "Q1 2026 (closing)", year: 2026, purpose: "Acquisition of 62.3% PrizePicks (US daily fantasy sports)", source: "https://www.allwyn.com/investors-news/allwyn-international-trading-update-and-launch-of-offering-of-usd-1-640-million-term-loan-b-to-finance-the-acquisition-of-prize-picks" },
+  { borrower: "ČEPS a.s. (transmission system operator)", type: "Refinancing", amount: "CZK 9,300m (~€380m)", currency: "CZK", value_eur: 380, lenders: "European Investment Bank (CZK 6.8bn first tranche)", date: "Feb 2026", year: 2026, purpose: "High-voltage grid renewal & extension", source: "https://www.eib.org/en/press/all/2026-056-czechia-to-upgrade-and-extend-electricity-network-with-eib-loans" },
+  { borrower: "CIMEX Hospitality Investments", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Raiffeisenbank (W&C advised)", date: "Feb 2026", year: 2026, purpose: "Prague hotel acquisition financing", source: "https://ceelegalmatters.com/" },
+
+  // ===== 2025 =====
+  { borrower: "Allwyn International (ex-Sazka)", type: "Refinancing", amount: "€2,150m", currency: "EUR", value_eur: 2150, lenders: "Bank syndicate (4 facilities, 5y)", date: "Jul 2025", year: 2025, purpose: "Refi €1.7bn syndicated facility, margin −150bps; growth & GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-2-15bn-syndicated-credit-facility-and-refinancing-of-existing-syndicated-credit-facility" },
+  { borrower: "Škoda Transportation (PPF Group)", type: "Syndicated", amount: "€1,500m", currency: "EUR", value_eur: 1500, lenders: "Syndicate led by ČSOB (incl. KB, ČS, UniCredit CZ&SK)", date: "2025", year: 2025, purpose: "Umbrella facility — term, revolving & corporate guarantee tranches", source: "https://practiceguides.chambers.com/practice-guides/banking-regulation-2026/czech-republic/trends-and-developments" },
+  { borrower: "CTP N.V.", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING global coordinators (SLL, 3.7%)", date: "Jul 2025", year: 2025, purpose: "5y unsecured SLL refinancing 2024 facility + bond buyback", source: "https://ctp.eu/news/ctp-announces-the-signing-of-a-e500-million-unsecured-syndicated-sustainability-linked-loan-facility/" },
+  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "JPY 80bn (~$528m / ~€480m)", currency: "JPY", value_eur: 480, lenders: "Samurai loan, SMBC Group", date: "Feb 2025", year: 2025, purpose: "Debut Japanese term loan — corporate liquidity", source: "https://www.epholding.cz/en/press-releases/smbc-group-supports-eph-in-securing-jpy80-billion-samurai-loan/" },
+  { borrower: "UniCredit Bank Czech Republic & Slovakia", type: "Refinancing", amount: "€200m guarantee → €400m lending", currency: "EUR", value_eur: 400, lenders: "European Investment Bank (guarantee)", date: "2025", year: 2025, purpose: "EIB-backed mid-cap lending programme", source: "https://mf.gov.cz/en/about-ministry/media-room/news-and-press-releases/2026/czechia-gets-eib-group-financing-of-close-to--8364-62854" },
+  { borrower: "CTP N.V.", type: "Syndicated", amount: "JPY 30bn (~€185m)", currency: "JPY", value_eur: 185, lenders: "Asian bank syndicate", date: "2025", year: 2025, purpose: "5y unsecured SLL, TONAR + 130bps", source: "https://realassetinsight.com/2025/07/24/ctp-secures-e500m-sustainability-linked-loan-for-bond-buyback/" },
+  { borrower: "NET4GAS s.r.o.", type: "Refinancing", amount: "CZK 4,000m (~€160m)", currency: "CZK", value_eur: 160, lenders: "KB, ČS, UniCredit CZ&SK, VÚB (Dentons advised)", date: "Apr 2025", year: 2025, purpose: "Refi facility — gas transmission infrastructure", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2025/april/dentons-advises-net4gas-on-czk-4-billion-refinancing-facility" },
+  { borrower: "Penta Investments (healthcare RE)", type: "Real Estate", amount: "CZK 3,200m (~€128m)", currency: "CZK", value_eur: 128, lenders: "5-bank syndicate: KB & ČSOB MLAs; UniCredit, ČS, Raiffeisenbank participants", date: "2025", year: 2025, purpose: "Senior financing for long-term care facilities + Klinika Dr. Pírka", source: "https://ceerealestatematters.com/penta-investments-secures-czk-3-2-billion-in-senior-financing-for-healthcare-real-estate-portfolio" },
+  { borrower: "Aurelia fondy SICAV (River Garden II + III)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "UniCredit Bank CZ&SK + Česká spořitelna (Kinstellar advised lenders, Dentons advised borrower)", date: "Sep 2025", year: 2025, purpose: "Acquisition financing — Karlín office complex (seller: Encore Plus Properties II)", source: "https://www.kinstellar.com/news-and-insights/detail/3742/kinstellar-advises-on-the-acquisition-financing-of-the-river-garden-ii-and-iii-office-buildings-in-prague" },
+  { borrower: "Penta Real Estate (Nová Waltrovka)", type: "Real Estate", amount: "€74m", currency: "EUR", value_eur: 74, lenders: "ČSOB & Česká spořitelna", date: "2025", year: 2025, purpose: "Office tranche of mixed-use Prague-Radlice scheme (€205m total)", source: "https://www.property-forum.eu/news/penta-secures-74-million-loan-for-prague-office-project/14072" },
+  { borrower: "Accolade (Karlovy Vary + Bratislava)", type: "Real Estate", amount: "€34.9m (CZK 880m)", currency: "EUR", value_eur: 35, lenders: "UniCredit Bank Czech Republic & Slovakia", date: "Mar 2025", year: 2025, purpose: "Two new industrial park developments", source: "https://accolade.eu/en/news/459/accolade-secures-additional-financing-worth-tens-of-millions-of-euros-in-loans-to-support-developments-in-karlovy-vary-and-bratislava" },
+  { borrower: "Crestyl (NR7 office, Prague)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Helaba", date: "2025", year: 2025, purpose: "Long-term financing for downtown office revitalisation", source: "https://www.property-forum.eu/news/helaba-to-finance-crestyls-revitalisation-project-in-prague/13133" },
+  { borrower: "Cresco Real Estate (SO-HO Phase 2)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Bank financing (Havel & Partners advised)", date: "2025", year: 2025, purpose: "Residential development — Prague-Holešovice", source: "https://www.havelpartners.com/" },
+
+  // ===== 2024 =====
+  { borrower: "ČEZ, a.s.", type: "Acquisition/LBO", amount: "€840m", currency: "EUR", value_eur: 840, lenders: "Bridge syndicate (W&C advised arrangers)", date: "Mar 2024", year: 2024, purpose: "Bridge-to-bond facility for 55.21% GasNet stake (€846.5m EV)", source: "https://www.cez.cz/en/investors/inside-information/cez-a.s.-successfully-signed-a-loan-agreement-for-840-mil.-eur-to-finance-the-acquisition-of-a-55.21-stake-in-gasnet-189803" },
+  { borrower: "ČEPS a.s. (transmission system operator)", type: "Syndicated", amount: "CZK 24,000m (~€960m)", currency: "CZK", value_eur: 960, lenders: "Česká spořitelna, ČSOB, Komerční banka (Dentons advised lenders)", date: "2024", year: 2024, purpose: "Corporate facility — TSO investments", source: "https://ceelegalmatters.com/dentons" },
+  { borrower: "CTP N.V.", type: "Syndicated", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING coordinators (SLL, 4.7%)", date: "Jun 2024", year: 2024, purpose: "5y unsecured SLL — GCP including developments", source: "https://www.businesswire.com/news/home/20240627835705/en/CTP-announces-the-signing-of-a-%E2%82%AC500-million-unsecured-syndicated-sustainability-linked-loan-facility-and-%E2%82%AC500-million-bond-tender-offer" },
+  { borrower: "Allwyn International", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "Lenders under existing Senior Facilities Agreement", date: "Q1 2024", year: 2024, purpose: "Accordion facilities — Instant Win Gaming investment + GCP", source: "https://www.allwyn.com/investors-news/allwyn-international-a-s-announces-500-million-accordion-facility" },
+  { borrower: "Kofola ČeskoSlovensko (Pivovary CZ Group)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "ČSOB & Česká spořitelna (Clifford Chance advised lenders)", date: "Mar 2024", year: 2024, purpose: "51% acquisition of Pivovary CZ Group (Holba/Zubr/Litovel)", source: "https://www.cliffordchance.com/news/news/2024/03/clifford-chance-advises-eskoslovenska-obchodni-banka-and-eska-sp.html" },
+  { borrower: "CPI Property Group (3 office assets)", type: "Refinancing", amount: "€277m", currency: "EUR", value_eur: 277, lenders: "Bank financing", date: "2024", year: 2024, purpose: "Refi three office assets — debt management programme", source: "https://www.property-forum.eu/news/cpipg-gets-eur277-million-to-refinance-three-office-assets/18471" },
+  { borrower: "Accolade Industrial Fund", type: "Refinancing", amount: ">€200m", currency: "EUR", value_eur: 200, lenders: "Česká spořitelna", date: "Dec 2024", year: 2024, purpose: "Refi 4 CZ + PL industrial parks — 5y stable financing", source: "https://accolade.eu/en/news/170/accolade-refinanced-the-czech-and-polish-industrial-real-estate-portfolio-for-more-than-eur-200-million" },
+
+  // ===== 2023 =====
+  { borrower: "Heimstaden Bostad (Czech subsidiaries)", type: "Real Estate", amount: "€700m", currency: "EUR", value_eur: 700, lenders: "Bank syndicate (Dentons advised)", date: "Sep 2023", year: 2023, purpose: "Sustainability-linked bank financing — CZ residential portfolio", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2023/september/dentons-advises-heimstaden-bostad-on-eur-700-million-of-sustainability-linked-financing" },
+  { borrower: "CPI Property Group", type: "Refinancing", amount: "€635m", currency: "EUR", value_eur: 635, lenders: "Santander, SocGen / Komerční banka, RBI, SMBC, Barclays, Erste", date: "Nov 2023", year: 2023, purpose: "3y bridge replacing prior IMMOFINANZ / S IMMO bridge facilities", source: "https://www.property-forum.eu/news/cpipg-closes-eur600-million-of-disposals-ytd/18519" },
+  { borrower: "Allwyn International", type: "Acquisition/LBO", amount: "€335m", currency: "EUR", value_eur: 335, lenders: "Lenders under Senior Facilities Agreement (accordion)", date: "Early 2023", year: 2023, purpose: "Acquisition of Camelot Lottery Solutions group + GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-335m-accordion-loan-facility" },
+
+  // ===== 2022 =====
+  { borrower: "CPI Property Group", type: "Refinancing", amount: "€1,852m", currency: "EUR", value_eur: 1852, lenders: "Banco Santander (global coordinator), Raiffeisen Bank Int'l, SocGen, Komerční banka, Erste Group", date: "Sep 2022", year: 2022, purpose: "Forward-start facility refinancing 2y bridges for IMMOFINANZ + S IMMO acquisitions", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2022/september/dentons-advises-cpi-property-group-on-refinancing-loans-for-acquisitions-of-immofinanz-and-s-immo" },
+  { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "€1,600m", currency: "EUR", value_eur: 1600, lenders: "Bank syndicate; UniCredit Global Coordinator (Clifford Chance / A&O)", date: "Nov 2022", year: 2022, purpose: "Senior Facilities Agreement — refi €623m loan + Camelot UK acquisition + GCP", source: "https://www.cliffordchance.com/news/news/2022/11/clifford-chance-advises-allwyn-on-its-1-6bn-senior-facilities-a.html" },
+  { borrower: "Cube Infrastructure Fund III (MVV Energie CZ)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Kommunalkredit Austria + Komerční banka (A&O Shearman advised)", date: "Aug–Dec 2022", year: 2022, purpose: "Syndicated leveraged infra acquisition financing — Czech district heating", source: "https://www.aoshearman.com/en/news/allen-overy-advises-on-the-financing-for-acquisition-of-mvv-energie-cz" },
+  { borrower: "Kofola ČeskoSlovensko", type: "Refinancing", amount: "up to CZK 1,000m new line + refi", currency: "CZK", value_eur: 40, lenders: "Česká spořitelna & ČSOB", date: "Jul 2022", year: 2022, purpose: "Refi to 60/40 EUR/CZK structure + new investment line", source: "https://ceelegalmatters.com/in-house/20933-deal-5-kofola-cfo-martin-pisklak-on-the-group-s-refinancing" },
+  { borrower: "Allwyn (Sazka Delta — OPAP minority)", type: "Acquisition/LBO", amount: "€327m + €600m bond", currency: "EUR", value_eur: 327, lenders: "Cash from balance sheet incl. €600m bond proceeds", date: "Feb 2022", year: 2022, purpose: "Acquired remaining Sazka minority — Allwyn stake in OPAP to 48.1%", source: "https://www.globenewswire.com/news-release/2022/02/17/2387312/0/en/Allwyn-increases-its-economic-interest-in-OPAP-to-48-1.html" },
+
+  // ===== 2021 =====
+  { borrower: "Tanemo a.s. (PPF SPV)", type: "Acquisition/LBO", amount: "€1,100m", currency: "EUR", value_eur: 1100, lenders: "Syndicate led by ING", date: "2021", year: 2021, purpose: "Certain-funds facility for Moneta Money Bank voluntary tender — first Czech VTO certain-funds loan", source: "https://www.prkpartners.com/files/013-czech-republic.pdf" },
+  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "€1,000m", currency: "EUR", value_eur: 1000, lenders: "Bank of China, Commerzbank, Credit Suisse, HSBC, ING, KB (agent), SMBC, UniCredit CZ&SK as MLAB; Citibank as MLA", date: "Mar 2021", year: 2021, purpose: "3y unsecured term + revolving — refi other indebtedness + GCP", source: "https://www.bakermckenzie.com/en/newsroom/2021/04/eph-secures-a-eur-1-bn-loan" },
+];
+
+const TYPE_BADGE = {
+  "Syndicated":      { cls: "badge-syn",  q: 'Czech "syndicated loan" 2026 borrower facility signed' },
+  "Acquisition/LBO": { cls: "badge-lbo",  q: 'Czech acquisition financing 2026 LBO buyout loan' },
+  "Refinancing":     { cls: "badge-refi", q: 'Czech corporate refinancing 2026 facility loan signed' },
+  "Real Estate":     { cls: "badge-re",   q: 'Czech real estate loan 2026 property financing Prague' },
+};
+
+const STATE_KEY = "cz_loans_filter_v2";
+const YEAR_STATE_KEY = "cz_loans_year_filter_v1";
+let activeFilter = localStorage.getItem(STATE_KEY) || "All";
+let activeYear = localStorage.getItem(YEAR_STATE_KEY) || "All";
+
+function filterDeals() {
+  return DEALS.filter(d =>
+    (activeFilter === "All" || d.type === activeFilter) &&
+    (activeYear === "All" || String(d.year) === activeYear)
+  );
+}
+
+// ---- Render stats ----
+function renderStats() {
+  const filtered = filterDeals();
+  const types = ["Syndicated", "Acquisition/LBO", "Refinancing", "Real Estate"];
+  const total_eur = filtered.reduce((s, d) => s + (d.value_eur || 0), 0);
+  const scopeLabel = (activeYear === "All" ? "2021–2026" : activeYear) + (activeFilter === "All" ? "" : " · " + activeFilter);
+  const html = [
+    `<div class="stat"><div class="label">Filtered deals</div><div class="value">${filtered.length}</div><div class="sub">${scopeLabel}</div></div>`,
+    `<div class="stat"><div class="label">Aggregate (EUR-eq)</div><div class="value">€${(total_eur/1000).toFixed(1)}bn</div><div class="sub">where disclosed</div></div>`,
+    ...types.map(t => {
+      const c = filtered.filter(d => d.type === t).length;
+      return `<div class="stat"><div class="label">${t}</div><div class="value">${c}</div></div>`;
+    })
+  ].join("");
+  document.getElementById("stats").innerHTML = html;
+}
+
+// ---- Render filter chips ----
+function renderFilters() {
+  const types = ["All", "Syndicated", "Acquisition/LBO", "Refinancing", "Real Estate"];
+  document.getElementById("filters").innerHTML = types.map(t =>
+    `<div class="chip ${activeFilter === t ? "active" : ""}" data-filter="type" data-value="${t}">${t}</div>`
+  ).join("");
+
+  const years = Array.from(new Set(DEALS.map(d => d.year))).sort((a, b) => b - a);
+  const yearOptions = ["All", ...years.map(String)];
+  document.getElementById("yearFilters").innerHTML = yearOptions.map(y =>
+    `<div class="chip ${activeYear === y ? "active" : ""}" data-filter="year" data-value="${y}">${y}</div>`
+  ).join("");
+
+  document.querySelectorAll(".chip").forEach(el => {
+    el.addEventListener("click", () => {
+      const kind = el.dataset.filter;
+      const val = el.dataset.value;
+      if (kind === "type") {
+        activeFilter = val;
+        localStorage.setItem(STATE_KEY, val);
+      } else if (kind === "year") {
+        activeYear = val;
+        localStorage.setItem(YEAR_STATE_KEY, val);
+      }
+      renderFilters();
+      renderTable();
+      renderStats();
+    });
+  });
+}
+
+// ---- Render table ----
+let grid = null;
+function renderTable() {
+  // Sort: year desc, then type
+  const filtered = filterDeals().slice().sort((a, b) => (b.year - a.year) || a.type.localeCompare(b.type));
+  const data = filtered.map(d => {
+    const b = TYPE_BADGE[d.type] || { cls: "" };
+    return [
+      d.borrower,
+      gridjs.html(`<span class="badge ${b.cls}">${d.type}</span>`),
+      d.amount,
+      d.date,
+      d.lenders,
+      d.purpose,
+      gridjs.html(`<a href="${d.source}" target="_blank" rel="noopener">link</a>`)
+    ];
+  });
+  if (grid) {
+    grid.updateConfig({ data }).forceRender();
+  } else {
+    grid = new gridjs.Grid({
+      columns: [
+        { name: "Borrower", width: "20%" },
+        { name: "Type", width: "11%" },
+        { name: "Amount", width: "11%" },
+        { name: "Date", width: "9%" },
+        { name: "Lenders", width: "21%" },
+        { name: "Purpose", width: "22%" },
+        { name: "Source", width: "6%" },
+      ],
+      data,
+      sort: true,
+      resizable: true,
+      style: {
+        table: { "border-collapse": "collapse" },
+        td: { "vertical-align": "top", "padding": "8px 10px", "border-bottom": "1px solid #f0ede7" },
+      }
+    });
+    grid.render(document.getElementById("table"));
+  }
+}
+
+// ---- Wire up ----
+renderStats();
+renderFilters();
+renderTable();
+</script>
+</body>
+</html>
