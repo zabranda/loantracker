@@ -378,6 +378,26 @@ const DEALS = [
 
   // Penta / Nemocnica Bory (Slovak hospital — Penta Czech-Slovak group-level investment)
   { borrower: "Penta Hospitals (Nemocnica Bory)", type: "Project/Infra", amount: "€146m (2022 capex spend)", currency: "EUR", value_eur: 146, lenders: "Penta group-level financing (CZ banks via Penta's standard healthcare-RE syndicate stack)", date: "2022", year: 2022, purpose: "Major hospital build-out in Bratislava; capex spent 2022, opened end of March 2023", source: "https://www.pentainvestments.com/en/about-us/", confidence: "Inferred" },
+
+  // ===== Round 8 — UBO-mapped backfill (Křetínský, PPF/CETIN, Tykač/Sev.en) =====
+
+  // CETIN Group N.V. / €1,650m term + revolving facilities — major missed 2021 deal
+  { borrower: "CETIN Group N.V. (PPF / GIC telecom infra)", type: "Syndicated", amount: "€1,650m", currency: "EUR", value_eur: 1650, lenders: "Bank syndicate (term + revolving facilities agreement)", date: "Aug 2021", year: 2021, purpose: "Multi-purpose group facility — refinancing + intercompany lending to CETIN Czechia + group expansion (PPF Telecom Group separation)", source: "https://www.cetin.cz/documents/d/guest/1_cetin-group_annual_accounts_2023_public", confidence: "Confirmed" },
+
+  // CETIN €197m RCF drawdown — to refinance intercompany Eurobond
+  { borrower: "CETIN Group N.V. (RCF utilization)", type: "Refinancing", amount: "€197m", currency: "EUR", value_eur: 197, lenders: "Drawdown under existing €1.65bn RCF", date: "Dec 2023", year: 2023, purpose: "Drawdown for intercompany loan to CETIN Czechia to refinance Eurobond maturing", source: "https://www.cetin.cz/documents/d/guest/1_cetin-group_annual_accounts_2023_public", confidence: "Confirmed" },
+
+  // CETIN €417m term loan early repayment
+  { borrower: "CETIN Group N.V. (term loan early repayment)", type: "Refinancing", amount: "€417m", currency: "EUR", value_eur: 417, lenders: "Term loan facility (originally due Nov 2025); repaid early using bond proceeds + RCF", date: "2024", year: 2024, purpose: "Early repayment of existing term loan — debt-stack optimization", source: "https://www.telecompaper.com/news/cetin-group-repays-eur-417-mln-term-loan-early--1558619", confidence: "Confirmed" },
+
+  // Casino Group / France Retail Holdings — Křetínský consortium take-private + restructuring
+  { borrower: "France Retail Holdings (EP / Fimalac / Attestor) — Casino Group", type: "Acquisition/LBO", amount: "€1,200m new money + €925m capital increase (€6.1bn debt reduction)", currency: "EUR", value_eur: 2125, lenders: "Consortium: EP Equity Investment III S.à r.l. (Křetínský-led), Fimalac, Attestor", date: "Mar 2024 (financial restructuring closing)", year: 2024, purpose: "Take-private + financial restructuring of French retailer Casino — 53.7% stake to FRH; debt cut by €6.1bn", source: "https://www.cnova.com/communique/financial-restructuring-of-casino-group-results-in-change-of-control-over-cnova/", confidence: "Confirmed" },
+
+  // Czech Media Invest / Editis — acquisition from Vivendi
+  { borrower: "International Media Invest (CMI/Křetínský) / Editis", type: "Acquisition/LBO", amount: "€653m", currency: "EUR", value_eur: 653, lenders: "CMI/IMI-side acquisition financing — Vivendi receivable", date: "Nov 2023 (close)", year: 2023, purpose: "Acquisition of Editis (2nd-largest French publishing group) from Vivendi", source: "https://variety.com/2023/tv/global/vivendi-publishing-house-editis-daniel-kretinskys-czech-media-invest-1235553443/", confidence: "Confirmed" },
+
+  // Sev.en GI / Celsa Steel UK + Celsa Nordic ("7 Steel")
+  { borrower: "Sev.en Global Investments (Tykač) / Celsa Steel UK + Nordic ('7 Steel')", type: "Acquisition/LBO", amount: "n/d (est. €200–400m on 2 Mt capacity, ~2,700 staff)", currency: "EUR", value_eur: 300, lenders: "Sev.en GI-side financing (specific structure undisclosed)", date: "Nov 2024 (announce) / 2025 (close)", year: 2024, purpose: "Acquisition of green-steel assets in UK (Cardiff EAF, 1.2 Mt) + Norway/Sweden/Finland/Denmark from Celsa Group; rebranded '7 Steel'", source: "https://www.7gi.com/media/2024/20241121.html", confidence: "Likely" },
 ];
 
 const TYPE_BADGE = {
