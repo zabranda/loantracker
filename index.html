@@ -359,6 +359,25 @@ const DEALS = [
 
   // Doosan Skoda Power / Kazakhstan steam turbine export
   { borrower: "Doosan Škoda Power (Kazakhstan turbines export)", type: "Export Finance", amount: "n/d (2× 175MW steam turbines for combined-cycle plant)", currency: "EUR", value_eur: 80, lenders: "EGAP/ČEB likely (industry-standard for CZ heavy-equipment exports)", date: "2024–2025", year: 2024, purpose: "Supply of 2× 175MW steam turbines to Kazakhstan combined-cycle power plant project", source: "https://www.enlit.world/library/doosan-koda-power-wins-steam-turbine-contract-in-kazakhstan", confidence: "Inferred" },
+
+  // ===== Round 7 backfill — 2021-22 gap correction =====
+  // CPIPG IMMOFINANZ bridge — Nov 30, 2021 — 10-bank syndicate
+  { borrower: "CPI Property Group (IMMOFINANZ takeover bridge)", type: "Acquisition/LBO", amount: "€2,500m", currency: "EUR", value_eur: 2500, lenders: "10-bank syndicate: Banco Santander, Credit Suisse, Erste Group, Goldman Sachs, HSBC, Raiffeisen Bank International, Société Générale / Komerční banka, UniCredit", date: "30 Nov 2021", year: 2021, purpose: "2-year bridge financing for IMMOFINANZ takeover offer (refinanced via Sept 2022 €1.852bn forward-start facility)", source: "https://cpipg.com/storage/app/uploads/public/636/b8f/bb4/636b8fbb44e1e506169279.pdf", confidence: "Confirmed" },
+
+  // CPIPG S IMMO bridge — 2022 — same syndicate structure
+  { borrower: "CPI Property Group (S IMMO takeover bridge)", type: "Acquisition/LBO", amount: "€1,250m", currency: "EUR", value_eur: 1250, lenders: "Same 10-bank syndicate as IMMOFINANZ bridge (Santander coordinator)", date: "2022", year: 2022, purpose: "2-year bridge financing for S IMMO takeover offer (refinanced via Sept 2022 €1.852bn forward-start facility)", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2022/september/dentons-advises-cpi-property-group-on-refinancing-loans-for-acquisitions-of-immofinanz-and-s-immo", confidence: "Confirmed" },
+
+  // SAZKA Group / Apollo Global €500m direct-PE financing
+  { borrower: "SAZKA Entertainment AG (KKCG / Sazka)", type: "Acquisition/LBO", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "Apollo Global Management funds — sole sponsor (direct PE / credit fund vehicle)", date: "Nov 2020 announce / 2021 close", year: 2021, purpose: "M&A war-chest for European + N. American lottery acquisitions; precursor to UK National Lottery + Camelot bid", source: "https://sbcnews.co.uk/retail/2020/11/10/sazka-secures-e500m-apollo-investment-to-fund-global-ma-drive/", confidence: "Likely" },
+
+  // ČEZ / UniCredit ESG-linked CZK 7.5bn (~€320m) — first CZ corporate ESG-tied facility
+  { borrower: "ČEZ a.s. (ESG-linked CZ banking facility)", type: "Refinancing", amount: "CZK 7,500m (~€320m)", currency: "CZK", value_eur: 320, lenders: "UniCredit Bank — first credit line tied to ČEZ ESG rating", date: "2021", year: 2021, purpose: "First ESG-linked corporate facility for ČEZ — interest margin tied to MSCI/CSRHub rating; 'Clean Energy of Tomorrow' strategy", source: "https://www.cez.cz/en/media/press-releases/cez-opens-first-line-of-credit-tied-to-esg-rating-178377", confidence: "Likely" },
+
+  // Skoda Vagonka Latvia EMU buyer credit
+  { borrower: "Pasažieru Vilciens / Latvia (Skoda Vagonka EMU export)", type: "Export Finance", amount: "€240m contract", currency: "EUR", value_eur: 240, lenders: "Buyer credit to Latvian state operator — EGAP-supported buyer credit structure inferred (industry pattern)", date: "2019 signed / delivery 2022–23", year: 2022, purpose: "32 dual-system EMUs for Riga suburban network (16Ev platform) — Czech rail-vehicle export", source: "https://www.railway-technology.com/news/skoda-vagonka-rail-contract-latvia/", confidence: "Inferred" },
+
+  // Penta / Nemocnica Bory (Slovak hospital — Penta Czech-Slovak group-level investment)
+  { borrower: "Penta Hospitals (Nemocnica Bory)", type: "Project/Infra", amount: "€146m (2022 capex spend)", currency: "EUR", value_eur: 146, lenders: "Penta group-level financing (CZ banks via Penta's standard healthcare-RE syndicate stack)", date: "2022", year: 2022, purpose: "Major hospital build-out in Bratislava; capex spent 2022, opened end of March 2023", source: "https://www.pentainvestments.com/en/about-us/", confidence: "Inferred" },
 ];
 
 const TYPE_BADGE = {
