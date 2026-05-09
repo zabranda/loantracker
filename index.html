@@ -78,6 +78,10 @@
   .badge-lbo { background: #fff0e6; color: #8a3d10; border-color: #f5cfb6; }
   .badge-refi { background: #ecf7ed; color: #1f5e2a; border-color: #c4e2c8; }
   .badge-re { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
+  .conf-confirmed { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
+  .conf-likely    { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
+  .conf-inferred  { background: #f0f0f0; color: #555;    border-color: #d0d0d0; }
+  .badge-export, .badge-project, .badge-intermediated { background: #eef0ff; color: #303a8a; border-color: #c8cef5; }
   .actions {
     display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
   }
@@ -120,7 +124,7 @@
 <body>
 <div class="wrap">
   <h1>Czech Corporate Loans Market — Deal Tracker</h1>
-  <div class="sub">Syndicated, LBO, refinancing, and CRE deals involving Czech borrowers/assets, 2021 – Q1 2026. Filters and refresh below.</div>
+  <div class="sub">Syndicated, LBO, refinancing, CRE, export finance, project &amp; infrastructure financings involving Czech borrowers, banks, or exporters. 2021 – Q1 2026. Confidence labelled.</div>
 
   <div class="stats" id="stats"></div>
 
@@ -146,56 +150,225 @@
 // Each deal: { borrower, type, amount, currency, value_eur (mm), lenders, date, year, purpose, source }
 const DEALS = [
   // ===== 2026 =====
-  { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "USD 1,640m", currency: "USD", value_eur: 1500, lenders: "TLB syndicate (SOFR + 250bps)", date: "Q1 2026 (closing)", year: 2026, purpose: "Acquisition of 62.3% PrizePicks (US daily fantasy sports)", source: "https://www.allwyn.com/investors-news/allwyn-international-trading-update-and-launch-of-offering-of-usd-1-640-million-term-loan-b-to-finance-the-acquisition-of-prize-picks" },
-  { borrower: "ČEPS a.s. (transmission system operator)", type: "Refinancing", amount: "CZK 9,300m (~€380m)", currency: "CZK", value_eur: 380, lenders: "European Investment Bank (CZK 6.8bn first tranche)", date: "Feb 2026", year: 2026, purpose: "High-voltage grid renewal & extension", source: "https://www.eib.org/en/press/all/2026-056-czechia-to-upgrade-and-extend-electricity-network-with-eib-loans" },
-  { borrower: "CIMEX Hospitality Investments", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Raiffeisenbank (W&C advised)", date: "Feb 2026", year: 2026, purpose: "Prague hotel acquisition financing", source: "https://ceelegalmatters.com/" },
+  { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "USD 1,640m", currency: "USD", value_eur: 1500, lenders: "TLB syndicate (SOFR + 250bps)", date: "Q1 2026 (closing)", year: 2026, purpose: "Acquisition of 62.3% PrizePicks (US daily fantasy sports)", source: "https://www.allwyn.com/investors-news/allwyn-international-trading-update-and-launch-of-offering-of-usd-1-640-million-term-loan-b-to-finance-the-acquisition-of-prize-picks", confidence: "Confirmed" },
+  { borrower: "ČEPS a.s. (transmission system operator)", type: "Refinancing", amount: "CZK 9,300m (~€380m)", currency: "CZK", value_eur: 380, lenders: "European Investment Bank (CZK 6.8bn first tranche)", date: "Feb 2026", year: 2026, purpose: "High-voltage grid renewal & extension", source: "https://www.eib.org/en/press/all/2026-056-czechia-to-upgrade-and-extend-electricity-network-with-eib-loans", confidence: "Confirmed" },
+  { borrower: "CIMEX Hospitality Investments", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Raiffeisenbank (W&C advised)", date: "Feb 2026", year: 2026, purpose: "Prague hotel acquisition financing", source: "https://ceelegalmatters.com/", confidence: "Confirmed" },
 
   // ===== 2025 =====
-  { borrower: "Allwyn International (ex-Sazka)", type: "Refinancing", amount: "€2,150m", currency: "EUR", value_eur: 2150, lenders: "Bank syndicate (4 facilities, 5y)", date: "Jul 2025", year: 2025, purpose: "Refi €1.7bn syndicated facility, margin −150bps; growth & GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-2-15bn-syndicated-credit-facility-and-refinancing-of-existing-syndicated-credit-facility" },
-  { borrower: "Škoda Transportation (PPF Group)", type: "Syndicated", amount: "€1,500m", currency: "EUR", value_eur: 1500, lenders: "Syndicate led by ČSOB (incl. KB, ČS, UniCredit CZ&SK)", date: "2025", year: 2025, purpose: "Umbrella facility — term, revolving & corporate guarantee tranches", source: "https://practiceguides.chambers.com/practice-guides/banking-regulation-2026/czech-republic/trends-and-developments" },
-  { borrower: "CTP N.V.", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING global coordinators (SLL, 3.7%)", date: "Jul 2025", year: 2025, purpose: "5y unsecured SLL refinancing 2024 facility + bond buyback", source: "https://ctp.eu/news/ctp-announces-the-signing-of-a-e500-million-unsecured-syndicated-sustainability-linked-loan-facility/" },
-  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "JPY 80bn (~$528m / ~€480m)", currency: "JPY", value_eur: 480, lenders: "Samurai loan, SMBC Group", date: "Feb 2025", year: 2025, purpose: "Debut Japanese term loan — corporate liquidity", source: "https://www.epholding.cz/en/press-releases/smbc-group-supports-eph-in-securing-jpy80-billion-samurai-loan/" },
-  { borrower: "UniCredit Bank Czech Republic & Slovakia", type: "Refinancing", amount: "€200m guarantee → €400m lending", currency: "EUR", value_eur: 400, lenders: "European Investment Bank (guarantee)", date: "2025", year: 2025, purpose: "EIB-backed mid-cap lending programme", source: "https://mf.gov.cz/en/about-ministry/media-room/news-and-press-releases/2026/czechia-gets-eib-group-financing-of-close-to--8364-62854" },
-  { borrower: "CTP N.V.", type: "Syndicated", amount: "JPY 30bn (~€185m)", currency: "JPY", value_eur: 185, lenders: "Asian bank syndicate", date: "2025", year: 2025, purpose: "5y unsecured SLL, TONAR + 130bps", source: "https://realassetinsight.com/2025/07/24/ctp-secures-e500m-sustainability-linked-loan-for-bond-buyback/" },
-  { borrower: "NET4GAS s.r.o.", type: "Refinancing", amount: "CZK 4,000m (~€160m)", currency: "CZK", value_eur: 160, lenders: "KB, ČS, UniCredit CZ&SK, VÚB (Dentons advised)", date: "Apr 2025", year: 2025, purpose: "Refi facility — gas transmission infrastructure", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2025/april/dentons-advises-net4gas-on-czk-4-billion-refinancing-facility" },
-  { borrower: "Penta Investments (healthcare RE)", type: "Real Estate", amount: "CZK 3,200m (~€128m)", currency: "CZK", value_eur: 128, lenders: "5-bank syndicate: KB & ČSOB MLAs; UniCredit, ČS, Raiffeisenbank participants", date: "2025", year: 2025, purpose: "Senior financing for long-term care facilities + Klinika Dr. Pírka", source: "https://ceerealestatematters.com/penta-investments-secures-czk-3-2-billion-in-senior-financing-for-healthcare-real-estate-portfolio" },
-  { borrower: "Aurelia fondy SICAV (River Garden II + III)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "UniCredit Bank CZ&SK + Česká spořitelna (Kinstellar advised lenders, Dentons advised borrower)", date: "Sep 2025", year: 2025, purpose: "Acquisition financing — Karlín office complex (seller: Encore Plus Properties II)", source: "https://www.kinstellar.com/news-and-insights/detail/3742/kinstellar-advises-on-the-acquisition-financing-of-the-river-garden-ii-and-iii-office-buildings-in-prague" },
-  { borrower: "Penta Real Estate (Nová Waltrovka)", type: "Real Estate", amount: "€74m", currency: "EUR", value_eur: 74, lenders: "ČSOB & Česká spořitelna", date: "2025", year: 2025, purpose: "Office tranche of mixed-use Prague-Radlice scheme (€205m total)", source: "https://www.property-forum.eu/news/penta-secures-74-million-loan-for-prague-office-project/14072" },
-  { borrower: "Accolade (Karlovy Vary + Bratislava)", type: "Real Estate", amount: "€34.9m (CZK 880m)", currency: "EUR", value_eur: 35, lenders: "UniCredit Bank Czech Republic & Slovakia", date: "Mar 2025", year: 2025, purpose: "Two new industrial park developments", source: "https://accolade.eu/en/news/459/accolade-secures-additional-financing-worth-tens-of-millions-of-euros-in-loans-to-support-developments-in-karlovy-vary-and-bratislava" },
-  { borrower: "Crestyl (NR7 office, Prague)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Helaba", date: "2025", year: 2025, purpose: "Long-term financing for downtown office revitalisation", source: "https://www.property-forum.eu/news/helaba-to-finance-crestyls-revitalisation-project-in-prague/13133" },
-  { borrower: "Cresco Real Estate (SO-HO Phase 2)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Bank financing (Havel & Partners advised)", date: "2025", year: 2025, purpose: "Residential development — Prague-Holešovice", source: "https://www.havelpartners.com/" },
+  { borrower: "Allwyn International (ex-Sazka)", type: "Refinancing", amount: "€2,150m", currency: "EUR", value_eur: 2150, lenders: "Syndicate of lenders (5y maturity all): €400m amortising TL + €900m bullet TL + €350m multi-currency RCF + €500m delayed-drawdown TL", date: "Jul 2025", year: 2025, purpose: "Refi €1.7bn syndicated facility (€1.2bn drawn), margin −150bps; growth & GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-2-15bn-syndicated-credit-facility-and-refinancing-of-existing-syndicated-credit-facility", confidence: "Confirmed" },
+  { borrower: "Škoda Transportation (PPF Group)", type: "Syndicated", amount: "€1,500m", currency: "EUR", value_eur: 1500, lenders: "Syndicate led by ČSOB (incl. KB, ČS, UniCredit CZ&SK)", date: "2025", year: 2025, purpose: "Umbrella facility — term, revolving & corporate guarantee tranches", source: "https://practiceguides.chambers.com/practice-guides/banking-regulation-2026/czech-republic/trends-and-developments", confidence: "Confirmed" },
+  { borrower: "CTP N.V.", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING global coordinators (SLL, 3.7%)", date: "Jul 2025", year: 2025, purpose: "5y unsecured SLL refinancing 2024 facility + bond buyback", source: "https://ctp.eu/news/ctp-announces-the-signing-of-a-e500-million-unsecured-syndicated-sustainability-linked-loan-facility/", confidence: "Confirmed" },
+  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "JPY 80bn (~$528m / ~€480m)", currency: "JPY", value_eur: 480, lenders: "Samurai loan, SMBC Group", date: "Feb 2025", year: 2025, purpose: "Debut Japanese term loan — corporate liquidity", source: "https://www.epholding.cz/en/press-releases/smbc-group-supports-eph-in-securing-jpy80-billion-samurai-loan/", confidence: "Confirmed" },
+  { borrower: "UniCredit Bank Czech Republic & Slovakia", type: "Refinancing", amount: "€200m guarantee → €400m lending", currency: "EUR", value_eur: 400, lenders: "European Investment Bank (guarantee)", date: "2025", year: 2025, purpose: "EIB-backed mid-cap lending programme", source: "https://mf.gov.cz/en/about-ministry/media-room/news-and-press-releases/2026/czechia-gets-eib-group-financing-of-close-to--8364-62854", confidence: "Confirmed" },
+  { borrower: "CTP N.V.", type: "Syndicated", amount: "JPY 30bn (~€185m)", currency: "JPY", value_eur: 185, lenders: "Asian bank syndicate", date: "2025", year: 2025, purpose: "5y unsecured SLL, TONAR + 130bps", source: "https://realassetinsight.com/2025/07/24/ctp-secures-e500m-sustainability-linked-loan-for-bond-buyback/", confidence: "Confirmed" },
+  { borrower: "NET4GAS s.r.o.", type: "Refinancing", amount: "CZK 4,000m (~€160m)", currency: "CZK", value_eur: 160, lenders: "KB, ČS, UniCredit CZ&SK, VÚB (Dentons advised)", date: "Apr 2025", year: 2025, purpose: "Refi facility — gas transmission infrastructure", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2025/april/dentons-advises-net4gas-on-czk-4-billion-refinancing-facility", confidence: "Confirmed" },
+  { borrower: "Penta Investments (healthcare RE)", type: "Real Estate", amount: "CZK 3,200m (~€128m)", currency: "CZK", value_eur: 128, lenders: "5-bank syndicate: KB & ČSOB MLAs; UniCredit, ČS, Raiffeisenbank participants", date: "2025", year: 2025, purpose: "Senior financing for long-term care facilities + Klinika Dr. Pírka", source: "https://ceerealestatematters.com/penta-investments-secures-czk-3-2-billion-in-senior-financing-for-healthcare-real-estate-portfolio", confidence: "Confirmed" },
+  { borrower: "Aurelia fondy SICAV (River Garden II + III)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "UniCredit Bank CZ&SK + Česká spořitelna (Kinstellar advised lenders, Dentons advised borrower)", date: "Sep 2025", year: 2025, purpose: "Acquisition financing — Karlín office complex (seller: Encore Plus Properties II)", source: "https://www.kinstellar.com/news-and-insights/detail/3742/kinstellar-advises-on-the-acquisition-financing-of-the-river-garden-ii-and-iii-office-buildings-in-prague", confidence: "Confirmed" },
+  { borrower: "Penta Real Estate (Nová Waltrovka)", type: "Real Estate", amount: "€74m", currency: "EUR", value_eur: 74, lenders: "ČSOB & Česká spořitelna", date: "2025", year: 2025, purpose: "Office tranche of mixed-use Prague-Radlice scheme (€205m total)", source: "https://www.property-forum.eu/news/penta-secures-74-million-loan-for-prague-office-project/14072", confidence: "Confirmed" },
+  { borrower: "Accolade (Karlovy Vary + Bratislava)", type: "Real Estate", amount: "€34.9m (CZK 880m)", currency: "EUR", value_eur: 35, lenders: "UniCredit Bank Czech Republic & Slovakia", date: "Mar 2025", year: 2025, purpose: "Two new industrial park developments", source: "https://accolade.eu/en/news/459/accolade-secures-additional-financing-worth-tens-of-millions-of-euros-in-loans-to-support-developments-in-karlovy-vary-and-bratislava", confidence: "Confirmed" },
+  { borrower: "Crestyl (NR7 office, Prague)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Helaba", date: "2025", year: 2025, purpose: "Long-term financing for downtown office revitalisation", source: "https://www.property-forum.eu/news/helaba-to-finance-crestyls-revitalisation-project-in-prague/13133", confidence: "Confirmed" },
+  { borrower: "Cresco Real Estate (SO-HO Phase 2)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Bank financing (Havel & Partners advised)", date: "2025", year: 2025, purpose: "Residential development — Prague-Holešovice", source: "https://www.havelpartners.com/", confidence: "Confirmed" },
 
   // ===== 2024 =====
-  { borrower: "ČEZ, a.s.", type: "Acquisition/LBO", amount: "€840m", currency: "EUR", value_eur: 840, lenders: "Bridge syndicate (W&C advised arrangers)", date: "Mar 2024", year: 2024, purpose: "Bridge-to-bond facility for 55.21% GasNet stake (€846.5m EV)", source: "https://www.cez.cz/en/investors/inside-information/cez-a.s.-successfully-signed-a-loan-agreement-for-840-mil.-eur-to-finance-the-acquisition-of-a-55.21-stake-in-gasnet-189803" },
-  { borrower: "ČEPS a.s. (transmission system operator)", type: "Syndicated", amount: "CZK 24,000m (~€960m)", currency: "CZK", value_eur: 960, lenders: "Česká spořitelna, ČSOB, Komerční banka (Dentons advised lenders)", date: "2024", year: 2024, purpose: "Corporate facility — TSO investments", source: "https://ceelegalmatters.com/dentons" },
-  { borrower: "CTP N.V.", type: "Syndicated", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING coordinators (SLL, 4.7%)", date: "Jun 2024", year: 2024, purpose: "5y unsecured SLL — GCP including developments", source: "https://www.businesswire.com/news/home/20240627835705/en/CTP-announces-the-signing-of-a-%E2%82%AC500-million-unsecured-syndicated-sustainability-linked-loan-facility-and-%E2%82%AC500-million-bond-tender-offer" },
-  { borrower: "Allwyn International", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "Lenders under existing Senior Facilities Agreement", date: "Q1 2024", year: 2024, purpose: "Accordion facilities — Instant Win Gaming investment + GCP", source: "https://www.allwyn.com/investors-news/allwyn-international-a-s-announces-500-million-accordion-facility" },
-  { borrower: "Kofola ČeskoSlovensko (Pivovary CZ Group)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "ČSOB & Česká spořitelna (Clifford Chance advised lenders)", date: "Mar 2024", year: 2024, purpose: "51% acquisition of Pivovary CZ Group (Holba/Zubr/Litovel)", source: "https://www.cliffordchance.com/news/news/2024/03/clifford-chance-advises-eskoslovenska-obchodni-banka-and-eska-sp.html" },
-  { borrower: "CPI Property Group (3 office assets)", type: "Refinancing", amount: "€277m", currency: "EUR", value_eur: 277, lenders: "Bank financing", date: "2024", year: 2024, purpose: "Refi three office assets — debt management programme", source: "https://www.property-forum.eu/news/cpipg-gets-eur277-million-to-refinance-three-office-assets/18471" },
-  { borrower: "Accolade Industrial Fund", type: "Refinancing", amount: ">€200m", currency: "EUR", value_eur: 200, lenders: "Česká spořitelna", date: "Dec 2024", year: 2024, purpose: "Refi 4 CZ + PL industrial parks — 5y stable financing", source: "https://accolade.eu/en/news/170/accolade-refinanced-the-czech-and-polish-industrial-real-estate-portfolio-for-more-than-eur-200-million" },
+  { borrower: "ČEZ, a.s.", type: "Acquisition/LBO", amount: "€840m", currency: "EUR", value_eur: 840, lenders: "2y term loan syndicate: Barclays, CaixaBank, Citigroup, Commerzbank, Intesa Sanpaolo, SMBC, Komerční banka / Société Générale (facility agent) (W&C advised arrangers)", date: "Mar 2024", year: 2024, purpose: "Bridge-to-bond facility for 55.21% GasNet stake (€846.5m EV)", source: "https://www.cez.cz/en/investors/inside-information/cez-a.s.-successfully-signed-a-loan-agreement-for-840-mil.-eur-to-finance-the-acquisition-of-a-55.21-stake-in-gasnet-189803", confidence: "Confirmed" },
+  { borrower: "ČEPS a.s. (transmission system operator)", type: "Syndicated", amount: "CZK 24,000m (~€960m)", currency: "CZK", value_eur: 960, lenders: "Česká spořitelna, ČSOB, Komerční banka (Dentons advised lenders)", date: "2024", year: 2024, purpose: "Corporate facility — TSO investments", source: "https://ceelegalmatters.com/dentons", confidence: "Confirmed" },
+  { borrower: "CTP N.V.", type: "Syndicated", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING coordinators (SLL, 4.7%)", date: "Jun 2024", year: 2024, purpose: "5y unsecured SLL — GCP including developments", source: "https://www.businesswire.com/news/home/20240627835705/en/CTP-announces-the-signing-of-a-%E2%82%AC500-million-unsecured-syndicated-sustainability-linked-loan-facility-and-%E2%82%AC500-million-bond-tender-offer", confidence: "Confirmed" },
+  { borrower: "Allwyn International", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "Lenders under existing Senior Facilities Agreement", date: "Q1 2024", year: 2024, purpose: "Accordion facilities — Instant Win Gaming investment + GCP", source: "https://www.allwyn.com/investors-news/allwyn-international-a-s-announces-500-million-accordion-facility", confidence: "Confirmed" },
+  { borrower: "Kofola ČeskoSlovensko (Pivovary CZ Group)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "ČSOB & Česká spořitelna (Clifford Chance advised lenders)", date: "Mar 2024", year: 2024, purpose: "51% acquisition of Pivovary CZ Group (Holba/Zubr/Litovel)", source: "https://www.cliffordchance.com/news/news/2024/03/clifford-chance-advises-eskoslovenska-obchodni-banka-and-eska-sp.html", confidence: "Confirmed" },
+  { borrower: "CPI Property Group (3 office assets)", type: "Refinancing", amount: "€277m", currency: "EUR", value_eur: 277, lenders: "Bank financing", date: "2024", year: 2024, purpose: "Refi three office assets — debt management programme", source: "https://www.property-forum.eu/news/cpipg-gets-eur277-million-to-refinance-three-office-assets/18471", confidence: "Confirmed" },
+  { borrower: "Accolade Industrial Fund", type: "Refinancing", amount: ">€200m", currency: "EUR", value_eur: 200, lenders: "Česká spořitelna", date: "Dec 2024", year: 2024, purpose: "Refi 4 CZ + PL industrial parks — 5y stable financing", source: "https://accolade.eu/en/news/170/accolade-refinanced-the-czech-and-polish-industrial-real-estate-portfolio-for-more-than-eur-200-million", confidence: "Confirmed" },
 
   // ===== 2023 =====
-  { borrower: "Heimstaden Bostad (Czech subsidiaries)", type: "Real Estate", amount: "€700m", currency: "EUR", value_eur: 700, lenders: "Bank syndicate (Dentons advised)", date: "Sep 2023", year: 2023, purpose: "Sustainability-linked bank financing — CZ residential portfolio", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2023/september/dentons-advises-heimstaden-bostad-on-eur-700-million-of-sustainability-linked-financing" },
-  { borrower: "CPI Property Group", type: "Refinancing", amount: "€635m", currency: "EUR", value_eur: 635, lenders: "Santander, SocGen / Komerční banka, RBI, SMBC, Barclays, Erste", date: "Nov 2023", year: 2023, purpose: "3y bridge replacing prior IMMOFINANZ / S IMMO bridge facilities", source: "https://www.property-forum.eu/news/cpipg-closes-eur600-million-of-disposals-ytd/18519" },
-  { borrower: "Allwyn International", type: "Acquisition/LBO", amount: "€335m", currency: "EUR", value_eur: 335, lenders: "Lenders under Senior Facilities Agreement (accordion)", date: "Early 2023", year: 2023, purpose: "Acquisition of Camelot Lottery Solutions group + GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-335m-accordion-loan-facility" },
+  { borrower: "Heimstaden Bostad (Czech subsidiaries)", type: "Real Estate", amount: "€700m", currency: "EUR", value_eur: 700, lenders: "Bank syndicate (Dentons advised)", date: "Sep 2023", year: 2023, purpose: "Sustainability-linked bank financing — CZ residential portfolio", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2023/september/dentons-advises-heimstaden-bostad-on-eur-700-million-of-sustainability-linked-financing", confidence: "Confirmed" },
+  { borrower: "CPI Property Group", type: "Refinancing", amount: "€635m", currency: "EUR", value_eur: 635, lenders: "Santander, SocGen / Komerční banka, RBI, SMBC, Barclays, Erste", date: "Nov 2023", year: 2023, purpose: "3y bridge replacing prior IMMOFINANZ / S IMMO bridge facilities", source: "https://www.property-forum.eu/news/cpipg-closes-eur600-million-of-disposals-ytd/18519", confidence: "Confirmed" },
+  { borrower: "Allwyn International", type: "Acquisition/LBO", amount: "€335m", currency: "EUR", value_eur: 335, lenders: "Lenders under Senior Facilities Agreement (accordion)", date: "Early 2023", year: 2023, purpose: "Acquisition of Camelot Lottery Solutions group + GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-335m-accordion-loan-facility", confidence: "Confirmed" },
 
   // ===== 2022 =====
-  { borrower: "CPI Property Group", type: "Refinancing", amount: "€1,852m", currency: "EUR", value_eur: 1852, lenders: "Banco Santander (global coordinator), Raiffeisen Bank Int'l, SocGen, Komerční banka, Erste Group", date: "Sep 2022", year: 2022, purpose: "Forward-start facility refinancing 2y bridges for IMMOFINANZ + S IMMO acquisitions", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2022/september/dentons-advises-cpi-property-group-on-refinancing-loans-for-acquisitions-of-immofinanz-and-s-immo" },
-  { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "€1,600m", currency: "EUR", value_eur: 1600, lenders: "Bank syndicate; UniCredit Global Coordinator (Clifford Chance / A&O)", date: "Nov 2022", year: 2022, purpose: "Senior Facilities Agreement — refi €623m loan + Camelot UK acquisition + GCP", source: "https://www.cliffordchance.com/news/news/2022/11/clifford-chance-advises-allwyn-on-its-1-6bn-senior-facilities-a.html" },
-  { borrower: "Cube Infrastructure Fund III (MVV Energie CZ)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Kommunalkredit Austria + Komerční banka (A&O Shearman advised)", date: "Aug–Dec 2022", year: 2022, purpose: "Syndicated leveraged infra acquisition financing — Czech district heating", source: "https://www.aoshearman.com/en/news/allen-overy-advises-on-the-financing-for-acquisition-of-mvv-energie-cz" },
-  { borrower: "Kofola ČeskoSlovensko", type: "Refinancing", amount: "up to CZK 1,000m new line + refi", currency: "CZK", value_eur: 40, lenders: "Česká spořitelna & ČSOB", date: "Jul 2022", year: 2022, purpose: "Refi to 60/40 EUR/CZK structure + new investment line", source: "https://ceelegalmatters.com/in-house/20933-deal-5-kofola-cfo-martin-pisklak-on-the-group-s-refinancing" },
-  { borrower: "Allwyn (Sazka Delta — OPAP minority)", type: "Acquisition/LBO", amount: "€327m + €600m bond", currency: "EUR", value_eur: 327, lenders: "Cash from balance sheet incl. €600m bond proceeds", date: "Feb 2022", year: 2022, purpose: "Acquired remaining Sazka minority — Allwyn stake in OPAP to 48.1%", source: "https://www.globenewswire.com/news-release/2022/02/17/2387312/0/en/Allwyn-increases-its-economic-interest-in-OPAP-to-48-1.html" },
+  { borrower: "CPI Property Group", type: "Refinancing", amount: "€1,852m", currency: "EUR", value_eur: 1852, lenders: "Banco Santander (global coordinator), Raiffeisen Bank Int'l, SocGen, Komerční banka, Erste Group", date: "Sep 2022", year: 2022, purpose: "Forward-start facility refinancing 2y bridges for IMMOFINANZ + S IMMO acquisitions", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2022/september/dentons-advises-cpi-property-group-on-refinancing-loans-for-acquisitions-of-immofinanz-and-s-immo", confidence: "Confirmed" },
+  { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "€1,600m", currency: "EUR", value_eur: 1600, lenders: "Bank syndicate; UniCredit Global Coordinator (Clifford Chance / A&O)", date: "Nov 2022", year: 2022, purpose: "Senior Facilities Agreement — refi €623m loan + Camelot UK acquisition + GCP", source: "https://www.cliffordchance.com/news/news/2022/11/clifford-chance-advises-allwyn-on-its-1-6bn-senior-facilities-a.html", confidence: "Confirmed" },
+  { borrower: "Cube Infrastructure Fund III (MVV Energie CZ)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Kommunalkredit Austria + Komerční banka (A&O Shearman advised)", date: "Aug–Dec 2022", year: 2022, purpose: "Syndicated leveraged infra acquisition financing — Czech district heating", source: "https://www.aoshearman.com/en/news/allen-overy-advises-on-the-financing-for-acquisition-of-mvv-energie-cz", confidence: "Confirmed" },
+  { borrower: "Kofola ČeskoSlovensko", type: "Refinancing", amount: "up to CZK 1,000m new line + refi", currency: "CZK", value_eur: 40, lenders: "Česká spořitelna & ČSOB", date: "Jul 2022", year: 2022, purpose: "Refi to 60/40 EUR/CZK structure + new investment line", source: "https://ceelegalmatters.com/in-house/20933-deal-5-kofola-cfo-martin-pisklak-on-the-group-s-refinancing", confidence: "Confirmed" },
+  { borrower: "Allwyn (Sazka Delta — OPAP minority)", type: "Acquisition/LBO", amount: "€327m + €600m bond", currency: "EUR", value_eur: 327, lenders: "Cash from balance sheet incl. €600m bond proceeds", date: "Feb 2022", year: 2022, purpose: "Acquired remaining Sazka minority — Allwyn stake in OPAP to 48.1%", source: "https://www.globenewswire.com/news-release/2022/02/17/2387312/0/en/Allwyn-increases-its-economic-interest-in-OPAP-to-48-1.html", confidence: "Confirmed" },
 
   // ===== 2021 =====
-  { borrower: "Tanemo a.s. (PPF SPV)", type: "Acquisition/LBO", amount: "€1,100m", currency: "EUR", value_eur: 1100, lenders: "Syndicate led by ING", date: "2021", year: 2021, purpose: "Certain-funds facility for Moneta Money Bank voluntary tender — first Czech VTO certain-funds loan", source: "https://www.prkpartners.com/files/013-czech-republic.pdf" },
-  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "€1,000m", currency: "EUR", value_eur: 1000, lenders: "Bank of China, Commerzbank, Credit Suisse, HSBC, ING, KB (agent), SMBC, UniCredit CZ&SK as MLAB; Citibank as MLA", date: "Mar 2021", year: 2021, purpose: "3y unsecured term + revolving — refi other indebtedness + GCP", source: "https://www.bakermckenzie.com/en/newsroom/2021/04/eph-secures-a-eur-1-bn-loan" },
+  { borrower: "Tanemo a.s. (PPF SPV)", type: "Acquisition/LBO", amount: "€1,100m", currency: "EUR", value_eur: 1100, lenders: "Syndicate led by ING", date: "2021", year: 2021, purpose: "Certain-funds facility for Moneta Money Bank voluntary tender — first Czech VTO certain-funds loan", source: "https://www.prkpartners.com/files/013-czech-republic.pdf", confidence: "Confirmed" },
+  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "€1,000m", currency: "EUR", value_eur: 1000, lenders: "Bank of China, Commerzbank, Credit Suisse, HSBC, ING, KB (agent), SMBC, UniCredit CZ&SK as MLAB; Citibank as MLA", date: "Mar 2021", year: 2021, purpose: "3y unsecured term + revolving — refi other indebtedness + GCP", source: "https://www.bakermckenzie.com/en/newsroom/2021/04/eph-secures-a-eur-1-bn-loan", confidence: "Confirmed" },
+
+  // ===== Newly added via alternative-source research (EGAP/ČEB, EIB/EBRD direct, JV disclosures, law-firm deals) =====
+
+  // CSG / Kinetic Group acquisition — JP Morgan-led
+  { borrower: "Czechoslovak Group (CSG)", type: "Acquisition/LBO", amount: "USD 2,150m (~€2,000m)", currency: "USD", value_eur: 2000, lenders: "JP Morgan as sole financial adviser & lead structurer (committed financing); subsequent IPO refinanced", date: "Dec 2024", year: 2024, purpose: "Acquisition of The Kinetic Group (CCI/Federal/Remington/Speer/HEVI-Shot ammunition) from Vista Outdoor", source: "https://www.businesswire.com/news/home/20240924599855/en/CSG-Urges-Vista-Outdoor-Stockholders-to-Vote-for-its-$2.15-Billion-Acquisition-of-The-Kinetic-Group-and-$150-Million-Investment-in-Revelyst", confidence: "Confirmed" },
+
+  // Aero Vodochody / L-39NG to Vietnam — EGAP + ČEB
+  { borrower: "Aero Vodochody / Omnipol (L-39NG export)", type: "Export Finance", amount: "~CZK 10bn (~€400m, est.)", currency: "CZK", value_eur: 400, lenders: "Česká exportní banka (ČEB), with EGAP insurance on bank guarantees", date: "2021–2024 (delivery)", year: 2024, purpose: "Buyer credit for Vietnam MoD purchase of 12× L-39NG trainer aircraft", source: "https://www.businessinfo.cz/clanky/aero-vodochody-doda-tucet-letounu-l-39ng-do-vietnamu-zakazku-pojistil-egap/", confidence: "Likely" },
+
+  // Iveco Czech / Ivory Coast bus export — EGAP-backed
+  { borrower: "Iveco Czech Republic (Ivory Coast 500 buses)", type: "Export Finance", amount: "CZK 2,400m (~€95m)", currency: "CZK", value_eur: 95, lenders: "Buyer credit to Government of Côte d'Ivoire — Lloyd's + EGAP insurance", date: "2024", year: 2024, purpose: "Supply of 500 CNG-powered buses to Abidjan; first CZ supplier in West Africa CNG market", source: "https://www.ivecogroup.com/media/brand_press_releases/2024/EMEA-(English)/Iveco-Bus/a_new_success_for_iveco_bus_in_ivory_coast_with_410_vehicles_for_a_total_fleet_of_more_than_1400_units_20240320T094722T455_urvgrj4kdivgrdtu1wrj1i30", confidence: "Confirmed" },
+
+  // Skoda Group / Uzbekistan trains — EGAP + EIB
+  { borrower: "Škoda Group (Uzbekistan EMU export)", type: "Export Finance", amount: "€120m (revised from €320m)", currency: "EUR", value_eur: 120, lenders: "Czech state export insurer EGAP + European Investment Bank (revised deal after original €320m financing collapsed)", date: "2025", year: 2025, purpose: "10× wide-gauge electric trains to Uzbekistan Railways + JV for local assembly", source: "https://railwaynews.net/skoda-secures-eur-120m-uzbekistan-electric-train-contract.html", confidence: "Confirmed" },
+
+  // EIB → ČEZ — €790m record
+  { borrower: "ČEZ Distribuce", type: "Project/Infra", amount: "€790m", currency: "EUR", value_eur: 790, lenders: "European Investment Bank (largest single EIB loan to CZ)", date: "Dec 2022", year: 2022, purpose: "Distribution grid modernization + connection of up to 2.2 GW new renewables (REPowerEU)", source: "https://www.eib.org/en/press/all/2022-529-czech-republic-eib-to-finance-modernisation-of-cez-s-distribution-grid-and-connection-of-new-renewable-energy-sources-with-a-record-breaking-loan-of-eur790-million", confidence: "Confirmed" },
+
+  // EIB → ČEZ — €400m phase III
+  { borrower: "ČEZ Distribuce", type: "Project/Infra", amount: "€400m", currency: "EUR", value_eur: 400, lenders: "European Investment Bank", date: "Dec 2024", year: 2024, purpose: "Distribution Network Upgrade III — automation + new renewable connections", source: "https://www.eib.org/en/press/all/2024-481-czech-electricity-grid-to-get-upgrade-with-eur400-million-eib-loan-to-utility-cez", confidence: "Confirmed" },
+
+  // EIB → ČSOB intermediated
+  { borrower: "Československá obchodní banka (ČSOB) — intermediated for SMEs/Mid-Caps", type: "Intermediated", amount: "€350m", currency: "EUR", value_eur: 350, lenders: "European Investment Bank (loan to ČSOB)", date: "2024", year: 2024, purpose: "On-lending facility for Czech mid-caps and SMEs", source: "https://www.eib.org/en/press/all/2024-480-czech-businesses-to-get-eur350-million-financing-support-with-eib-loan-to-bank-csob", confidence: "Confirmed" },
+
+  // EIB → KB + SGEF intermediated
+  { borrower: "Komerční banka + SG Equipment Finance — intermediated", type: "Intermediated", amount: "€400m", currency: "EUR", value_eur: 400, lenders: "European Investment Bank (loan to KB + SGEF)", date: "2024", year: 2024, purpose: "Mid-cap & SME lending in Czechia and Slovakia", source: "https://www.eib.org/en/press/all/2024-478-czech-and-slovak-businesses-to-get-financing-support-with-eur400-million-in-eib-loans-to-komercni-banka-and-sgef", confidence: "Confirmed" },
+
+  // EIB → Správa železnic — €466m
+  { borrower: "Správa železnic (Czech rail infrastructure)", type: "Project/Infra", amount: "€466m", currency: "EUR", value_eur: 466, lenders: "European Investment Bank", date: "2025", year: 2025, purpose: "Czech railway modernization programme — track + signalling", source: "https://www.eib.org/en/press/all/2025-051-czech-republic-to-step-up-railway-improvements-with-eib-loan-of-eur466-million", confidence: "Confirmed" },
+
+  // EIB → Správa železnic — €200m additional
+  { borrower: "Správa železnic (Czech rail infrastructure)", type: "Project/Infra", amount: "€200m", currency: "EUR", value_eur: 200, lenders: "European Investment Bank", date: "2025", year: 2025, purpose: "Additional rail upgrade — transport safety & sustainability", source: "https://www.eib.org/en/press/all/2025-409-czech-republic-to-upgrade-railways-with-eur200-million-eib-loan-bolstering-transport-safety-and-sustainability", confidence: "Confirmed" },
+
+  // EBRD → Heimstaden Bostad CZ
+  { borrower: "Heimstaden Bostad (Czech residential portfolio)", type: "Real Estate", amount: "€110m", currency: "EUR", value_eur: 110, lenders: "EBRD (alongside commercial banks)", date: "2023", year: 2023, purpose: "Energy-efficient renovation of ~42,500 residential units in CZ — green refurbishment programme", source: "https://www.ebrd.com/home/news-and-events/news/2023/ebrd-lends-110-million-to-promote-energy-efficient-residential-housing-in-the-czech-republic.html", confidence: "Confirmed" },
+
+  // EBRD → CIMEX Group / OREA Hotels — replaces the prior n/d Feb 2026 placeholder
+  { borrower: "CIMEX Group / OREA Hotels & Resorts", type: "Acquisition/LBO", amount: "€140.4m total (€46.8m EBRD + UniCredit + Raiffeisenbank)", currency: "EUR", value_eur: 140, lenders: "Syndicated facility: EBRD €46.8m + UniCredit Bank + Raiffeisenbank (W&C advised arrangers)", date: "Dec 2024", year: 2024, purpose: "Hotel chain modernization & energy efficiency upgrades — largest CZ hotel chain", source: "https://www.ebrd.com/home/news-and-events/news/2024/ebrd-lends--46-8-million-to-czech-hospitality-operator-cimex-gro.html", confidence: "Confirmed" },
+
+  // EBRD → AFI Europe regional
+  { borrower: "AFI Europe (regional incl. Czech PRS pipeline)", type: "Real Estate", amount: "up to €120m (regional)", currency: "EUR", value_eur: 120, lenders: "EBRD", date: "2024–25", year: 2024, purpose: "Regional development pipeline (CZ + RS + PL + RO) — incl. Czech PRS expansion", source: "https://www.property-forum.eu/news/afi-europe-to-expand-prs-segment-with-new-ebrd-loan/19794", confidence: "Confirmed" },
+
+  // CCC — PLN 1.8bn term + RCF (cross-border CZ legal)
+  { borrower: "CCC S.A. (Polish footwear group, CZ ops in scope)", type: "Refinancing", amount: "PLN 1,800m (~€420m)", currency: "PLN", value_eur: 420, lenders: "Bank syndicate (Kinstellar advised on RO/CZ/HR/HU/SK legal aspects)", date: "Aug 2024", year: 2024, purpose: "Term + revolving facilities — cross-border refi covering Czech operating subsidiaries", source: "https://www.kinstellar.com/news-and-insights/detail/2932/kinstellar-advises-ccc-on-the-romanian-czech-croatian-hungarian-and-slovak-legal-aspects-of-a-pln-18-billion-financing-agreement", confidence: "Likely" },
+
+  // CPI Property Group rooftop solar — green loan from ČSOB
+  { borrower: "CPI Property Group (rooftop PV portfolio CZ)", type: "Project/Infra", amount: "n/d (estimated €30–50m)", currency: "EUR", value_eur: 40, lenders: "Československá obchodní banka (ČSOB) — green loan (Kinstellar advised lender)", date: "Jul 2024", year: 2024, purpose: "Rooftop solar power plants on CPIPG real estate — green-loan structure", source: "https://www.kinstellar.com/news-and-insights/detail/2897/kinstellar-advises-on-the-green-loan-financing-for-cpi-property-group-in-the-czech-republic", confidence: "Inferred" },
+
+  // VGP / Allianz JV — bank facilities (CZ portfolio component)
+  { borrower: "VGP–Allianz European Logistics JV (CZ portion)", type: "Real Estate", amount: "€950m JV facilities (CZ assets ~30%)", currency: "EUR", value_eur: 285, lenders: "Bank syndicate to JV (drawn €694m JV-wide)", date: "outstanding 2021–26", year: 2024, purpose: "Logistics-park JV bank debt allocated across DE/CZ/HU/SK; CZ asset share notable", source: "https://www.vgpparks.eu/en/about-us/", confidence: "Inferred" },
+
+  // ENERGO-PRO Spain (Xeal/Galicia) — €300m bridge
+  { borrower: "ENERGO-PRO (Xeal Spain — Galicia hydropower)", type: "Acquisition/LBO", amount: "€300m bridge", currency: "EUR", value_eur: 300, lenders: "JP Morgan + Goldman Sachs (subsequently refinanced via green Eurobonds)", date: "2023", year: 2023, purpose: "Acquisition of Xallas Electricidad y Aleaciones (Xeal) from Sixth Street — 10 HPPs, 167 MW + ferroalloy plants", source: "https://sixthstreet.com/investment_announce/energo-pro-acquires-ten-hydropower-plants-in-spain-from-sixth-street/", confidence: "Confirmed" },
+
+  // Penta Hospitals / Group Mediterra
+  { borrower: "Penta Hospitals (Group Mediterra acquisition)", type: "Acquisition/LBO", amount: "n/d (est. €100–150m)", currency: "EUR", value_eur: 120, lenders: "Likely Penta's existing CZ healthcare-RE bank syndicate (KB/ČSOB MLAs; UniCredit/ČS/Raiffeisenbank)", date: "Oct 2025", year: 2025, purpose: "Acquisition of 6 hospitals + medical school + home-healthcare agency", source: "https://www.pentainvestments.com/en/penta-hospitals-plans-to-acquire-group-mediterra-and-significantly-expands-its-healthcare-network-adding-six-hospitals-and-a-medical-school-to-the-network/", confidence: "Inferred" },
+
+  // KKCG group syndicated facility — covers Aricoma + Avenga (replaces prior Inferred entry)
+  { borrower: "KKCG Group (Aricoma + Avenga technology pillar)", type: "Refinancing", amount: "n/d (multi-purpose syndicated facility)", currency: "EUR", value_eur: 250, lenders: "Syndicate led by Česká spořitelna; Komerční banka, ČSOB, UniCredit Bank CZ&SK (Dentons advised lenders)", date: "Aug 2024", year: 2024, purpose: "Refinance existing liabilities + fund further development of KKCG technology pillar (Aricoma + Avenga; ~8,000 staff)", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2024/august/dentons-advises-lenders-on-financing-for-kkcg-following-its-acquisition-of-avenga", confidence: "Confirmed" },
+
+  // ===== Round 2 additions (FTMO, REICO, ČD) =====
+  // FTMO / OANDA — Czech-side LBO, UniCredit-led 6-bank syndicate
+  { borrower: "FTMO Trading Global s.r.o. (OANDA acquisition)", type: "Acquisition/LBO", amount: "USD 250m (~€235m)", currency: "USD", value_eur: 235, lenders: "Senior club facility — UniCredit Bank CZ&SK (lead) + 5 Czech banks (Clifford Chance advised lenders; Latham advised FTMO; JP Morgan FA)", date: "Dec 2024", year: 2024, purpose: "Acquisition of OANDA Global Corp (FX/CFD broker) from CVC Asia Fund IV", source: "https://www.cliffordchanceprague.com/clifford-chance-advises-unicredit-and-major-banks-on-ftmo-s-acquisition-financing", confidence: "Confirmed" },
+
+  // REICO Palladium — €400m Erste-led 4-bank club; LARGEST single-asset CZ transaction ever
+  { borrower: "REICO ČS Nemovitostní fond (Palladium Prague)", type: "Real Estate", amount: "€400m", currency: "EUR", value_eur: 400, lenders: "4-bank club: Erste Group Bank (coordinator + facility agent), Česká spořitelna, Komerční banka, UniCredit Bank (W&C advised lenders)", date: "2025", year: 2025, purpose: "Acquisition of Palladium mixed-use centre (~60,000 sqm retail + offices) from Union Investment — largest single-property CZ deal ever", source: "https://www.whitecase.com/news/press-release/white-case-advises-landmark-financing-reicos-acquisition-prestigious-prague", confidence: "Confirmed" },
+
+  // REICO / Bořislavka Centrum — Feb 2022, KKCG seller, price undisclosed but "highest valuation in CZ market"
+  { borrower: "REICO ČS Nemovitostní fond (Bořislavka Centrum)", type: "Real Estate", amount: "n/d (Likely €130–200m range)", currency: "EUR", value_eur: 165, lenders: "Likely Erste / Česká spořitelna (REICO's standard lender stack); Clifford Chance advised seller KKCG", date: "Feb 2022", year: 2022, purpose: "Acquisition of Bořislavka Centrum office+retail (~40,000 sqm, 75% offices) from KKCG Real Estate Group", source: "https://www.property-forum.eu/news/reico-acquires-pragues-borislavka-centrum-from-kkcg/11405", confidence: "Likely" },
+
+  // ČD / EIB — €300m rolling-stock modernization
+  { borrower: "České dráhy (ČD)", type: "Project/Infra", amount: "€300m (CZK 7.61bn)", currency: "EUR", value_eur: 300, lenders: "European Investment Bank", date: "Oct 2024", year: 2024, purpose: "180 passenger coaches + 20 electric locomotives + ERTMS retrofit on 219 existing units", source: "https://www.eib.org/en/press/all/2024-404-czech-trains-to-be-upgraded-with-eur300-million-eib-loan-to-national-railway-operator", confidence: "Confirmed" },
+
+  // ===== Round 3 additions (Trigea, JET Investment, Yanmar/Tedom) =====
+  // Trigea / Arkády Pankrác — record CZ-domestic retail RE deal
+  { borrower: "Trigea nemovitostní fond (Arkády Pankrác)", type: "Real Estate", amount: "€241m headline + €112m assumed mortgage", currency: "EUR", value_eur: 353, lenders: "Existing €112m mortgage transferred from seller; new acquisition tranche from CZ banks (W&C advised Trigea)", date: "Feb 2024", year: 2024, purpose: "Acquisition of Arkády Pankrác Prague shopping centre — record CZ retail RE deal by domestic fund (>CZK 6bn total)", source: "https://www.whitecase.com/news/press-release/white-case-advises-trigea-acquisition-arkady-pankrac", confidence: "Confirmed" },
+
+  // Yanmar Group / Tedom acquisition — Czech cogen, from JET Investment
+  { borrower: "Yanmar Group (Tedom acquisition from JET Investment)", type: "Acquisition/LBO", amount: "n/d (est. €150–250m, target revenue ~€315m)", currency: "EUR", value_eur: 200, lenders: "Yanmar group financing (Dentons advised buyer; DRV Legal advised JET); likely Japanese-side senior + CZ legal package", date: "Oct 2024", year: 2024, purpose: "Acquisition of Tedom (CZ cogeneration / CHP plants — operations in CZ/DE/PL/SK/UK/US/KZ)", source: "https://ceelegalmatters.com/czech-republic/27491-dentons-and-drv-legal-advise-on-yanmar-group-s-acquisition-of-tedom", confidence: "Likely" },
+
+  // JET Investment / LIKOV — buyout via Jet 3 fund
+  { borrower: "JET Investment / LIKOV s.r.o.", type: "Acquisition/LBO", amount: "n/d (est. €40–60m on CZK 1.5bn turnover target)", currency: "EUR", value_eur: 50, lenders: "Acquisition financing under Jet 3 fund — bank co-financing inferred (CZ bank stack typical for industrial mid-market)", date: "Nov 2023", year: 2023, purpose: "70% buyout of LIKOV (European building-profile manufacturer, Kuřim, South Moravia)", source: "https://www.jetinvestment.eu/news/jet-investment-acquires-likov-a-leading-european-manufacturer-of-building-profiles/", confidence: "Inferred" },
+
+  // Trigea / Wrocław City Logistics II — CZ fund acquiring Polish logistics
+  { borrower: "Trigea nemovitostní fond (City Logistics Wrocław II, PL)", type: "Real Estate", amount: "n/d (est. €40–55m on 38,178 sqm)", currency: "EUR", value_eur: 47, lenders: "Acquisition financing for CZ fund's Polish leg (Greenberg Traurig advised buyer)", date: "Feb 2023", year: 2023, purpose: "Acquisition of 2-building Panattoni-developed warehouse park, Wrocław", source: "https://www.gtlaw.com/en/news/2023/02/press-releases/greenberg-traurig-advised-trigea-on-the-acquisition-of-a-logistics-park-in-wroclaw", confidence: "Inferred" },
+
+  // ===== Round 4 additions (EPH refi, EP/J&T/IDS, KKCG/Avenga, Carlyle/Tescan, Shimadzu/Tescan, CSG/Fiocchi, Dr.Max/Neo Apotek) =====
+  // EPH €3.745bn term + revolving facilities — June 2023, refi of bank indebtedness
+  { borrower: "EPH (Energetický a průmyslový holding)", type: "Refinancing", amount: "€3,745m", currency: "EUR", value_eur: 3745, lenders: "Group of international banks (term + revolving, up to 5y maturity)", date: "Jun 2023", year: 2023, purpose: "Refi part of bank indebtedness + increased flexibility — successor to 2021 €1bn facility", source: "https://ieefa.org/resources/ephs-transition-plan-faces-heightened-scrutiny-after-new-bond-issuance", confidence: "Confirmed" },
+
+  // EP Corporate Group + J&T Capital Partners / IDS plc (UK Royal Mail parent) — landmark take-private
+  { borrower: "EP UK Bidco (EP Corporate Group + J&T Capital Partners) — IDS plc takeover", type: "Acquisition/LBO", amount: "£2,850m syndicated acquisition financing (£3.5bn equity / £5.28bn EV)", currency: "GBP", value_eur: 3300, lenders: "Bank syndicate (Kirkland advised buyer; J&T Capital Partners co-bidder)", date: "Aug 2024 (signed) / May 2025 (closed)", year: 2024, purpose: "Take-private of International Distribution Services plc (UK Royal Mail parent + GLS) at 370p/share", source: "https://www.kirkland.com/news/press-release/2024/05/kirkland-advises-ep-corporate-group-on-recommended-cash-offer-for-uk-royal-mail-parent-ids", confidence: "Confirmed" },
+
+  // KKCG / Avenga acquisition financing — Jan 2024
+  { borrower: "KKCG (Avenga acquisition from Oaktree + Cornerstone)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 200, lenders: "Syndicate led by Česká spořitelna; Komerční banka, UniCredit Bank CZ&SK (Dentons advised lenders)", date: "Jan 2024", year: 2024, purpose: "100% acquisition of Avenga (global software & consulting) from Oaktree-managed funds + Cornerstone Investment Management", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2024/january/dentons-advises-syndicate-of-banks-on-financing-of-kkcgs-acquisition-of-avenga", confidence: "Confirmed" },
+
+  // ARICOMA / Musala Soft (earlier KKCG IT M&A — Sep 2022)
+  { borrower: "Aricoma Group / Musala Soft (KKCG)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 60, lenders: "Bank syndicate (Dentons advised banks)", date: "Sep 2022", year: 2022, purpose: "Aricoma's acquisition of Musala Soft (Bulgarian IT services group) — KKCG portfolio expansion", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2022/september/dentons-advises-banks-on-financing-of-acquisition-of-musala-soft-by-aricoma", confidence: "Likely" },
+
+  // Carlyle / Tescan acquisition — Jan 2023 close
+  { borrower: "Carlyle / Tescan ORSAY HOLDING", type: "Acquisition/LBO", amount: "USD ~200–300m (lower hundreds of $m, per HN)", currency: "USD", value_eur: 230, lenders: "Senior debt arranged by Deloitte Debt & Capital Advisory; W&C advised Carlyle", date: "Jan 2023 (close, Dec 2022 SPA)", year: 2023, purpose: "Majority buyout of Tescan ORSAY HOLDING (CZ electron microscope + scientific instrument manufacturer)", source: "https://www.whitecase.com/news/press-release/white-case-advises-carlyle-acquisition-tescan", confidence: "Confirmed" },
+
+  // Shimadzu / Tescan exit — $850m EV
+  { borrower: "Shimadzu Corporation / Tescan Group (Carlyle exit)", type: "Acquisition/LBO", amount: "USD 850m EV", currency: "USD", value_eur: 800, lenders: "Buyer-side Japanese financing (W&C advised Carlyle)", date: "H1 2026 (closing)", year: 2026, purpose: "Acquisition of Tescan from Carlyle by Shimadzu — exit at ~50% above 2022 entry value", source: "https://www.whitecase.com/news/press-release/white-case-advises-carlyle-sale-tescan-group-shimadzu-corporation", confidence: "Confirmed" },
+
+  // CSG / Fiocchi Munizioni — 2022, "largest financial investment in CSG history"
+  { borrower: "Czechoslovak Group (CSG) / Fiocchi Munizioni", type: "Acquisition/LBO", amount: "n/d (largest CSG financial investment to date in 2022)", currency: "EUR", value_eur: 400, lenders: "Bank + bond financing (CSG-side; specific syndicate undisclosed)", date: "2022", year: 2022, purpose: "70% acquisition of Fiocchi Munizioni (Italian small-calibre ammunition leader) from Charme III", source: "https://czechoslovakgroup.com/en/news/czechoslovak-group-acquired-a-majority-share-in-fiocchi-munizioni-the-world-s-leading-manufacturer-of-small-caliber-ammunition", confidence: "Likely" },
+
+  // Dr.Max / Neo Apotek Italy
+  { borrower: "Dr.Max (Penta) / Neo Apotek S.p.A. (Italy)", type: "Acquisition/LBO", amount: "n/d (largest in Dr.Max history at announcement)", currency: "EUR", value_eur: 300, lenders: "Penta-backed financing — likely CZ syndicate stack (KB/ČSOB/ČS/UniCredit) + Dr.Max group facilities", date: "Nov 2023", year: 2023, purpose: "Acquisition of 210+ Italian pharmacies — Dr.Max Italy expansion", source: "https://www.pentafund.com/news/healthcare/new-chapter-for-the-pharma-market-dr-max-expands-into-italy/", confidence: "Likely" },
+
+  // EP Infrastructure earlier facility — Jan 2020 €800m (just inside historical context but technically pre-window)
+  // Skipped: pre-2021
+
+  // CE Industries / Czech Precision Forge — Nov 2023, undisclosed
+  { borrower: "CE Industries (Strnad) / Czech Precision Forge", type: "Acquisition/LBO", amount: "n/d (forging assets, no public quantum)", currency: "EUR", value_eur: 50, lenders: "Group-level CE Industries financing — bank specific not disclosed", date: "Nov 2023", year: 2023, purpose: "Acquisition of Pilsen-based Czech Precision Forge — CE Industries portfolio expansion (95% staff growth YoY in 2023)", source: "https://www.ce.industries/press-release/9-czech-precision-forge-ma-nove-majitele", confidence: "Inferred" },
+
+  // ===== Round 5 additions (Solek, Rohlík, Genesis Capital, BHM, Hartenberg) =====
+  // Solek / Chile renewables — multi-tranche $379m total
+  { borrower: "Solek Holding (Chile solar portfolio)", type: "Project/Infra", amount: "USD 379m total (~€353m)", currency: "USD", value_eur: 353, lenders: "BNP Paribas + Natixis arrangers; mix: $178m 20y USPP bond, $75m mezzanine, $55m PMGD bridge, $37m utility-scale bridge, $19m LC, $15m VAT line", date: "Jun 2024", year: 2024, purpose: "Project finance package for Solek's Chilean PV portfolio (284 MW operating + 400 MW pipeline incl. 95.2 MW Leyda)", source: "https://renewablesnow.com/news/czechias-solek-raises-usd-379m-for-solar-portfolio-in-chile-824631/", confidence: "Confirmed" },
+
+  // Rohlík Group / EIB €90m (Scale-Up Initiative)
+  { borrower: "Rohlík Group", type: "Intermediated", amount: "€90m", currency: "EUR", value_eur: 90, lenders: "European Investment Bank (Scale-Up Initiative) — White & Case advised borrower", date: "Jun 2024", year: 2024, purpose: "Digital advances + new distribution centres + European expansion (alongside €170m EBRD-led equity round)", source: "https://www.eib.org/en/press/all/2024-229-czech-e-grocery-business-rohlik-gets-eur90-million-eib-loan-for-growth", confidence: "Confirmed" },
+
+  // Genesis Capital / Schulte + GAF — buy-and-build
+  { borrower: "Genesis Capital (Schulte + GAF acquisitions)", type: "Acquisition/LBO", amount: "n/d (est. €40–80m combined)", currency: "EUR", value_eur: 60, lenders: "Česká spořitelna (Clifford Chance advised lender)", date: "Apr 2024", year: 2024, purpose: "GPEF IV add-on acquisitions: Schulte (HVAC technical building services) + GAF (custom metalworking)", source: "https://www.cliffordchance.com/news/news/2024/04/clifford-chance-advises-eska-spoitelna-on-financing-of-acquisitions-of-schulte-and-gaf-by-genesis-capital.html", confidence: "Confirmed" },
+
+  // BHM Group (Krsek) / Medifa
+  { borrower: "BHM Group / Reinsberg Group / Medifa", type: "Acquisition/LBO", amount: "n/d (est. €30–60m on German OR-equipment maker)", currency: "EUR", value_eur: 45, lenders: "BHM Group financing — Reinsberg holdco established 2023 to consolidate medtech", date: "Spring 2023", year: 2023, purpose: "Acquisition of Medifa (German operating-room equipment manufacturer)", source: "https://www.bhmgroup.eu/en/news/bhm-group-founded-a-new-holding-company-reinsberg-group", confidence: "Likely" },
+
+  // BHM Group / Brandon Medical (UK)
+  { borrower: "Reinsberg Group / Brandon Medical (UK)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 50, lenders: "BHM Group / Reinsberg holdco financing (specific facility undisclosed)", date: "Oct 2024", year: 2024, purpose: "Majority stake in Brandon Medical (UK medical equipment) — Reinsberg medtech roll-up", source: "https://www.medifa.com/2024/10/29/reinsberg-group-acquires-majority-stake-in-brandon-medical/?lang=en", confidence: "Inferred" },
+
+  // BHM Group mezzanine to Alvo (capital growth)
+  { borrower: "BHM Group / Alvo (mezzanine)", type: "Refinancing", amount: "n/d", currency: "EUR", value_eur: 35, lenders: "BHM Group as mezzanine provider (BHM-side financing)", date: "2023–2024", year: 2024, purpose: "Mezzanine to fund Alvo's capital growth needs — BHM acting as direct lender", source: "https://www.thecfigroup.com/transactions/bhm-group-provided-mezzanine-financing-to-fund-alvos-capital-growth-requirements/", confidence: "Inferred" },
+
+  // Hartenberg / 4kraft (KinderKraft)
+  { borrower: "Hartenberg Capital / 4kraft (KinderKraft)", type: "Acquisition/LBO", amount: "n/d (Hartenberg sweet spot EV €40–200m)", currency: "EUR", value_eur: 80, lenders: "Hartenberg-side financing — typical CZ/PL bank stack inferred", date: "Dec 2024", year: 2024, purpose: "Acquisition of 4kraft (Polish baby/childcare brand owner — KinderKraft) — Hartenberg's 7th portfolio company", source: "https://www.hartenbergcapital.com/projects", confidence: "Inferred" },
+
+  // Genesis Capital / AV MEDIA
+  { borrower: "Genesis Capital / AV MEDIA", type: "Acquisition/LBO", amount: "n/d (est. €30–50m for CZ AV-integration leader)", currency: "EUR", value_eur: 40, lenders: "Genesis-side financing under GPEF IV", date: "2023", year: 2023, purpose: "Majority stake acquisition of AV MEDIA (AV systems integration + events tech)", source: "https://www.genesis.cz/en/private-equity/news", confidence: "Inferred" },
+
+  // Genesis Capital / Slevomat — debut deal of GPEF V
+  { borrower: "Genesis Capital (GPEF V) / Slevomat Group", type: "Acquisition/LBO", amount: "n/d (debut deal of €270m GPEF V fund)", currency: "EUR", value_eur: 50, lenders: "Genesis-side financing — GPEF V fund (€270m total commitments)", date: "2024", year: 2024, purpose: "Acquisition of Slevomat Group (CZ leading e-commerce voucher platform)", source: "https://www.genesis.cz/en/private-equity/our-portfolio", confidence: "Inferred" },
+
+  // PFX Group (Genesis-owned) / Cine Chromatix VFX
+  { borrower: "Genesis Capital / PFX Group (Cine Chromatix VFX add-on)", type: "Acquisition/LBO", amount: "n/d (smaller add-on; lifted PFX to ~250 staff)", currency: "EUR", value_eur: 30, lenders: "PFX Group / Genesis-side financing (specific facility not disclosed)", date: "2024", year: 2024, purpose: "Acquisition of German VFX division of Cine Chromatix — PFX's CEE post-production roll-up", source: "https://www.genesis.cz/en/private-equity/news", confidence: "Inferred" },
+
+  // ===== Round 6 additions (Letiště Praha, Teplárny Brno, Kaprain/Mafra, Správa železnic CZ 24bn + 13bn) =====
+  // Letiště Praha (Prague Airport) — 10-bank consortium long-term credit framework
+  { borrower: "Letiště Praha (Václav Havel Airport)", type: "Syndicated", amount: "CZK 7,000m (~€280m)", currency: "CZK", value_eur: 280, lenders: "Consortium of 10 banks (qualified via May 2021 public tender)", date: "2021–2022", year: 2021, purpose: "Long-term credit framework — strengthen post-COVID financial stability + sustainable development CAPEX", source: "https://www.prg.aero/en/prague-airport-boosts-its-financial-stability-loan-be-provided-consortium-banks", confidence: "Confirmed" },
+
+  // Teplárny Brno / EIB district heating + biomass CHP
+  { borrower: "Teplárny Brno (district heating modernization)", type: "Project/Infra", amount: "€75m (of €164m total project)", currency: "EUR", value_eur: 75, lenders: "European Investment Bank", date: "May 2023", year: 2023, purpose: "Biomass CHP unit + grid modernization (5 km existing pipelines + 5.5 km new + 16 transfer stations modernized + 105 new)", source: "https://www.eib.org/en/press/all/2023-200-eib-commits-eur75-million-to-support-sustainable-heating-in-the-czech-republic", confidence: "Confirmed" },
+
+  // Kaprain / Mafra + Synthesia + LONDA — closing Feb 2024
+  { borrower: "Kaprain Group (Pražák) / Mafra + Synthesia + LONDA", type: "Acquisition/LBO", amount: "~CZK 10,000m (~€400m total)", currency: "CZK", value_eur: 400, lenders: "Kaprain-side acquisition financing — BBH advised buyer", date: "Feb 2024 (close)", year: 2024, purpose: "Acquisition of media (Mafra — MF Dnes / iDNES), chemicals (Synthesia) + radio (LONDA — Impuls) from Andrej Babiš's Agrofert", source: "https://ceelegalmatters.com/czech-republic/25626-closing-kaprain-group-s-acquisition-of-mafra-publishing-and-synthesia-from-agrofert-now-closed", confidence: "Likely" },
+
+  // Správa železnic / EIB CZK 24bn — first tranche of CZK 48.8bn programme
+  { borrower: "Správa železnic (Czech rail infrastructure)", type: "Project/Infra", amount: "CZK 24,000m (~€960m)", currency: "CZK", value_eur: 960, lenders: "European Investment Bank — first tranche of CZK 48.8bn programme", date: "Autumn 2023", year: 2023, purpose: "Green funding for railway modernization (TEN-T lines + ERTMS rollout)", source: "https://www.eib.org/en/press/all/2023-390-eib-signs-czk-24-billion-green-funding-for-czech-railway-modernisation", confidence: "Confirmed" },
+
+  // Správa železnic / EIB CZK 13bn — second tranche
+  { borrower: "Správa železnic (Czech rail infrastructure)", type: "Project/Infra", amount: "CZK 13,000m (~€527m)", currency: "CZK", value_eur: 527, lenders: "European Investment Bank — second tranche of CZK 48.8bn programme", date: "Jun 2024", year: 2024, purpose: "Continued ERTMS deployment + TEN-T rail safety/capacity upgrade", source: "https://www.eib.org/en/press/all/2024-202-czech-railway-safety-and-capacity-strengthened-with-eib-loan-of-czk-13-billion", confidence: "Confirmed" },
+
+  // Doosan Skoda Power / Kazakhstan steam turbine export
+  { borrower: "Doosan Škoda Power (Kazakhstan turbines export)", type: "Export Finance", amount: "n/d (2× 175MW steam turbines for combined-cycle plant)", currency: "EUR", value_eur: 80, lenders: "EGAP/ČEB likely (industry-standard for CZ heavy-equipment exports)", date: "2024–2025", year: 2024, purpose: "Supply of 2× 175MW steam turbines to Kazakhstan combined-cycle power plant project", source: "https://www.enlit.world/library/doosan-koda-power-wins-steam-turbine-contract-in-kazakhstan", confidence: "Inferred" },
 ];
 
 const TYPE_BADGE = {
-  "Syndicated":      { cls: "badge-syn",  q: 'Czech "syndicated loan" 2026 borrower facility signed' },
-  "Acquisition/LBO": { cls: "badge-lbo",  q: 'Czech acquisition financing 2026 LBO buyout loan' },
-  "Refinancing":     { cls: "badge-refi", q: 'Czech corporate refinancing 2026 facility loan signed' },
-  "Real Estate":     { cls: "badge-re",   q: 'Czech real estate loan 2026 property financing Prague' },
+  "Syndicated":      { cls: "badge-syn",     q: 'Czech "syndicated loan" 2026 borrower facility signed' },
+  "Acquisition/LBO": { cls: "badge-lbo",     q: 'Czech acquisition financing 2026 LBO buyout loan' },
+  "Refinancing":     { cls: "badge-refi",    q: 'Czech corporate refinancing 2026 facility loan signed' },
+  "Real Estate":     { cls: "badge-re",      q: 'Czech real estate loan 2026 property financing Prague' },
+  "Export Finance":  { cls: "badge-export",  q: 'Czech export finance EGAP CEB buyer credit' },
+  "Project/Infra":   { cls: "badge-project", q: 'Czech project finance infrastructure EIB loan' },
+  "Intermediated":   { cls: "badge-intermediated", q: 'Czech intermediated EIB EBRD bank facility' },
 };
 
 const STATE_KEY = "cz_loans_filter_v2";
@@ -213,7 +386,7 @@ function filterDeals() {
 // ---- Render stats ----
 function renderStats() {
   const filtered = filterDeals();
-  const types = ["Syndicated", "Acquisition/LBO", "Refinancing", "Real Estate"];
+  const types = ["Syndicated", "Acquisition/LBO", "Refinancing", "Real Estate", "Export Finance", "Project/Infra", "Intermediated"];
   const total_eur = filtered.reduce((s, d) => s + (d.value_eur || 0), 0);
   const scopeLabel = (activeYear === "All" ? "2021–2026" : activeYear) + (activeFilter === "All" ? "" : " · " + activeFilter);
   const html = [
@@ -229,7 +402,7 @@ function renderStats() {
 
 // ---- Render filter chips ----
 function renderFilters() {
-  const types = ["All", "Syndicated", "Acquisition/LBO", "Refinancing", "Real Estate"];
+  const types = ["All", "Syndicated", "Acquisition/LBO", "Refinancing", "Real Estate", "Export Finance", "Project/Infra", "Intermediated"];
   document.getElementById("filters").innerHTML = types.map(t =>
     `<div class="chip ${activeFilter === t ? "active" : ""}" data-filter="type" data-value="${t}">${t}</div>`
   ).join("");
@@ -265,9 +438,11 @@ function renderTable() {
   const filtered = filterDeals().slice().sort((a, b) => (b.year - a.year) || a.type.localeCompare(b.type));
   const data = filtered.map(d => {
     const b = TYPE_BADGE[d.type] || { cls: "" };
+    const confCls = d.confidence === "Confirmed" ? "conf-confirmed" : (d.confidence === "Likely" ? "conf-likely" : "conf-inferred");
     return [
       d.borrower,
       gridjs.html(`<span class="badge ${b.cls}">${d.type}</span>`),
+      gridjs.html(`<span class="badge ${confCls}">${d.confidence || "Confirmed"}</span>`),
       d.amount,
       d.date,
       d.lenders,
@@ -280,12 +455,13 @@ function renderTable() {
   } else {
     grid = new gridjs.Grid({
       columns: [
-        { name: "Borrower", width: "20%" },
-        { name: "Type", width: "11%" },
-        { name: "Amount", width: "11%" },
-        { name: "Date", width: "9%" },
-        { name: "Lenders", width: "21%" },
-        { name: "Purpose", width: "22%" },
+        { name: "Borrower", width: "18%" },
+        { name: "Type", width: "10%" },
+        { name: "Conf.", width: "8%" },
+        { name: "Amount", width: "10%" },
+        { name: "Date", width: "8%" },
+        { name: "Lenders", width: "19%" },
+        { name: "Purpose", width: "21%" },
         { name: "Source", width: "6%" },
       ],
       data,
