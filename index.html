@@ -100,6 +100,115 @@
   .empty-msg { padding: 16px; color: #6b7280; font-style: italic; font-size: 13px; }
   .view-chip { font-weight: 500; }
   .coal-toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .csv-btn {
+    margin-left: 8px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .csv-btn:hover { background: #333; }
+  .watchlist-title { display: flex; justify-content: space-between; align-items: center; }
+  .company-filter-wrap {
+    position: relative;
+    display: inline-block;
+    min-width: 280px;
+  }
+  .company-filter-btn {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d6d2cb;
+    border-radius: 6px;
+    background: #fff;
+    color: #1a1a1a;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .company-filter-btn:hover { border-color: #1a1a1a; }
+  .company-filter-btn .caret { color: #6b6863; font-size: 10px; margin-left: 8px; }
+  .company-filter-label { font-weight: 500; }
+  .company-filter-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 360px;
+    max-height: 400px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #d6d2cb;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    margin-top: 4px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  .company-filter-dropdown[hidden] { display: none; }
+  .company-filter-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0ede7;
+    font-size: 12px;
+    background: #f8f7f4;
+    flex-shrink: 0;
+  }
+  .company-action {
+    color: #1d4ed8;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .company-action:hover { text-decoration: underline; }
+  .company-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+    overflow-y: auto;
+    max-height: 340px;
+    font-size: 13px;
+  }
+  .company-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 14px;
+    cursor: pointer;
+    color: #1a1a1a;
+  }
+  .company-item:hover {
+    background: #f3f4f6;
+  }
+  .company-item.active {
+    background: #dbeafe;
+    color: #1e40af;
+    font-weight: 600;
+  }
+  .company-item.active::before {
+    content: "✓ ";
+    margin-right: 4px;
+  }
+  .company-count {
+    background: #f0f0f0;
+    color: #4b5563;
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+  }
+  .company-item.active .company-count {
+    background: #93c5fd;
+    color: #1e40af;
+  }
   .actions {
     display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
   }
@@ -149,6 +258,16 @@
   <div class="panel">
     <h2>View</h2>
     <div class="filters" id="viewTabs"></div>
+    <h2 style="margin-top: 16px;">Filter by company</h2>
+    <div class="company-filter-wrap">
+      <button class="company-filter-btn" id="companyFilterBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span class="company-filter-label" id="companyFilterLabel">All companies</span>
+        <span class="caret">▼</span>
+      </button>
+      <div class="company-filter-dropdown" id="companyFilterDropdown" hidden role="listbox"></div>
+    </div>
+    <h2 style="margin-top: 16px;">Sort</h2>
+    <div class="filters" id="sortChips"></div>
     <h2 style="margin-top: 16px;">Filter by deal type</h2>
     <div class="filters" id="filters"></div>
     <h2 style="margin-top: 16px;">Filter by year</h2>
@@ -183,7 +302,7 @@ const DEALS = [
   { borrower: "UniCredit Bank Czech Republic & Slovakia", type: "Refinancing", amount: "€200m guarantee → €400m lending", currency: "EUR", value_eur: 400, lenders: "European Investment Bank (guarantee)", date: "2025", year: 2025, purpose: "EIB-backed mid-cap lending programme", source: "https://mf.gov.cz/en/about-ministry/media-room/news-and-press-releases/2026/czechia-gets-eib-group-financing-of-close-to--8364-62854", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
   { borrower: "CTP N.V.", type: "Syndicated", amount: "JPY 30bn (~€185m)", currency: "JPY", value_eur: 185, lenders: "Asian bank syndicate", date: "2025", year: 2025, purpose: "5y unsecured SLL, TONAR + 130bps", source: "https://realassetinsight.com/2025/07/24/ctp-secures-e500m-sustainability-linked-loan-for-bond-buyback/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
   { borrower: "NET4GAS s.r.o.", type: "Refinancing", amount: "CZK 4,000m (~€160m)", currency: "CZK", value_eur: 160, lenders: "KB, ČS, UniCredit CZ&SK, VÚB (Dentons advised)", date: "Apr 2025", year: 2025, purpose: "Refi facility — gas transmission infrastructure", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2025/april/dentons-advises-net4gas-on-czk-4-billion-refinancing-facility", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-04-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
-  { borrower: "Penta Investments (healthcare RE)", type: "Real Estate", amount: "CZK 3,200m (~€128m)", currency: "CZK", value_eur: 128, lenders: "5-bank syndicate: KB & ČSOB MLAs; UniCredit, ČS, Raiffeisenbank participants", date: "2025", year: 2025, purpose: "Senior financing for long-term care facilities + Klinika Dr. Pírka", source: "https://ceerealestatematters.com/penta-investments-secures-czk-3-2-billion-in-senior-financing-for-healthcare-real-estate-portfolio", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Penta Investments (healthcare RE)", type: "Real Estate", amount: "CZK 3,200m (~€128m)", currency: "CZK", value_eur: 128, lenders: "5-bank syndicate: KB & ČSOB MLAs; UniCredit, ČS, Raiffeisenbank participants", date: "2025", year: 2025, purpose: "Senior financing for long-term care facilities + Klinika Dr. Pírka", source: "https://ceerealestatematters.com/penta-investments-secures-czk-3-2-billion-in-senior-financing-for-healthcare-real-estate-portfolio", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
   { borrower: "Aurelia fondy SICAV (River Garden II + III)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "UniCredit Bank CZ&SK + Česká spořitelna (Kinstellar advised lenders, Dentons advised borrower)", date: "Sep 2025", year: 2025, purpose: "Acquisition financing — Karlín office complex (seller: Encore Plus Properties II)", source: "https://www.kinstellar.com/news-and-insights/detail/3742/kinstellar-advises-on-the-acquisition-financing-of-the-river-garden-ii-and-iii-office-buildings-in-prague", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-09-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "unknown" },
   { borrower: "Penta Real Estate (Nová Waltrovka)", type: "Real Estate", amount: "€74m", currency: "EUR", value_eur: 74, lenders: "ČSOB & Česká spořitelna", date: "2025", year: 2025, purpose: "Office tranche of mixed-use Prague-Radlice scheme (€205m total)", source: "https://www.property-forum.eu/news/penta-secures-74-million-loan-for-prague-office-project/14072", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
   { borrower: "Accolade (Karlovy Vary + Bratislava)", type: "Real Estate", amount: "€34.9m (CZK 880m)", currency: "EUR", value_eur: 35, lenders: "UniCredit Bank Czech Republic & Slovakia", date: "Mar 2025", year: 2025, purpose: "Two new industrial park developments", source: "https://accolade.eu/en/news/459/accolade-secures-additional-financing-worth-tens-of-millions-of-euros-in-loans-to-support-developments-in-karlovy-vary-and-bratislava", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-03-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
@@ -224,10 +343,10 @@ const DEALS = [
   { borrower: "Aero Vodochody / Omnipol (L-39NG export)", type: "Export Finance", amount: "~CZK 10bn (~€400m, est.)", currency: "CZK", value_eur: 400, lenders: "Česká exportní banka (ČEB), with EGAP insurance on bank guarantees", date: "2021–2024 (delivery)", year: 2024, purpose: "Buyer credit for Vietnam MoD purchase of 12× L-39NG trainer aircraft", source: "https://www.businessinfo.cz/clanky/aero-vodochody-doda-tucet-letounu-l-39ng-do-vietnamu-zakazku-pojistil-egap/", confidence: "Likely", tenor_y: 8, signed_iso: "2021-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
 
   // Iveco Czech / Ivory Coast bus export — EGAP-backed
-  { borrower: "Iveco Czech Republic (Ivory Coast 500 buses)", type: "Export Finance", amount: "CZK 2,400m (~€95m)", currency: "CZK", value_eur: 95, lenders: "Buyer credit to Government of Côte d'Ivoire — Lloyd's + EGAP insurance", date: "2024", year: 2024, purpose: "Supply of 500 CNG-powered buses to Abidjan; first CZ supplier in West Africa CNG market", source: "https://www.ivecogroup.com/media/brand_press_releases/2024/EMEA-(English)/Iveco-Bus/a_new_success_for_iveco_bus_in_ivory_coast_with_410_vehicles_for_a_total_fleet_of_more_than_1400_units_20240320T094722T455_urvgrj4kdivgrdtu1wrj1i30", confidence: "Confirmed", tenor_y: 8, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Iveco Czech Republic (Ivory Coast 500 buses)", type: "Export Finance", amount: "CZK 2,400m (~€95m)", currency: "CZK", value_eur: 95, lenders: "Buyer credit to Government of Côte d'Ivoire — Lloyd's + EGAP insurance", date: "2024", year: 2024, purpose: "Supply of 500 CNG-powered buses to Abidjan; first CZ supplier in West Africa CNG market", source: "https://www.ivecogroup.com/media/brand_press_releases/2024/EMEA-(English)/Iveco-Bus/a_new_success_for_iveco_bus_in_ivory_coast_with_410_vehicles_for_a_total_fleet_of_more_than_1400_units_20240320T094722T455_urvgrj4kdivgrdtu1wrj1i30", confidence: "Confirmed", tenor_y: 8, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Skoda Group / Uzbekistan trains — EGAP + EIB
-  { borrower: "Škoda Group (Uzbekistan EMU export)", type: "Export Finance", amount: "€120m (revised from €320m)", currency: "EUR", value_eur: 120, lenders: "Czech state export insurer EGAP + European Investment Bank (revised deal after original €320m financing collapsed)", date: "2025", year: 2025, purpose: "10× wide-gauge electric trains to Uzbekistan Railways + JV for local assembly", source: "https://railwaynews.net/skoda-secures-eur-120m-uzbekistan-electric-train-contract.html", confidence: "Confirmed", tenor_y: 8, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Škoda Group (Uzbekistan EMU export)", type: "Export Finance", amount: "€120m (revised from €320m)", currency: "EUR", value_eur: 120, lenders: "Czech state export insurer EGAP + European Investment Bank (revised deal after original €320m financing collapsed)", date: "2025", year: 2025, purpose: "10× wide-gauge electric trains to Uzbekistan Railways + JV for local assembly", source: "https://railwaynews.net/skoda-secures-eur-120m-uzbekistan-electric-train-contract.html", confidence: "Confirmed", tenor_y: 8, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // EIB → ČEZ — €790m record
   { borrower: "ČEZ Distribuce", type: "Project/Infra", amount: "€790m", currency: "EUR", value_eur: 790, lenders: "European Investment Bank (largest single EIB loan to CZ)", date: "Dec 2022", year: 2022, purpose: "Distribution grid modernization + connection of up to 2.2 GW new renewables (REPowerEU)", source: "https://www.eib.org/en/press/all/2022-529-czech-republic-eib-to-finance-modernisation-of-cez-s-distribution-grid-and-connection-of-new-renewable-energy-sources-with-a-record-breaking-loan-of-eur790-million", confidence: "Confirmed", tenor_y: 15, signed_iso: "2022-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
@@ -248,13 +367,13 @@ const DEALS = [
   { borrower: "Správa železnic (Czech rail infrastructure)", type: "Project/Infra", amount: "€200m", currency: "EUR", value_eur: 200, lenders: "European Investment Bank", date: "2025", year: 2025, purpose: "Additional rail upgrade — transport safety & sustainability", source: "https://www.eib.org/en/press/all/2025-409-czech-republic-to-upgrade-railways-with-eur200-million-eib-loan-bolstering-transport-safety-and-sustainability", confidence: "Confirmed", tenor_y: 15, signed_iso: "2025-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
 
   // EBRD → Heimstaden Bostad CZ
-  { borrower: "Heimstaden Bostad (Czech residential portfolio)", type: "Real Estate", amount: "€110m", currency: "EUR", value_eur: 110, lenders: "EBRD (alongside commercial banks)", date: "2023", year: 2023, purpose: "Energy-efficient renovation of ~42,500 residential units in CZ — green refurbishment programme", source: "https://www.ebrd.com/home/news-and-events/news/2023/ebrd-lends-110-million-to-promote-energy-efficient-residential-housing-in-the-czech-republic.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2023-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Heimstaden Bostad (Czech residential portfolio)", type: "Real Estate", amount: "€110m", currency: "EUR", value_eur: 110, lenders: "EBRD (alongside commercial banks)", date: "2023", year: 2023, purpose: "Energy-efficient renovation of ~42,500 residential units in CZ — green refurbishment programme", source: "https://www.ebrd.com/home/news-and-events/news/2023/ebrd-lends-110-million-to-promote-energy-efficient-residential-housing-in-the-czech-republic.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2023-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // EBRD → CIMEX Group / OREA Hotels — replaces the prior n/d Feb 2026 placeholder
-  { borrower: "CIMEX Group / OREA Hotels & Resorts", type: "Acquisition/LBO", amount: "€140.4m total (€46.8m EBRD + UniCredit + Raiffeisenbank)", currency: "EUR", value_eur: 140, lenders: "Syndicated facility: EBRD €46.8m + UniCredit Bank + Raiffeisenbank (W&C advised arrangers)", date: "Dec 2024", year: 2024, purpose: "Hotel chain modernization & energy efficiency upgrades — largest CZ hotel chain", source: "https://www.ebrd.com/home/news-and-events/news/2024/ebrd-lends--46-8-million-to-czech-hospitality-operator-cimex-gro.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "CIMEX Group / OREA Hotels & Resorts", type: "Acquisition/LBO", amount: "€140.4m total (€46.8m EBRD + UniCredit + Raiffeisenbank)", currency: "EUR", value_eur: 140, lenders: "Syndicated facility: EBRD €46.8m + UniCredit Bank + Raiffeisenbank (W&C advised arrangers)", date: "Dec 2024", year: 2024, purpose: "Hotel chain modernization & energy efficiency upgrades — largest CZ hotel chain", source: "https://www.ebrd.com/home/news-and-events/news/2024/ebrd-lends--46-8-million-to-czech-hospitality-operator-cimex-gro.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // EBRD → AFI Europe regional
-  { borrower: "AFI Europe (regional incl. Czech PRS pipeline)", type: "Real Estate", amount: "up to €120m (regional)", currency: "EUR", value_eur: 120, lenders: "EBRD", date: "2024–25", year: 2024, purpose: "Regional development pipeline (CZ + RS + PL + RO) — incl. Czech PRS expansion", source: "https://www.property-forum.eu/news/afi-europe-to-expand-prs-segment-with-new-ebrd-loan/19794", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "AFI Europe (regional incl. Czech PRS pipeline)", type: "Real Estate", amount: "up to €120m (regional)", currency: "EUR", value_eur: 120, lenders: "EBRD", date: "2024–25", year: 2024, purpose: "Regional development pipeline (CZ + RS + PL + RO) — incl. Czech PRS expansion", source: "https://www.property-forum.eu/news/afi-europe-to-expand-prs-segment-with-new-ebrd-loan/19794", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // CCC — PLN 1.8bn term + RCF (cross-border CZ legal)
   { borrower: "CCC S.A. (Polish footwear group, CZ ops in scope)", type: "Refinancing", amount: "PLN 1,800m (~€420m)", currency: "PLN", value_eur: 420, lenders: "Bank syndicate (Kinstellar advised on RO/CZ/HR/HU/SK legal aspects)", date: "Aug 2024", year: 2024, purpose: "Term + revolving facilities — cross-border refi covering Czech operating subsidiaries", source: "https://www.kinstellar.com/news-and-insights/detail/2932/kinstellar-advises-ccc-on-the-romanian-czech-croatian-hungarian-and-slovak-legal-aspects-of-a-pln-18-billion-financing-agreement", confidence: "Likely", tenor_y: 5, signed_iso: "2024-08-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
@@ -269,7 +388,7 @@ const DEALS = [
   { borrower: "ENERGO-PRO (Xeal Spain — Galicia hydropower)", type: "Acquisition/LBO", amount: "€300m bridge", currency: "EUR", value_eur: 300, lenders: "JP Morgan + Goldman Sachs (subsequently refinanced via green Eurobonds)", date: "2023", year: 2023, purpose: "Acquisition of Xallas Electricidad y Aleaciones (Xeal) from Sixth Street — 10 HPPs, 167 MW + ferroalloy plants", source: "https://sixthstreet.com/investment_announce/energo-pro-acquires-ten-hydropower-plants-in-spain-from-sixth-street/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2023-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
 
   // Penta Hospitals / Group Mediterra
-  { borrower: "Penta Hospitals (Group Mediterra acquisition)", type: "Acquisition/LBO", amount: "n/d (est. €100–150m)", currency: "EUR", value_eur: 120, lenders: "Likely Penta's existing CZ healthcare-RE bank syndicate (KB/ČSOB MLAs; UniCredit/ČS/Raiffeisenbank)", date: "Oct 2025", year: 2025, purpose: "Acquisition of 6 hospitals + medical school + home-healthcare agency", source: "https://www.pentainvestments.com/en/penta-hospitals-plans-to-acquire-group-mediterra-and-significantly-expands-its-healthcare-network-adding-six-hospitals-and-a-medical-school-to-the-network/", confidence: "Inferred", tenor_y: 5, signed_iso: "2025-10-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Penta Hospitals (Group Mediterra acquisition)", type: "Acquisition/LBO", amount: "n/d (est. €100–150m)", currency: "EUR", value_eur: 120, lenders: "Likely Penta's existing CZ healthcare-RE bank syndicate (KB/ČSOB MLAs; UniCredit/ČS/Raiffeisenbank)", date: "Oct 2025", year: 2025, purpose: "Acquisition of 6 hospitals + medical school + home-healthcare agency", source: "https://www.pentainvestments.com/en/penta-hospitals-plans-to-acquire-group-mediterra-and-significantly-expands-its-healthcare-network-adding-six-hospitals-and-a-medical-school-to-the-network/", confidence: "Inferred", tenor_y: 5, signed_iso: "2025-10-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // KKCG group syndicated facility — covers Aricoma + Avenga (replaces prior Inferred entry)
   { borrower: "KKCG Group (Aricoma + Avenga technology pillar)", type: "Refinancing", amount: "n/d (multi-purpose syndicated facility)", currency: "EUR", value_eur: 250, lenders: "Syndicate led by Česká spořitelna; Komerční banka, ČSOB, UniCredit Bank CZ&SK (Dentons advised lenders)", date: "Aug 2024", year: 2024, purpose: "Refinance existing liabilities + fund further development of KKCG technology pillar (Aricoma + Avenga; ~8,000 staff)", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2024/august/dentons-advises-lenders-on-financing-for-kkcg-following-its-acquisition-of-avenga", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-08-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
@@ -336,7 +455,7 @@ const DEALS = [
   { borrower: "Solek Holding (Chile solar portfolio)", type: "Project/Infra", amount: "USD 379m total (~€353m)", currency: "USD", value_eur: 353, lenders: "BNP Paribas + Natixis arrangers; mix: $178m 20y USPP bond, $75m mezzanine, $55m PMGD bridge, $37m utility-scale bridge, $19m LC, $15m VAT line", date: "Jun 2024", year: 2024, purpose: "Project finance package for Solek's Chilean PV portfolio (284 MW operating + 400 MW pipeline incl. 95.2 MW Leyda)", source: "https://renewablesnow.com/news/czechias-solek-raises-usd-379m-for-solar-portfolio-in-chile-824631/", confidence: "Confirmed", tenor_y: 20, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
 
   // Rohlík Group / EIB €90m (Scale-Up Initiative)
-  { borrower: "Rohlík Group", type: "Intermediated", amount: "€90m", currency: "EUR", value_eur: 90, lenders: "European Investment Bank (Scale-Up Initiative) — White & Case advised borrower", date: "Jun 2024", year: 2024, purpose: "Digital advances + new distribution centres + European expansion (alongside €170m EBRD-led equity round)", source: "https://www.eib.org/en/press/all/2024-229-czech-e-grocery-business-rohlik-gets-eur90-million-eib-loan-for-growth", confidence: "Confirmed", tenor_y: 7, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Rohlík Group", type: "Intermediated", amount: "€90m", currency: "EUR", value_eur: 90, lenders: "European Investment Bank (Scale-Up Initiative) — White & Case advised borrower", date: "Jun 2024", year: 2024, purpose: "Digital advances + new distribution centres + European expansion (alongside €170m EBRD-led equity round)", source: "https://www.eib.org/en/press/all/2024-229-czech-e-grocery-business-rohlik-gets-eur90-million-eib-loan-for-growth", confidence: "Confirmed", tenor_y: 7, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Genesis Capital / Schulte + GAF — buy-and-build
   { borrower: "Genesis Capital (Schulte + GAF acquisitions)", type: "Acquisition/LBO", amount: "n/d (est. €40–80m combined)", currency: "EUR", value_eur: 60, lenders: "Česká spořitelna (Clifford Chance advised lender)", date: "Apr 2024", year: 2024, purpose: "GPEF IV add-on acquisitions: Schulte (HVAC technical building services) + GAF (custom metalworking)", source: "https://www.cliffordchance.com/news/news/2024/04/clifford-chance-advises-eska-spoitelna-on-financing-of-acquisitions-of-schulte-and-gaf-by-genesis-capital.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-04-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
@@ -351,7 +470,7 @@ const DEALS = [
   { borrower: "BHM Group / Alvo (mezzanine)", type: "Refinancing", amount: "n/d", currency: "EUR", value_eur: 35, lenders: "BHM Group as mezzanine provider (BHM-side financing)", date: "2023–2024", year: 2024, purpose: "Mezzanine to fund Alvo's capital growth needs — BHM acting as direct lender", source: "https://www.thecfigroup.com/transactions/bhm-group-provided-mezzanine-financing-to-fund-alvos-capital-growth-requirements/", confidence: "Inferred", tenor_y: 5, signed_iso: "2023-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Hartenberg / 4kraft (KinderKraft)
-  { borrower: "Hartenberg Capital / 4kraft (KinderKraft)", type: "Acquisition/LBO", amount: "n/d (Hartenberg sweet spot EV €40–200m)", currency: "EUR", value_eur: 80, lenders: "Hartenberg-side financing — typical CZ/PL bank stack inferred", date: "Dec 2024", year: 2024, purpose: "Acquisition of 4kraft (Polish baby/childcare brand owner — KinderKraft) — Hartenberg's 7th portfolio company", source: "https://www.hartenbergcapital.com/projects", confidence: "Inferred", tenor_y: 5, signed_iso: "2024-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Hartenberg Capital / 4kraft (KinderKraft)", type: "Acquisition/LBO", amount: "n/d (Hartenberg sweet spot EV €40–200m)", currency: "EUR", value_eur: 80, lenders: "Hartenberg-side financing — typical CZ/PL bank stack inferred", date: "Dec 2024", year: 2024, purpose: "Acquisition of 4kraft (Polish baby/childcare brand owner — KinderKraft) — Hartenberg's 7th portfolio company", source: "https://www.hartenbergcapital.com/projects", confidence: "Inferred", tenor_y: 5, signed_iso: "2024-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Genesis Capital / AV MEDIA
   { borrower: "Genesis Capital / AV MEDIA", type: "Acquisition/LBO", amount: "n/d (est. €30–50m for CZ AV-integration leader)", currency: "EUR", value_eur: 40, lenders: "Genesis-side financing under GPEF IV", date: "2023", year: 2023, purpose: "Majority stake acquisition of AV MEDIA (AV systems integration + events tech)", source: "https://www.genesis.cz/en/private-equity/news", confidence: "Inferred", tenor_y: 5, signed_iso: "2023-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
@@ -379,7 +498,7 @@ const DEALS = [
   { borrower: "Správa železnic (Czech rail infrastructure)", type: "Project/Infra", amount: "CZK 13,000m (~€527m)", currency: "CZK", value_eur: 527, lenders: "European Investment Bank — second tranche of CZK 48.8bn programme", date: "Jun 2024", year: 2024, purpose: "Continued ERTMS deployment + TEN-T rail safety/capacity upgrade", source: "https://www.eib.org/en/press/all/2024-202-czech-railway-safety-and-capacity-strengthened-with-eib-loan-of-czk-13-billion", confidence: "Confirmed", tenor_y: 15, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
 
   // Doosan Skoda Power / Kazakhstan steam turbine export
-  { borrower: "Doosan Škoda Power (Kazakhstan turbines export)", type: "Export Finance", amount: "n/d (2× 175MW steam turbines for combined-cycle plant)", currency: "EUR", value_eur: 80, lenders: "EGAP/ČEB likely (industry-standard for CZ heavy-equipment exports)", date: "2024–2025", year: 2024, purpose: "Supply of 2× 175MW steam turbines to Kazakhstan combined-cycle power plant project", source: "https://www.enlit.world/library/doosan-koda-power-wins-steam-turbine-contract-in-kazakhstan", confidence: "Inferred", tenor_y: 8, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Doosan Škoda Power (Kazakhstan turbines export)", type: "Export Finance", amount: "n/d (2× 175MW steam turbines for combined-cycle plant)", currency: "EUR", value_eur: 80, lenders: "EGAP/ČEB likely (industry-standard for CZ heavy-equipment exports)", date: "2024–2025", year: 2024, purpose: "Supply of 2× 175MW steam turbines to Kazakhstan combined-cycle power plant project", source: "https://www.enlit.world/library/doosan-koda-power-wins-steam-turbine-contract-in-kazakhstan", confidence: "Inferred", tenor_y: 8, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // ===== Round 7 backfill — 2021-22 gap correction =====
   // CPIPG IMMOFINANZ bridge — Nov 30, 2021 — 10-bank syndicate
@@ -398,7 +517,7 @@ const DEALS = [
   { borrower: "Pasažieru Vilciens / Latvia (Skoda Vagonka EMU export)", type: "Export Finance", amount: "€240m contract", currency: "EUR", value_eur: 240, lenders: "Buyer credit to Latvian state operator — EGAP-supported buyer credit structure inferred (industry pattern)", date: "2019 signed / delivery 2022–23", year: 2022, purpose: "32 dual-system EMUs for Riga suburban network (16Ev platform) — Czech rail-vehicle export", source: "https://www.railway-technology.com/news/skoda-vagonka-rail-contract-latvia/", confidence: "Inferred", tenor_y: 8, signed_iso: "2019-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
 
   // Penta / Nemocnica Bory (Slovak hospital — Penta Czech-Slovak group-level investment)
-  { borrower: "Penta Hospitals (Nemocnica Bory)", type: "Project/Infra", amount: "€146m (2022 capex spend)", currency: "EUR", value_eur: 146, lenders: "Penta group-level financing (CZ banks via Penta's standard healthcare-RE syndicate stack)", date: "2022", year: 2022, purpose: "Major hospital build-out in Bratislava; capex spent 2022, opened end of March 2023", source: "https://www.pentainvestments.com/en/about-us/", confidence: "Inferred", tenor_y: 12, signed_iso: "2022-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Penta Hospitals (Nemocnica Bory)", type: "Project/Infra", amount: "€146m (2022 capex spend)", currency: "EUR", value_eur: 146, lenders: "Penta group-level financing (CZ banks via Penta's standard healthcare-RE syndicate stack)", date: "2022", year: 2022, purpose: "Major hospital build-out in Bratislava; capex spent 2022, opened end of March 2023", source: "https://www.pentainvestments.com/en/about-us/", confidence: "Inferred", tenor_y: 12, signed_iso: "2022-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // ===== Round 8 — UBO-mapped backfill (Křetínský, PPF/CETIN, Tykač/Sev.en) =====
 
@@ -426,7 +545,7 @@ const DEALS = [
   { borrower: "CVC Capital Partners VIII + EMMA Capital / Packeta Group", type: "Acquisition/LBO", amount: "n/d (Packeta 2022 turnover €255m → estimated EV €600–900m)", currency: "EUR", value_eur: 500, lenders: "Club: Česká spořitelna (agent), Československá obchodní banka, Citibank — Clifford Chance advised lenders, CMS advised buyers", date: "Dec 2023", year: 2023, purpose: "Acquisition of Packeta Group (CZ/SK e-commerce logistics + 9,000 PUDO + 6,000 parcel machines)", source: "https://www.cliffordchance.com/news/news/2024/04/clifford-chance-advises-club-of-banks-led-by-eska-spoitelna-in-f.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2023-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
 
   // CVC + EMMA Capital / FoxPost (Hungary) — financed by CZ banks
-  { borrower: "CVC Capital Partners + EMMA Capital / FoxPost (Hungary)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 80, lenders: "Major Czech banks (Clifford Chance advised; CMS advised buyers)", date: "Sep 2024", year: 2024, purpose: "Bolt-on of FoxPost (Hungarian parcel-locker logistics) to Packeta platform", source: "https://www.cliffordchance.com/news/news/2024/09/clifford-chance-advises-major-czech-banks-on-financing-of-acquis.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-09-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "CVC Capital Partners + EMMA Capital / FoxPost (Hungary)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 80, lenders: "Major Czech banks (Clifford Chance advised; CMS advised buyers)", date: "Sep 2024", year: 2024, purpose: "Bolt-on of FoxPost (Hungarian parcel-locker logistics) to Packeta platform", source: "https://www.cliffordchance.com/news/news/2024/09/clifford-chance-advises-major-czech-banks-on-financing-of-acquis.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-09-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Blackstone / CT Real Estate (Contera) — €470m, 80% CZ
   { borrower: "Blackstone / CT Real Estate (Contera) logistics portfolio", type: "Real Estate", amount: "€470m", currency: "EUR", value_eur: 470, lenders: "Blackstone-side acquisition financing (Schoenherr advised Blackstone; W&C advised TPG seller)", date: "Dec 2024 (announce) / Feb 2025 (close)", year: 2024, purpose: "Acquisition of 500,000 sqm last-mile logistics portfolio (10 properties) from TPG Real Estate + Contera — 80% CZ / 20% SK", source: "https://realassets.ipe.com/news/blackstone-buys-central-europe-logistics-portfolio-from-tpg-contera/10127802.article", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "large-cap" },
@@ -449,22 +568,22 @@ const DEALS = [
   // ===== Round 10 — Eurowag, Accolade-deep, RegioJet, Agrostroj, Emma Capital =====
 
   // Accolade / Amazon Kojetín automated DC (€137.5m, Q1 2022)
-  { borrower: "Accolade Industrial Fund (Amazon Kojetín DC)", type: "Real Estate", amount: "€137.5m", currency: "EUR", value_eur: 138, lenders: "Bank consortium led by Komerční banka, with Česká spořitelna and Raiffeisenbank", date: "Q1 2022", year: 2022, purpose: "Construction loan for 187,000 sqm robotic Amazon distribution centre near Kojetín (51,000 sqm floor; 2,000 jobs)", source: "https://www.property-forum.eu/news/accolade-signs-1375-million-loan-for-amazon-warehouse/12347", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-02-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Accolade Industrial Fund (Amazon Kojetín DC)", type: "Real Estate", amount: "€137.5m", currency: "EUR", value_eur: 138, lenders: "Bank consortium led by Komerční banka, with Česká spořitelna and Raiffeisenbank", date: "Q1 2022", year: 2022, purpose: "Construction loan for 187,000 sqm robotic Amazon distribution centre near Kojetín (51,000 sqm floor; 2,000 jobs)", source: "https://www.property-forum.eu/news/accolade-signs-1375-million-loan-for-amazon-warehouse/12347", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-02-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Accolade / Helaba €129m refi
-  { borrower: "Accolade Industrial Fund (5-park refi via Helaba)", type: "Refinancing", amount: "€129m (~CZK 3.1bn)", currency: "EUR", value_eur: 129, lenders: "Helaba (Landesbank Hessen-Thüringen)", date: "2022", year: 2022, purpose: "Refi of 5 completed and fully leased industrial parks", source: "https://accolade.eu/en/news/170/accolade-refinanced-the-czech-and-polish-industrial-real-estate-portfolio-for-more-than-eur-200-million", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Accolade Industrial Fund (5-park refi via Helaba)", type: "Refinancing", amount: "€129m (~CZK 3.1bn)", currency: "EUR", value_eur: 129, lenders: "Helaba (Landesbank Hessen-Thüringen)", date: "2022", year: 2022, purpose: "Refi of 5 completed and fully leased industrial parks", source: "https://accolade.eu/en/news/170/accolade-refinanced-the-czech-and-polish-industrial-real-estate-portfolio-for-more-than-eur-200-million", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Accolade / Aareal Bank €153m refi
   { borrower: "Accolade Industrial Fund (Aareal refi)", type: "Refinancing", amount: "€153m", currency: "EUR", value_eur: 153, lenders: "Aareal Bank", date: "2022", year: 2022, purpose: "Refi tranche of Accolade industrial portfolio", source: "https://www.property-forum.eu/news/accolade-closes-153-million-refinancing-deal-with-aareal-bank/6582", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
 
   // RegioJet / SGEF (KB group) — historic aggregate
-  { borrower: "RegioJet a.s. (rolling stock financing via SGEF)", type: "Project/Infra", amount: "€84m aggregate (15y) + ~€80m new in pipeline", currency: "EUR", value_eur: 80, lenders: "SG Equipment Finance (Komerční banka group) — long-term equipment finance partner", date: "ongoing 2009–2026", year: 2024, purpose: "Rail rolling-stock financing for RegioJet (and Student Agency bus fleet); regional contract win in Ústí nad Labem region adds 23 new EMUs", source: "https://www.railwaypro.com/wp/regiojet-has-secured-eur-84-million-in-financing/", confidence: "Likely", tenor_y: 12, signed_iso: "2009-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "RegioJet a.s. (rolling stock financing via SGEF)", type: "Project/Infra", amount: "€84m aggregate (15y) + ~€80m new in pipeline", currency: "EUR", value_eur: 80, lenders: "SG Equipment Finance (Komerční banka group) — long-term equipment finance partner", date: "ongoing 2009–2026", year: 2024, purpose: "Rail rolling-stock financing for RegioJet (and Student Agency bus fleet); regional contract win in Ústí nad Labem region adds 23 new EMUs", source: "https://www.railwaypro.com/wp/regiojet-has-secured-eur-84-million-in-financing/", confidence: "Likely", tenor_y: 12, signed_iso: "2009-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Agrostroj Pelhřimov / Kansas KMW plant — $105m (CZK 2.5bn)
-  { borrower: "Agrostroj Pelhřimov / KMW Kansas plant (Stoklásek)", type: "Project/Infra", amount: "USD 105m (CZK 2.5bn)", currency: "USD", value_eur: 96, lenders: "Likely EGAP/ČEB-supported export-investment financing + Stoklásek group facilities (specifics undisclosed)", date: "Apr 2024", year: 2024, purpose: "New 50,000 sqm production facility in Sterling, Kansas — agricultural loaders/excavators (KMW brand acquired via Stoll Maschinenfabrik); 251 jobs", source: "https://www.e15.cz/byznys/prumysl-a-energetika/agrostroj-pelhrimov-podnikatele-stoklaska-postavi-v-kansasu-novy-zavod-za-2-5-miliardy-korun-1414765", confidence: "Inferred", tenor_y: 12, signed_iso: "2024-04-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Agrostroj Pelhřimov / KMW Kansas plant (Stoklásek)", type: "Project/Infra", amount: "USD 105m (CZK 2.5bn)", currency: "USD", value_eur: 96, lenders: "Likely EGAP/ČEB-supported export-investment financing + Stoklásek group facilities (specifics undisclosed)", date: "Apr 2024", year: 2024, purpose: "New 50,000 sqm production facility in Sterling, Kansas — agricultural loaders/excavators (KMW brand acquired via Stoll Maschinenfabrik); 251 jobs", source: "https://www.e15.cz/byznys/prumysl-a-energetika/agrostroj-pelhrimov-podnikatele-stoklaska-postavi-v-kansasu-novy-zavod-za-2-5-miliardy-korun-1414765", confidence: "Inferred", tenor_y: 12, signed_iso: "2024-04-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Emma Capital — J&T ARCH €100m equity-equivalent investment (8.1% stake)
-  { borrower: "Emma Alpha Holding (Emma Capital / Šmejc)", type: "Refinancing", amount: "€100m (8.1% indirect stake to J&T ARCH Investments)", currency: "EUR", value_eur: 100, lenders: "J&T ARCH Investments — minority-equity / quasi-credit instrument", date: "2024", year: 2024, purpose: "Capital injection at HoldCo (post-Packeta) — supports Emma Capital's €2.4bn AUM platform", source: "https://www.emmacapital.cz/articles", confidence: "Likely", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Emma Alpha Holding (Emma Capital / Šmejc)", type: "Refinancing", amount: "€100m (8.1% indirect stake to J&T ARCH Investments)", currency: "EUR", value_eur: 100, lenders: "J&T ARCH Investments — minority-equity / quasi-credit instrument", date: "2024", year: 2024, purpose: "Capital injection at HoldCo (post-Packeta) — supports Emma Capital's €2.4bn AUM platform", source: "https://www.emmacapital.cz/articles", confidence: "Likely", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Eurowag €285m RCF baseline at IPO
   { borrower: "W.A.G. Payment Solutions (Eurowag)", type: "Syndicated", amount: "€285m RCF", currency: "EUR", value_eur: 285, lenders: "Bank syndicate (RCF in place at LSE IPO)", date: "Oct 2021 (IPO)", year: 2021, purpose: "Revolving credit facility supporting LSE-listed Czech road-payments / fleet-card platform", source: "https://investors.eurowag.com/application/files/7817/3737/9673/Prospectus.pdf", confidence: "Likely", tenor_y: 5, signed_iso: "2021-10-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
@@ -478,7 +597,7 @@ const DEALS = [
   { borrower: "Sev.en Global Investments / Mong Duong 2 (Vietnam, 51%)", type: "Acquisition/LBO", amount: "n/d (1.2 GW plant, 'Europe's largest energy investment in Vietnam')", currency: "USD", value_eur: 400, lenders: "Sev.en GI / Tykač group financing (largely equity)", date: "Nov 2023", year: 2023, purpose: "51% controlling stake from The AES Corporation + co-shareholders — 1.2 GW coal-fired plant supplying Hanoi/N. Vietnam", source: "https://www.aes-vietnam.com/en/aes-agrees-sell-mong-duong-2-coal-fired-plant-vietnam", confidence: "Confirmed", tenor_y: 5, signed_iso: "2023-11-15", ing_status: "outsider", coal_excluded: true, sweet_spot: "large-cap" },
 
   // Sev.en GI / Mong Duong 2 +19% top-up (Aug 2024)
-  { borrower: "Sev.en Global Investments / Mong Duong 2 (Vietnam, +19% to 70%)", type: "Acquisition/LBO", amount: "n/d", currency: "USD", value_eur: 150, lenders: "Sev.en GI follow-on equity", date: "Aug 2024", year: 2024, purpose: "Additional 19% acquired from China Investment Corporation — total Sev.en stake to 70%", source: "https://www.7gi.com/media/2024/20240813.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-08-15", ing_status: "outsider", coal_excluded: true, sweet_spot: "stretch" },
+  { borrower: "Sev.en Global Investments / Mong Duong 2 (Vietnam, +19% to 70%)", type: "Acquisition/LBO", amount: "n/d", currency: "USD", value_eur: 150, lenders: "Sev.en GI follow-on equity", date: "Aug 2024", year: 2024, purpose: "Additional 19% acquired from China Investment Corporation — total Sev.en stake to 70%", source: "https://www.7gi.com/media/2024/20240813.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-08-15", ing_status: "outsider", coal_excluded: true, sweet_spot: "ideal" },
 
   // Sev.en GI / Illinois Basin coal rights (Golden Eagle Land Company)
   { borrower: "Sev.en Global Investments / Golden Eagle Land Company (Illinois Basin, US)", type: "Acquisition/LBO", amount: "n/d (2bn+ tons recoverable thermal coal reserves)", currency: "USD", value_eur: 200, lenders: "Sev.en GI subsidiary Golden Eagle financing (largely equity)", date: "Apr 2023", year: 2023, purpose: "Acquisition of Colt LLC + Ruger Coal Company — Illinois Basin thermal coal mining rights (>2bn tons; 55,000 acres land, 600,000 acres mineral)", source: "https://www.7gi.com/media/2023/20230404.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2023-04-15", ing_status: "outsider", coal_excluded: true, sweet_spot: "stretch" },
@@ -492,18 +611,18 @@ const DEALS = [
   { borrower: "Enery Development (Austria/CEE) — initial CZ solar portfolio", type: "Project/Infra", amount: "n/d (early Czech footprint)", currency: "EUR", value_eur: 50, lenders: "Československá obchodní banka (ČSOB) — green loan; Clifford Chance advised lender", date: "Jan 2022", year: 2022, purpose: "Acquisition financing for initial Enery Czech solar portfolio (Enery's CZ entry)", source: "https://www.cliffordchance.com/news/news/2022/01/clifford-chance-advises-sob-on-financing-of-the-czech-solar-port.html", confidence: "Confirmed", tenor_y: 12, signed_iso: "2022-01-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Enery / Energy 21 71 MW portfolio (2023)
-  { borrower: "Enery Development / Energy 21 (71 MW, 36 plants from CEE Equity Partners)", type: "Project/Infra", amount: "n/d (3rd-largest operational CZ solar portfolio)", currency: "EUR", value_eur: 90, lenders: "Acquisition financing — likely ČSOB-led continuation (Clifford Chance advisor pattern)", date: "2023", year: 2023, purpose: "Acquisition of 36 solar PV plants (71 MW) from funds managed by CEE Equity Partners — pushed Enery to 45 plants in CZ", source: "https://renewablesnow.com/news/austrias-enery-buys-71-mw-solar-pv-portfolio-in-czechia-748143/", confidence: "Likely", tenor_y: 12, signed_iso: "2023-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Enery Development / Energy 21 (71 MW, 36 plants from CEE Equity Partners)", type: "Project/Infra", amount: "n/d (3rd-largest operational CZ solar portfolio)", currency: "EUR", value_eur: 90, lenders: "Acquisition financing — likely ČSOB-led continuation (Clifford Chance advisor pattern)", date: "2023", year: 2023, purpose: "Acquisition of 36 solar PV plants (71 MW) from funds managed by CEE Equity Partners — pushed Enery to 45 plants in CZ", source: "https://renewablesnow.com/news/austrias-enery-buys-71-mw-solar-pv-portfolio-in-czechia-748143/", confidence: "Likely", tenor_y: 12, signed_iso: "2023-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Enery / Sunfarming 60 MW CZ portfolio (Solarpark Kameničná)
   { borrower: "Enery Development / Sunfarming CZ portfolio (Solarpark Kameničná)", type: "Project/Infra", amount: "n/d (60 MW, 31 plants, FIT until 2031)", currency: "EUR", value_eur: 75, lenders: "Československá obchodní banka (ČSOB) — green loan; Clifford Chance advised lender", date: "Aug 2024", year: 2024, purpose: "Acquisition of 60 MW CZ solar from German developer Sunfarming — Solarpark Kameničná financing", source: "https://www.cliffordchance.com/news/news/2024/08/clifford-chance-advises-eskoslovenska-obchodni-banka-on-the-fina.html", confidence: "Confirmed", tenor_y: 12, signed_iso: "2024-08-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Draslovka (BPD Partners) / Oaktree $150m preferred equity
-  { borrower: "Draslovka Holding (BPD Partners — Pudil/Bobela/Dobrovský)", type: "Refinancing", amount: "USD 150m preferred equity", currency: "USD", value_eur: 140, lenders: "Funds managed by Oaktree Capital Management — preferred-equity / quasi-credit", date: "2022", year: 2022, purpose: "Strategic capital injection supporting acquisition of Mining & Process Solutions (Australia, glycine leaching tech) + global growth (US/Australia/Africa expansion)", source: "https://www.draslovka.com/draslovka-announces-150-million-partnership-with-oaktree-and-acquisition-of-mining-and-process-solutions-11", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Draslovka Holding (BPD Partners — Pudil/Bobela/Dobrovský)", type: "Refinancing", amount: "USD 150m preferred equity", currency: "USD", value_eur: 140, lenders: "Funds managed by Oaktree Capital Management — preferred-equity / quasi-credit", date: "2022", year: 2022, purpose: "Strategic capital injection supporting acquisition of Mining & Process Solutions (Australia, glycine leaching tech) + global growth (US/Australia/Africa expansion)", source: "https://www.draslovka.com/draslovka-announces-150-million-partnership-with-oaktree-and-acquisition-of-mining-and-process-solutions-11", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // ===== Round 13 — AFI/Port7, more fund deals =====
 
   // AFI Europe / Port7 acquisition from Skanska — Q4 2025 / H1 2026
-  { borrower: "AFI Europe / Port7 office complex (Prague Holešovice)", type: "Real Estate", amount: "€130m (CZK 3.16bn / SEK 1.4bn)", currency: "EUR", value_eur: 130, lenders: "AFI-side acquisition financing — likely tied to AFI's existing EBRD €120m + commercial banks", date: "Dec 2025 (announced) / H1 2026 (transfer)", year: 2026, purpose: "Acquisition of Port7 (3 office buildings + adjacent plots; ~36,000 sqm fully leased) from Skanska Commercial Development Europe — first AFI/Skanska CEE transaction", source: "https://group.skanska.com/media/press-releases-articles/303357/Skanska-divests-the-office-complex-Port7-in-Prague,-Czech-Republic,-for-about-EUR-130M,-about-SEK-1.4-billion", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "AFI Europe / Port7 office complex (Prague Holešovice)", type: "Real Estate", amount: "€130m (CZK 3.16bn / SEK 1.4bn)", currency: "EUR", value_eur: 130, lenders: "AFI-side acquisition financing — likely tied to AFI's existing EBRD €120m + commercial banks", date: "Dec 2025 (announced) / H1 2026 (transfer)", year: 2026, purpose: "Acquisition of Port7 (3 office buildings + adjacent plots; ~36,000 sqm fully leased) from Skanska Commercial Development Europe — first AFI/Skanska CEE transaction", source: "https://group.skanska.com/media/press-releases-articles/303357/Skanska-divests-the-office-complex-Port7-in-Prague,-Czech-Republic,-for-about-EUR-130M,-about-SEK-1.4-billion", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-12-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // ===== Round 14 — TotalEnergies/EPH, Solitea, Genesis Capital follow-ons =====
 
@@ -514,7 +633,7 @@ const DEALS = [
   { borrower: "Solitea / Seyfor Group (KKCG-adjacent CZ/SK IT roll-up via Sandberg Capital)", type: "Refinancing", amount: "~€70m", currency: "EUR", value_eur: 70, lenders: "Bank financing (KSB advised borrower); Sandberg Capital majority owner", date: "2024", year: 2024, purpose: "Refinancing existing loans + supporting CZ/SK/AT/Balkan IT-services M&A platform (30+ acquisitions to date)", source: "https://www.ksb.cz/en/clanky/poradenstvi-skupine-solitea-pri-zajisteni-financovani", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Genesis Capital / NAY-DATART minority + RSJ co-investor
-  { borrower: "Genesis Capital + RSJ / NAY-DATART Group", type: "Acquisition/LBO", amount: "n/d (minority stake; 2024 NAY+Datart merger)", currency: "EUR", value_eur: 80, lenders: "Bank syndicate likely under GPEF IV facility — co-investor RSJ", date: "2024", year: 2024, purpose: "Minority stake in NAY-DATART (CZ/SK consumer electronics + appliances retailer formed 2024 by NAY + HP Tronic/Datart merger)", source: "https://www.genesis.cz/en/private-equity/news/genesis-capital-invests-in-the-nay-datart-group", confidence: "Likely", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "stretch" },
+  { borrower: "Genesis Capital + RSJ / NAY-DATART Group", type: "Acquisition/LBO", amount: "n/d (minority stake; 2024 NAY+Datart merger)", currency: "EUR", value_eur: 80, lenders: "Bank syndicate likely under GPEF IV facility — co-investor RSJ", date: "2024", year: 2024, purpose: "Minority stake in NAY-DATART (CZ/SK consumer electronics + appliances retailer formed 2024 by NAY + HP Tronic/Datart merger)", source: "https://www.genesis.cz/en/private-equity/news/genesis-capital-invests-in-the-nay-datart-group", confidence: "Likely", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
 
   // Genesis Capital / Slevomat majority — debut GPEF V deal
   { borrower: "Genesis Capital (GPEF V) / Slevomat Group", type: "Acquisition/LBO", amount: "n/d (debut deal of €270m GPEF V; CZ/SK leading travel + leisure platform)", currency: "EUR", value_eur: 70, lenders: "Genesis-side acquisition financing (Dentons advised buyer)", date: "Nov 2025", year: 2025, purpose: "Majority stake in Slevomat (online travel/leisure marketplace, CZ/SK)", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2025/november/dentons-advised-genesis-capital-on-the-acquisition-of-a-majority-stake-in-the-slevomat-group", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-11-15", ing_status: "outsider", coal_excluded: false, sweet_spot: "ideal" },
@@ -534,16 +653,36 @@ const STATE_KEY = "cz_loans_filter_v2";
 const YEAR_STATE_KEY = "cz_loans_year_filter_v1";
 const VIEW_KEY = "cz_loans_view_v1";
 const COAL_KEY = "cz_loans_coal_filter_v1";
+const COMPANY_KEY = "cz_loans_company_v2"; // array of company keys (multi-select hook)
+const SORT_KEY = "cz_loans_sort_v1";
 let activeFilter = localStorage.getItem(STATE_KEY) || "All";
 let activeYear = localStorage.getItem(YEAR_STATE_KEY) || "All";
 let activeView = localStorage.getItem(VIEW_KEY) || "pipeline";
 let coalIncluded = localStorage.getItem(COAL_KEY) === "true"; // default = excluded
+let companyFilter = (() => {
+  try { return JSON.parse(localStorage.getItem(COMPANY_KEY) || "[]"); }
+  catch { return []; }
+})();
+let sortMode = localStorage.getItem(SORT_KEY) || "maturity"; // "maturity" | "az" | "amount"
+
+// Company-key extraction: take leading borrower phrase, strip parens/slashes/dashes/legal suffixes.
+function companyKey(borrower) {
+  if (!borrower) return "";
+  let head = borrower.split(/[\/\(—–\-]/)[0].trim();
+  head = head.replace(/\s+(a\.s\.|s\.r\.o\.|GmbH|Ltd\.?|N\.V\.|S\.A\.|SE|plc|AG|Holding|Holdings|Group|fondy|fond|SICAV|s\.r\.l\.)\.?$/gi, "").trim();
+  // Collapse repeated whitespace
+  head = head.replace(/\s+/g, " ");
+  return head;
+}
 
 const TODAY = new Date();
 const REFI_WINDOW_MONTHS = 18;
 document.addEventListener("DOMContentLoaded", () => {
   const e = document.getElementById("asof");
   if (e) e.textContent = TODAY.toISOString().slice(0, 10);
+
+  setupCompanyFilterToggle();
+  populateCompanyDropdown();
 });
 
 function monthsBetween(d1, d2) {
@@ -569,6 +708,46 @@ function monthsToRefi(deal) {
 function monthsToMaturity(deal) {
   return monthsBetween(TODAY, deriveMaturity(deal));
 }
+
+function dealsToCsv(deals) {
+  const rows = [["Borrower","Type","Confidence","ING role","Sweet spot","Amount","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
+  deals.forEach(d => {
+    rows.push([
+      d.borrower,
+      d.type,
+      d.confidence,
+      d.ing_status,
+      d.sweet_spot,
+      d.amount,
+      maturityIso(d),
+      monthsToMaturity(d),
+      d.lenders,
+      d.purpose,
+      d.source,
+    ]);
+  });
+  return rows.map(r =>
+    r.map(c => {
+      const s = String(c == null ? "" : c);
+      // CSV-escape: quote and double internal quotes
+      if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    }).join(",")
+  ).join("\n");
+}
+function downloadCsv(deals, filename) {
+  const csv = dealsToCsv(deals);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function refiUrgency(deal) {
   const m2m = monthsToMaturity(deal);
   if (m2m < 0) return "past";       // already matured
@@ -580,11 +759,25 @@ function refiUrgency(deal) {
 }
 
 function filterDeals() {
+  const sel = companyFilter || [];
   return DEALS.filter(d =>
     (activeFilter === "All" || d.type === activeFilter) &&
     (activeYear === "All" || String(d.year) === activeYear) &&
-    (coalIncluded || !d.coal_excluded)
+    (coalIncluded || !d.coal_excluded) &&
+    (sel.length === 0 || sel.includes(companyKey(d.borrower)))
   );
+}
+function sortDeals(deals) {
+  const arr = deals.slice();
+  if (sortMode === "az") {
+    arr.sort((a, b) => a.borrower.localeCompare(b.borrower, "cs", { sensitivity: "base" }));
+  } else if (sortMode === "amount") {
+    arr.sort((a, b) => (b.value_eur || 0) - (a.value_eur || 0));
+  } else {
+    // default: months-to-maturity ascending (most urgent first)
+    arr.sort((a, b) => monthsToMaturity(a) - monthsToMaturity(b));
+  }
+  return arr;
 }
 function pipelineDeals(monthsMaxFromMaturity) {
   // deals where today is within `monthsMaxFromMaturity` months OF maturity (past or future)
@@ -613,7 +806,7 @@ function renderStats() {
     `<div class="stat"><div class="label">Live refi window (≤18m)</div><div class="value">${liveRefi.length}</div><div class="sub">€${(liveTotal/1000).toFixed(2)}bn EUR-eq</div></div>`,
     `<div class="stat" style="border-left:3px solid #166534;"><div class="label">ING incumbent (defend)</div><div class="value">${incumbent.length}</div><div class="sub">€${(incumbentTotal/1000).toFixed(2)}bn at risk</div></div>`,
     `<div class="stat" style="border-left:3px solid #b91c1c;"><div class="label">ING outsider (greenfield)</div><div class="value">${outsider.length}</div><div class="sub">€${(outsiderTotal/1000).toFixed(2)}bn opportunity</div></div>`,
-    `<div class="stat" style="border-left:3px solid #1d4ed8;"><div class="label">Sweet-spot fit (€30–75m)</div><div class="value">${ideal.length}</div><div class="sub">€${(idealTotal/1000).toFixed(2)}bn ideal lead</div></div>`,
+    `<div class="stat" style="border-left:3px solid #1d4ed8;"><div class="label">Sweet-spot fit (€30–150m)</div><div class="value">${ideal.length}</div><div class="sub">€${(idealTotal/1000).toFixed(2)}bn ideal lead</div></div>`,
     `<div class="stat"><div class="label">Total tracked</div><div class="value">${filtered.length}</div><div class="sub">${coalIncluded ? "incl. coal" : "coal excluded"}</div></div>`,
   ].join("");
   document.getElementById("stats").innerHTML = html;
@@ -641,6 +834,25 @@ function renderFilters() {
     `<div class="chip view-chip ${activeView === o.v ? "active" : ""}" data-filter="view" data-value="${o.v}">${o.label}</div>`
   ).join("");
 
+  // Sort mode chips
+  const sortOptions = [
+    { v: "maturity", label: "⏱️ Maturity (urgent first)" },
+    { v: "az",       label: "🔤 A → Z (borrower)" },
+    { v: "amount",   label: "💰 Amount (largest first)" },
+  ];
+  document.getElementById("sortChips").innerHTML = sortOptions.map(o =>
+    `<div class="chip ${sortMode === o.v ? "active" : ""}" data-filter="sort" data-value="${o.v}">${o.label}</div>`
+  ).join("");
+
+  // Company-filter button label
+  const lbl = document.getElementById("companyFilterLabel");
+  if (lbl) {
+    if (!companyFilter || companyFilter.length === 0) lbl.textContent = "All companies";
+    else if (companyFilter.length === 1) lbl.textContent = companyFilter[0];
+    else lbl.textContent = `${companyFilter.length} companies selected`;
+  }
+  populateCompanyDropdown();
+
   // Coal toggle
   document.getElementById("coalToggle").innerHTML =
     `<label class="coal-toggle"><input type="checkbox" id="coalCheck" ${coalIncluded ? "checked" : ""}/> Include coal/thermal-coal mining (default off — ESG-excluded)</label>`;
@@ -652,6 +864,7 @@ function renderFilters() {
       if (kind === "type") { activeFilter = val; localStorage.setItem(STATE_KEY, val); }
       else if (kind === "year") { activeYear = val; localStorage.setItem(YEAR_STATE_KEY, val); }
       else if (kind === "view") { activeView = val; localStorage.setItem(VIEW_KEY, val); }
+      else if (kind === "sort") { sortMode = val; localStorage.setItem(SORT_KEY, val); }
       render();
     });
   });
@@ -669,6 +882,99 @@ function render() {
   renderFilters();
   renderStats();
   renderTable();
+}
+
+
+// ---- Excel-style company-filter dropdown ----
+function populateCompanyDropdown() {
+  const dd = document.getElementById("companyFilterDropdown");
+  if (!dd) return;
+  // Aggregate deals by companyKey, applying current type/year/coal filters
+  const baseFiltered = DEALS.filter(d =>
+    (activeFilter === "All" || d.type === activeFilter) &&
+    (activeYear === "All" || String(d.year) === activeYear) &&
+    (coalIncluded || !d.coal_excluded)
+  );
+  const groups = {};
+  baseFiltered.forEach(d => {
+    const k = companyKey(d.borrower);
+    if (!k) return;
+    groups[k] = (groups[k] || 0) + 1;
+  });
+  const keys = Object.keys(groups).sort((a, b) =>
+    a.localeCompare(b, "cs", { sensitivity: "base" })
+  );
+  const isActive = (k) => companyFilter && companyFilter.includes(k);
+  let html = `
+    <div class="company-filter-actions">
+      <a href="#" class="company-action" data-action="show-all">Show all (${baseFiltered.length})</a>
+      <a href="#" class="company-action" data-action="close">Close</a>
+    </div>
+    <ul class="company-list">
+      ${keys.map(k => `
+        <li class="company-item ${isActive(k) ? "active" : ""}" data-company="${k.replace(/"/g, '&quot;')}">
+          <span class="company-name">${k}</span>
+          <span class="company-count">${groups[k]}</span>
+        </li>
+      `).join("")}
+    </ul>
+  `;
+  dd.innerHTML = html;
+  // Wire up clicks
+  dd.querySelectorAll(".company-item").forEach(el => {
+    el.addEventListener("click", (ev) => {
+      const k = el.dataset.company;
+      if (ev.shiftKey || ev.ctrlKey || ev.metaKey) {
+        // Multi-select with modifier keys
+        if (companyFilter.includes(k)) {
+          companyFilter = companyFilter.filter(x => x !== k);
+        } else {
+          companyFilter = companyFilter.concat([k]);
+        }
+      } else {
+        // Single-select (default)
+        companyFilter = [k];
+        document.getElementById("companyFilterDropdown").hidden = true;
+        document.getElementById("companyFilterBtn").setAttribute("aria-expanded", "false");
+      }
+      localStorage.setItem(COMPANY_KEY, JSON.stringify(companyFilter));
+      render();
+    });
+  });
+  dd.querySelectorAll(".company-action").forEach(el => {
+    el.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const a = el.dataset.action;
+      if (a === "show-all") {
+        companyFilter = [];
+        localStorage.setItem(COMPANY_KEY, JSON.stringify([]));
+        render();
+      } else if (a === "close") {
+        document.getElementById("companyFilterDropdown").hidden = true;
+        document.getElementById("companyFilterBtn").setAttribute("aria-expanded", "false");
+      }
+    });
+  });
+}
+
+// Toggle company-filter dropdown via header button
+function setupCompanyFilterToggle() {
+  const btn = document.getElementById("companyFilterBtn");
+  const dd = document.getElementById("companyFilterDropdown");
+  if (!btn || !dd) return;
+  btn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    const open = !dd.hidden;
+    dd.hidden = open;
+    btn.setAttribute("aria-expanded", String(!open));
+    if (!open) populateCompanyDropdown();
+  });
+  document.addEventListener("click", (ev) => {
+    if (!dd.contains(ev.target) && ev.target !== btn && !btn.contains(ev.target)) {
+      dd.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    }
+  });
 }
 
 // ---- Render table ----
@@ -699,8 +1005,8 @@ function urgencyBadge(d) {
   return `<span class="badge ${x.cls}" title="${m2m} months to maturity">${x.text}</span>`;
 }
 function sweetBadge(s) {
-  if (s === "ideal") return `<span class="badge sweet-ideal">€30–75m ideal</span>`;
-  if (s === "stretch") return `<span class="badge sweet-stretch">€75–300m stretch</span>`;
+  if (s === "ideal") return `<span class="badge sweet-ideal">€30–150m ideal</span>`;
+  if (s === "stretch") return `<span class="badge sweet-stretch">€150–300m stretch</span>`;
   if (s === "large-cap") return `<span class="badge sweet-large">>€300m large-cap</span>`;
   return "";
 }
@@ -729,27 +1035,37 @@ function renderTable() {
     // Three watchlists shown one after another
     document.getElementById("table").innerHTML = `
       <div class="watchlist-section">
-        <h3 class="watchlist-title">🎯 Greenfield refi opportunities — ING outsider, maturity ≤18m</h3>
+        <h3 class="watchlist-title">🎯 Greenfield refi opportunities — ING outsider, maturity ≤18m
+          <button class="csv-btn" id="csv-greenfield">⬇ CSV</button>
+        </h3>
         <div id="wl-greenfield"></div>
       </div>
       <div class="watchlist-section">
-        <h3 class="watchlist-title">🛡️ Must-retain — ING incumbent, maturity ≤18m</h3>
+        <h3 class="watchlist-title">🛡️ Must-retain — ING incumbent or participant, maturity ≤18m
+          <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
+        </h3>
         <div id="wl-incumbent"></div>
       </div>
       <div class="watchlist-section">
-        <h3 class="watchlist-title">📅 All upcoming refis — sorted by months-to-maturity</h3>
+        <h3 class="watchlist-title">📅 All upcoming refis — sorted by months-to-maturity
+          <button class="csv-btn" id="csv-all">⬇ CSV</button>
+        </h3>
         <div id="wl-all"></div>
       </div>
     `;
     grid = null; // reset
 
-    const live = filterDeals().filter(d => {
+    let live = filterDeals().filter(d => {
       const m2m = monthsToMaturity(d);
       return m2m >= -3 && m2m <= REFI_WINDOW_MONTHS;
-    }).sort((a,b) => monthsToMaturity(a) - monthsToMaturity(b));
+    });
+    // For pipeline view, the user-selected sort still applies to "All upcoming" watchlist.
+    // Greenfield/Must-retain are always month-sorted (most urgent first).
+    const liveByMaturity = live.slice().sort((a, b) => monthsToMaturity(a) - monthsToMaturity(b));
+    live = sortDeals(live);
 
-    const greenfield = live.filter(d => d.ing_status === "outsider");
-    const incumbent = live.filter(d => d.ing_status === "incumbent" || d.ing_status === "participant");
+    const greenfield = liveByMaturity.filter(d => d.ing_status === "outsider");
+    const incumbent = liveByMaturity.filter(d => d.ing_status === "incumbent" || d.ing_status === "participant");
 
     function makeGrid(elId, rows, emptyMsg) {
       if (rows.length === 0) {
@@ -785,13 +1101,32 @@ function renderTable() {
     makeGrid("wl-incumbent", incumbent,
              "No ING-incumbent or participant exposures maturing within 18 months.");
     makeGrid("wl-all", live, "No deals maturing in the next 18 months under current filters.");
+
+    // Wire up CSV export buttons
+    const today = TODAY.toISOString().slice(0, 10);
+    document.getElementById("csv-greenfield").addEventListener("click", () =>
+      downloadCsv(greenfield, `cz-loans-greenfield-${today}.csv`));
+    document.getElementById("csv-incumbent").addEventListener("click", () =>
+      downloadCsv(incumbent, `cz-loans-must-retain-${today}.csv`));
+    document.getElementById("csv-all").addEventListener("click", () =>
+      downloadCsv(live, `cz-loans-pipeline-${today}.csv`));
     return;
   }
 
-  // 'all' view: sort by months-to-maturity ascending (most urgent first)
-  const filtered = filterDeals().slice().sort((a, b) => monthsToMaturity(a) - monthsToMaturity(b));
+  // 'all' view: apply user's selected sort mode
+  const filtered = sortDeals(filterDeals());
   const data = filtered.map(buildRow);
-  document.getElementById("table").innerHTML = "";
+  document.getElementById("table").innerHTML = `
+    <div style="margin-bottom: 8px; text-align: right;">
+      <button class="csv-btn" id="csv-all-view">⬇ Export ${filtered.length} deals to CSV</button>
+    </div>
+    <div id="all-grid"></div>
+  `;
+  setTimeout(() => {
+    const btn = document.getElementById("csv-all-view");
+    if (btn) btn.addEventListener("click", () =>
+      downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`));
+  }, 0);
   grid = new gridjs.Grid({
     columns: [
       { name: "Borrower", width: "16%" },
@@ -812,7 +1147,7 @@ function renderTable() {
       td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
     }
   });
-  grid.render(document.getElementById("table"));
+  grid.render(document.getElementById("all-grid") || document.getElementById("table"));
 }
 
 // ---- Wire up ----
