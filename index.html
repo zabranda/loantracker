@@ -1118,37 +1118,47 @@ function renderTable() {
   // 'all' view: apply user's selected sort mode
   const filtered = sortDeals(filterDeals());
   const data = filtered.map(buildRow);
+
+  // Reuse grid instance when possible — avoids destroy/recreate on every sort/filter change
+  if (grid && document.getElementById("all-grid")) {
+    grid.updateConfig({ data }).forceRender();
+    const btn = document.getElementById("csv-all-view");
+    if (btn) btn.onclick = () => downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`);
+    return;
+  }
+
+  // First render (or after switching back from pipeline view)
   document.getElementById("table").innerHTML = `
     <div style="margin-bottom: 8px; text-align: right;">
       <button class="csv-btn" id="csv-all-view">⬇ Export ${filtered.length} deals to CSV</button>
     </div>
     <div id="all-grid"></div>
   `;
-  setTimeout(() => {
-    const btn = document.getElementById("csv-all-view");
-    if (btn) btn.addEventListener("click", () =>
-      downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`));
-  }, 0);
+  document.getElementById("csv-all-view").onclick = () =>
+    downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`);
+
+  const COLS = [
+    { name: "Borrower", width: "17%", sort: true },
+    { name: "Type", width: "9%", sort: true, formatter: FMT_TYPE },
+    { name: "Urgency", width: "8%", sort: true, formatter: FMT_URGENCY },
+    { name: "ING", width: "8%", sort: true, formatter: FMT_ING },
+    { name: "Amount", width: "10%", sort: true },
+    { name: "Maturity", width: "8%", sort: true },
+    { name: "Months till maturity", width: "10%", sort: true },
+    { name: "Lenders", width: "15%", sort: true },
+    { name: "Conf.", width: "6%", sort: true, formatter: FMT_CONF },
+    { name: "Src", width: "5%", sort: false, formatter: FMT_SRC },
+  ];
   grid = new gridjs.Grid({
-    columns: [
-      { name: "Borrower", width: "17%", sort: true },
-      { name: "Type", width: "9%", sort: true, formatter: FMT_TYPE },
-      { name: "Urgency", width: "8%", sort: true, formatter: FMT_URGENCY },
-      { name: "ING", width: "8%", sort: true, formatter: FMT_ING },
-      { name: "Amount", width: "10%", sort: true },
-      { name: "Maturity", width: "8%", sort: true },
-      { name: "Months till maturity", width: "10%", sort: true },
-      { name: "Lenders", width: "15%", sort: true },
-      { name: "Conf.", width: "6%", sort: true, formatter: FMT_CONF },
-      { name: "Src", width: "5%", sort: false, formatter: FMT_SRC },
-    ],
-    data, resizable: true,
+    columns: COLS,
+    data,
+    resizable: true,
     style: {
       table: { "border-collapse": "collapse", "font-size": "12px" },
       td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
     }
   });
-  grid.render(document.getElementById("all-grid") || document.getElementById("table"));
+  grid.render(document.getElementById("all-grid"));
 }
 
 // ---- Wire up ----
