@@ -1034,43 +1034,40 @@ const FMT_CONF = cell => { const cls = cell === "Confirmed" ? "conf-confirmed" :
 const FMT_SRC  = cell => gridjs.html(`<a href="${cell}" target="_blank" rel="noopener">link</a>`);
 
 function renderTable() {
-  let dataset;
   if (activeView === "pipeline") {
-    // Build HTML structure only on first render (or after switching from all-view)
-    if (!document.getElementById("wl-opportunity")) {
-      document.getElementById("table").innerHTML = `
-        <div class="watchlist-section">
-          <h3 class="watchlist-title">🎯 ING opportunity — refi within 18 months
-            <button class="csv-btn" id="csv-opportunity">⬇ CSV</button>
-          </h3>
-          <div id="wl-opportunity"></div>
-        </div>
-        <div class="watchlist-section">
-          <h3 class="watchlist-title">🛡️ Must-retain — ING incumbent or participant, maturity ≤18m
-            <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
-          </h3>
-          <div id="wl-incumbent"></div>
-        </div>
-        <div class="watchlist-section">
-          <h3 class="watchlist-title">📅 All upcoming refis — sorted by months-to-maturity
-            <button class="csv-btn" id="csv-all">⬇ CSV</button>
-          </h3>
-          <div id="wl-all"></div>
-        </div>
-      `;
-      pipelineGrids = {};
-    }
-    grid = null; // all-view grid no longer active
+    grid = null;
+    pipelineGrids = {};
 
-    let live = filterDeals().filter(d => {
+    // Always rebuild so sort chips always take effect
+    document.getElementById("table").innerHTML = `
+      <div class="watchlist-section">
+        <h3 class="watchlist-title">🎯 ING opportunity — refi within 18 months
+          <button class="csv-btn" id="csv-opportunity">⬇ CSV</button>
+        </h3>
+        <div id="wl-opportunity"></div>
+      </div>
+      <div class="watchlist-section">
+        <h3 class="watchlist-title">🛡️ Must-retain — ING incumbent or participant, maturity ≤18m
+          <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
+        </h3>
+        <div id="wl-incumbent"></div>
+      </div>
+      <div class="watchlist-section">
+        <h3 class="watchlist-title">📅 All upcoming refis
+          <button class="csv-btn" id="csv-all">⬇ CSV</button>
+        </h3>
+        <div id="wl-all"></div>
+      </div>
+    `;
+
+    // All three sections use sortDeals — sort chips affect all of them
+    const live = sortDeals(filterDeals().filter(d => {
       const m2m = monthsToMaturity(d);
       return m2m >= -3 && m2m <= REFI_WINDOW_MONTHS;
-    });
-    const liveByMaturity = live.slice().sort((a, b) => monthsToMaturity(a) - monthsToMaturity(b));
-    live = sortDeals(live);
+    }));
 
-    const opportunity = liveByMaturity.filter(d => d.ing_status === "opportunity");
-    const incumbent = liveByMaturity.filter(d => d.ing_status === "incumbent" || d.ing_status === "participant");
+    const opportunity = live.filter(d => d.ing_status === "opportunity");
+    const incumbent   = live.filter(d => d.ing_status === "incumbent" || d.ing_status === "participant");
 
     const PIPE_COLS = [
       { name: "Borrower", width: "17%" },
@@ -1092,33 +1089,22 @@ function renderTable() {
     function makeGrid(elId, rows, emptyMsg) {
       const el = document.getElementById(elId);
       if (!el) return;
-      if (rows.length === 0) {
-        el.innerHTML = `<div class="empty-msg">${emptyMsg}</div>`;
-        pipelineGrids[elId] = null;
-        return;
-      }
-      const data = rows.map(buildRow);
-      if (pipelineGrids[elId]) {
-        pipelineGrids[elId].updateConfig({ data }).forceRender();
-        return;
-      }
-      const g = new gridjs.Grid({ columns: PIPE_COLS, data, sort: false, style: PIPE_STYLE });
-      g.render(el);
-      pipelineGrids[elId] = g;
+      if (rows.length === 0) { el.innerHTML = `<div class="empty-msg">${emptyMsg}</div>`; return; }
+      new gridjs.Grid({ columns: PIPE_COLS, data: rows.map(buildRow), sort: false, style: PIPE_STYLE }).render(el);
     }
 
-    makeGrid("wl-opportunity", opportunity,
-             "No ING-opportunity refis within 18 months under current filters.");
-    makeGrid("wl-incumbent", incumbent,
-             "No ING-incumbent or participant exposures maturing within 18 months.");
-    makeGrid("wl-all", live, "No deals maturing in the next 18 months under current filters.");
+    makeGrid("wl-opportunity", opportunity, "No ING-opportunity refis within 18 months under current filters.");
+    makeGrid("wl-incumbent",   incumbent,   "No ING-incumbent or participant exposures maturing within 18 months.");
+    makeGrid("wl-all",         live,        "No deals maturing in the next 18 months under current filters.");
 
     const today = TODAY.toISOString().slice(0, 10);
     document.getElementById("csv-opportunity").onclick = () => downloadCsv(opportunity, `cz-loans-opportunity-${today}.csv`);
-    document.getElementById("csv-incumbent").onclick = () => downloadCsv(incumbent, `cz-loans-must-retain-${today}.csv`);
-    document.getElementById("csv-all").onclick = () => downloadCsv(live, `cz-loans-pipeline-${today}.csv`);
+    document.getElementById("csv-incumbent").onclick   = () => downloadCsv(incumbent,   `cz-loans-must-retain-${today}.csv`);
+    document.getElementById("csv-all").onclick         = () => downloadCsv(live,        `cz-loans-pipeline-${today}.csv`);
     return;
   }
+
+  // 'all' view
 
   // 'all' view: apply user's selected sort mode
   const filtered = sortDeals(filterDeals());
