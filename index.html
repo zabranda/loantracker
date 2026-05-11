@@ -1002,7 +1002,6 @@ function urgencyBadge(d) {
 
 
 function buildRow(d) {
-  const confVal = d.confidence || "Confirmed";
   return [
     d.borrower,
     d.type,
@@ -1012,20 +1011,19 @@ function buildRow(d) {
     maturityIso(d),
     monthsToMaturity(d),
     d.lenders,
-    confVal,
+    d.confidence || "Confirmed",
     d.source
   ];
 }
-// Formatters keep HTML out of the data so Grid.js sorts on plain values
 const FMT_TYPE = cell => { const b = TYPE_BADGE[cell] || {cls:""}; return gridjs.html(`<span class="badge ${b.cls}">${cell}</span>`); };
 const FMT_URGENCY = cell => {
   const map = {
-    live: { cls: "urg-live", text: "🔴 Live" },
-    imminent: { cls: "urg-imminent", text: "🟠 Imminent" },
+    live:        { cls: "urg-live",        text: "🔴 Live" },
+    imminent:    { cls: "urg-imminent",    text: "🟠 Imminent" },
     approaching: { cls: "urg-approaching", text: "🟡 Approaching" },
-    distant: { cls: "urg-distant", text: "⚪ Distant" },
-    far: { cls: "urg-far", text: "⬜ Far" },
-    past: { cls: "urg-past", text: "⬛ Past" },
+    distant:     { cls: "urg-distant",     text: "⚪ Distant" },
+    far:         { cls: "urg-far",         text: "⬜ Far" },
+    past:        { cls: "urg-past",        text: "⬛ Past" },
   };
   const x = map[cell] || map.far;
   return gridjs.html(`<span class="badge ${x.cls}">${x.text}</span>`);
