@@ -263,6 +263,14 @@
       </button>
       <div class="company-filter-dropdown" id="companyFilterDropdown" hidden role="listbox"></div>
     </div>
+    <h2 style="margin-top: 16px;">Filter by group</h2>
+    <div class="company-filter-wrap">
+      <button class="company-filter-btn" id="groupFilterBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span class="company-filter-label" id="groupFilterLabel">All groups</span>
+        <span class="caret">▼</span>
+      </button>
+      <div class="company-filter-dropdown" id="groupFilterDropdown" hidden role="listbox"></div>
+    </div>
     <h2 style="margin-top: 16px;">Sort</h2>
     <div class="filters" id="sortChips"></div>
     <h2 style="margin-top: 16px;">Filter by deal type</h2>
@@ -651,6 +659,7 @@ const YEAR_STATE_KEY = "cz_loans_year_filter_v1";
 const VIEW_KEY = "cz_loans_view_v1";
 const COAL_KEY = "cz_loans_coal_filter_v1";
 const COMPANY_KEY = "cz_loans_company_v2"; // array of company keys (multi-select hook)
+const GROUP_KEY  = "cz_loans_group_v1";
 const SORT_KEY = "cz_loans_sort_v1";
 let activeFilter = localStorage.getItem(STATE_KEY) || "All";
 let activeYear = localStorage.getItem(YEAR_STATE_KEY) || "All";
@@ -660,6 +669,41 @@ let companyFilter = (() => {
   try { return JSON.parse(localStorage.getItem(COMPANY_KEY) || "[]"); }
   catch { return []; }
 })();
+let groupFilter = localStorage.getItem(GROUP_KEY) || "";
+
+// ---- Group definitions (parent → substring patterns in borrower name) ----
+const DEAL_GROUPS = {
+  "Accolade":          ["Accolade"],
+  "AFI Europe":        ["AFI Europe"],
+  "Allwyn / Sazka":   ["Allwyn", "Sazka"],
+  "BHM Group":         ["BHM Group", "Reinsberg Group"],
+  "Carlyle":           ["Carlyle"],
+  "CETIN / PPF Telco": ["CETIN"],
+  "ČEZ Group":         ["ČEZ", "Czech Grid Holdings (GasNet)"],
+  "CPI Property Group":["CPI Property Group"],
+  "CTP":               ["CTP N.V."],
+  "EMMA Capital":      ["EMMA Capital", "Emma Alpha"],
+  "Enery":             ["Enery"],
+  "EPH / Křetínský":  ["EPH", "EP UK Bidco", "EP Corporate", "France Retail Holdings", "International Media Invest"],
+  "Genesis Capital":   ["Genesis Capital"],
+  "Hartenberg":        ["Hartenberg"],
+  "Heimstaden":        ["Heimstaden"],
+  "KKCG":              ["KKCG", "SAZKA Entertainment", "Aricoma", "Solitea"],
+  "Kofola":            ["Kofola"],
+  "Penta Group":       ["Penta", "Dr.Max"],
+  "PPF Group":         ["PPF", "Škoda Transportation", "Tanemo"],
+  "REICO":             ["REICO"],
+  "Sev.en / Tykač":   ["Sev.en"],
+  "Solek":             ["Solek", "SOLEK"],
+  "Trigea":            ["Trigea"],
+};
+
+function dealGroup(borrower) {
+  for (const [grp, patterns] of Object.entries(DEAL_GROUPS)) {
+    if (patterns.some(p => borrower.includes(p))) return grp;
+  }
+  return null;
+}
 let sortMode = localStorage.getItem(SORT_KEY) || "maturity"; // "maturity" | "az" | "amount"
 
 // Company-key extraction: take leading borrower phrase, strip parens/slashes/dashes/legal suffixes.
@@ -680,6 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupCompanyFilterToggle();
   populateCompanyDropdown();
+  setupGroupFilterToggle();
 });
 
 function monthsBetween(d1, d2) {
@@ -760,7 +805,8 @@ function filterDeals() {
     (activeFilter === "All" || d.type === activeFilter) &&
     (activeYear === "All" || String(d.year) === activeYear) &&
     (coalIncluded || !d.coal_excluded) &&
-    (sel.length === 0 || sel.includes(companyKey(d.borrower)))
+    (sel.length === 0 || sel.includes(companyKey(d.borrower))) &&
+    (groupFilter === "" || dealGroup(d.borrower) === groupFilter)
   );
 }
 function sortDeals(deals) {
@@ -949,6 +995,85 @@ function populateCompanyDropdown() {
         document.getElementById("companyFilterBtn").setAttribute("aria-expanded", "false");
       }
     });
+  });
+}
+
+// ---- Group-filter dropdown ----
+function populateGroupDropdown() {
+  const dd = document.getElementById("groupFilterDropdown");
+  if (!dd) return;
+  // Count deals per group (using only type/year/coal filters, not company filter)
+  const base = DEALS.filter(d =>
+    (activeFilter === "All" || d.type === activeFilter) &&
+    (activeYear === "All" || String(d.year) === activeYear) &&
+    (coalIncluded || !d.coal_excluded)
+  );
+  const counts = {};
+  base.forEach(d => {
+    const g = dealGroup(d.borrower);
+    if (g) counts[g] = (counts[g] || 0) + 1;
+  });
+  const grpNames = Object.keys(counts).sort((a, b) => a.localeCompare(b, "cs", { sensitivity: "base" }));
+  dd.innerHTML = `
+    <div class="company-filter-actions">
+      <a href="#" class="company-action" data-action="show-all">Show all</a>
+      <a href="#" class="company-action" data-action="close">Close</a>
+    </div>
+    <ul class="company-list">
+      ${grpNames.map(g => `
+        <li class="company-item ${groupFilter === g ? "active" : ""}" data-group="${g.replace(/"/g, '&quot;')}">
+          <span class="company-name">${g}</span>
+          <span class="company-count">${counts[g]}</span>
+        </li>`).join("")}
+    </ul>
+  `;
+  dd.querySelectorAll(".company-item").forEach(el => {
+    el.addEventListener("click", () => {
+      groupFilter = el.dataset.group;
+      localStorage.setItem(GROUP_KEY, groupFilter);
+      dd.hidden = true;
+      document.getElementById("groupFilterBtn").setAttribute("aria-expanded", "false");
+      updateGroupLabel();
+      render();
+    });
+  });
+  dd.querySelectorAll(".company-action").forEach(el => {
+    el.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (el.dataset.action === "show-all") {
+        groupFilter = "";
+        localStorage.setItem(GROUP_KEY, "");
+        render();
+      }
+      dd.hidden = true;
+      document.getElementById("groupFilterBtn").setAttribute("aria-expanded", "false");
+      updateGroupLabel();
+    });
+  });
+}
+
+function updateGroupLabel() {
+  const lbl = document.getElementById("groupFilterLabel");
+  if (lbl) lbl.textContent = groupFilter || "All groups";
+}
+
+function setupGroupFilterToggle() {
+  const btn = document.getElementById("groupFilterBtn");
+  const dd  = document.getElementById("groupFilterDropdown");
+  if (!btn || !dd) return;
+  updateGroupLabel();
+  btn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    const open = !dd.hidden;
+    dd.hidden = open;
+    btn.setAttribute("aria-expanded", String(!open));
+    if (!open) populateGroupDropdown();
+  });
+  document.addEventListener("click", (ev) => {
+    if (!dd.contains(ev.target) && ev.target !== btn && !btn.contains(ev.target)) {
+      dd.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    }
   });
 }
 
