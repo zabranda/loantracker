@@ -1073,16 +1073,16 @@ function renderTable() {
     const incumbent = liveByMaturity.filter(d => d.ing_status === "incumbent" || d.ing_status === "participant");
 
     const PIPE_COLS = [
-      { name: "Borrower", width: "17%", sort: true },
-      { name: "Type", width: "9%", sort: true, formatter: FMT_TYPE },
-      { name: "Urgency", width: "8%", sort: true, formatter: FMT_URGENCY },
-      { name: "ING", width: "8%", sort: true, formatter: FMT_ING },
-      { name: "Amount", width: "10%", sort: true },
-      { name: "Maturity", width: "8%", sort: true },
-      { name: "Months till maturity", width: "10%", sort: true },
-      { name: "Lenders", width: "15%", sort: true },
-      { name: "Conf.", width: "6%", sort: true, formatter: FMT_CONF },
-      { name: "Src", width: "5%", sort: false, formatter: FMT_SRC },
+      { name: "Borrower", width: "17%" },
+      { name: "Type", width: "9%", formatter: FMT_TYPE },
+      { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
+      { name: "ING", width: "8%", formatter: FMT_ING },
+      { name: "Amount", width: "10%" },
+      { name: "Maturity", width: "8%" },
+      { name: "Months till maturity", width: "10%" },
+      { name: "Lenders", width: "15%" },
+      { name: "Conf.", width: "6%", formatter: FMT_CONF },
+      { name: "Src", width: "5%", formatter: FMT_SRC },
     ];
     const PIPE_STYLE = {
       table: { "border-collapse": "collapse", "font-size": "12px" },
@@ -1102,7 +1102,7 @@ function renderTable() {
         pipelineGrids[elId].updateConfig({ data }).forceRender();
         return;
       }
-      const g = new gridjs.Grid({ columns: PIPE_COLS, data, resizable: true, style: PIPE_STYLE });
+      const g = new gridjs.Grid({ columns: PIPE_COLS, data, sort: false, style: PIPE_STYLE });
       g.render(el);
       pipelineGrids[elId] = g;
     }
@@ -1146,21 +1146,21 @@ function renderTable() {
     downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`);
 
   const COLS = [
-    { name: "Borrower", width: "17%", sort: true },
-    { name: "Type", width: "9%", sort: true, formatter: FMT_TYPE },
-    { name: "Urgency", width: "8%", sort: true, formatter: FMT_URGENCY },
-    { name: "ING", width: "8%", sort: true, formatter: FMT_ING },
-    { name: "Amount", width: "10%", sort: true },
-    { name: "Maturity", width: "8%", sort: true },
-    { name: "Months till maturity", width: "10%", sort: true },
-    { name: "Lenders", width: "15%", sort: true },
-    { name: "Conf.", width: "6%", sort: true, formatter: FMT_CONF },
-    { name: "Src", width: "5%", sort: false, formatter: FMT_SRC },
+    { name: "Borrower", width: "17%" },
+    { name: "Type", width: "9%", formatter: FMT_TYPE },
+    { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
+    { name: "ING", width: "8%", formatter: FMT_ING },
+    { name: "Amount", width: "10%" },
+    { name: "Maturity", width: "8%" },
+    { name: "Months till maturity", width: "10%" },
+    { name: "Lenders", width: "15%" },
+    { name: "Conf.", width: "6%", formatter: FMT_CONF },
+    { name: "Src", width: "5%", formatter: FMT_SRC },
   ];
   grid = new gridjs.Grid({
     columns: COLS,
     data,
-    resizable: true,
+    sort: false,
     style: {
       table: { "border-collapse": "collapse", "font-size": "12px" },
       td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
