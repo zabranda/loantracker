@@ -974,6 +974,7 @@ function setupCompanyFilterToggle() {
 
 // ---- Render table ----
 let grid = null;
+let pipelineGrids = {};
 
 function ingBadge(s) {
   const map = {
@@ -1035,67 +1036,75 @@ const FMT_SRC  = cell => gridjs.html(`<a href="${cell}" target="_blank" rel="noo
 function renderTable() {
   let dataset;
   if (activeView === "pipeline") {
-    // Three watchlists shown one after another
-    document.getElementById("table").innerHTML = `
-      <div class="watchlist-section">
-        <h3 class="watchlist-title">🎯 ING opportunity — refi within 18 months
-          <button class="csv-btn" id="csv-opportunity">⬇ CSV</button>
-        </h3>
-        <div id="wl-opportunity"></div>
-      </div>
-      <div class="watchlist-section">
-        <h3 class="watchlist-title">🛡️ Must-retain — ING incumbent or participant, maturity ≤18m
-          <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
-        </h3>
-        <div id="wl-incumbent"></div>
-      </div>
-      <div class="watchlist-section">
-        <h3 class="watchlist-title">📅 All upcoming refis — sorted by months-to-maturity
-          <button class="csv-btn" id="csv-all">⬇ CSV</button>
-        </h3>
-        <div id="wl-all"></div>
-      </div>
-    `;
-    grid = null; // reset
+    // Build HTML structure only on first render (or after switching from all-view)
+    if (!document.getElementById("wl-opportunity")) {
+      document.getElementById("table").innerHTML = `
+        <div class="watchlist-section">
+          <h3 class="watchlist-title">🎯 ING opportunity — refi within 18 months
+            <button class="csv-btn" id="csv-opportunity">⬇ CSV</button>
+          </h3>
+          <div id="wl-opportunity"></div>
+        </div>
+        <div class="watchlist-section">
+          <h3 class="watchlist-title">🛡️ Must-retain — ING incumbent or participant, maturity ≤18m
+            <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
+          </h3>
+          <div id="wl-incumbent"></div>
+        </div>
+        <div class="watchlist-section">
+          <h3 class="watchlist-title">📅 All upcoming refis — sorted by months-to-maturity
+            <button class="csv-btn" id="csv-all">⬇ CSV</button>
+          </h3>
+          <div id="wl-all"></div>
+        </div>
+      `;
+      pipelineGrids = {};
+    }
+    grid = null; // all-view grid no longer active
 
     let live = filterDeals().filter(d => {
       const m2m = monthsToMaturity(d);
       return m2m >= -3 && m2m <= REFI_WINDOW_MONTHS;
     });
-    // For pipeline view, the user-selected sort still applies to "All upcoming" watchlist.
-    // Opportunity/Must-retain are always month-sorted (most urgent first).
     const liveByMaturity = live.slice().sort((a, b) => monthsToMaturity(a) - monthsToMaturity(b));
     live = sortDeals(live);
 
     const opportunity = liveByMaturity.filter(d => d.ing_status === "opportunity");
     const incumbent = liveByMaturity.filter(d => d.ing_status === "incumbent" || d.ing_status === "participant");
 
+    const PIPE_COLS = [
+      { name: "Borrower", width: "17%", sort: true },
+      { name: "Type", width: "9%", sort: true, formatter: FMT_TYPE },
+      { name: "Urgency", width: "8%", sort: true, formatter: FMT_URGENCY },
+      { name: "ING", width: "8%", sort: true, formatter: FMT_ING },
+      { name: "Amount", width: "10%", sort: true },
+      { name: "Maturity", width: "8%", sort: true },
+      { name: "Months till maturity", width: "10%", sort: true },
+      { name: "Lenders", width: "15%", sort: true },
+      { name: "Conf.", width: "6%", sort: true, formatter: FMT_CONF },
+      { name: "Src", width: "5%", sort: false, formatter: FMT_SRC },
+    ];
+    const PIPE_STYLE = {
+      table: { "border-collapse": "collapse", "font-size": "12px" },
+      td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
+    };
+
     function makeGrid(elId, rows, emptyMsg) {
+      const el = document.getElementById(elId);
+      if (!el) return;
       if (rows.length === 0) {
-        document.getElementById(elId).innerHTML = `<div class="empty-msg">${emptyMsg}</div>`;
+        el.innerHTML = `<div class="empty-msg">${emptyMsg}</div>`;
+        pipelineGrids[elId] = null;
         return;
       }
       const data = rows.map(buildRow);
-      const g = new gridjs.Grid({
-        columns: [
-          { name: "Borrower", width: "17%", sort: true },
-          { name: "Type", width: "9%", sort: true, formatter: FMT_TYPE },
-          { name: "Urgency", width: "8%", sort: true, formatter: FMT_URGENCY },
-          { name: "ING", width: "8%", sort: true, formatter: FMT_ING },
-          { name: "Amount", width: "10%", sort: true },
-          { name: "Maturity", width: "8%", sort: true },
-          { name: "Months till maturity", width: "10%", sort: true },
-          { name: "Lenders", width: "15%", sort: true },
-          { name: "Conf.", width: "6%", sort: true, formatter: FMT_CONF },
-          { name: "Src", width: "5%", sort: false, formatter: FMT_SRC },
-        ],
-        data, resizable: true,
-        style: {
-          table: { "border-collapse": "collapse", "font-size": "12px" },
-          td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
-        }
-      });
-      g.render(document.getElementById(elId));
+      if (pipelineGrids[elId]) {
+        pipelineGrids[elId].updateConfig({ data }).forceRender();
+        return;
+      }
+      const g = new gridjs.Grid({ columns: PIPE_COLS, data, resizable: true, style: PIPE_STYLE });
+      g.render(el);
+      pipelineGrids[elId] = g;
     }
 
     makeGrid("wl-opportunity", opportunity,
@@ -1104,20 +1113,19 @@ function renderTable() {
              "No ING-incumbent or participant exposures maturing within 18 months.");
     makeGrid("wl-all", live, "No deals maturing in the next 18 months under current filters.");
 
-    // Wire up CSV export buttons
     const today = TODAY.toISOString().slice(0, 10);
-    document.getElementById("csv-opportunity").addEventListener("click", () =>
-      downloadCsv(opportunity, `cz-loans-opportunity-${today}.csv`));
-    document.getElementById("csv-incumbent").addEventListener("click", () =>
-      downloadCsv(incumbent, `cz-loans-must-retain-${today}.csv`));
-    document.getElementById("csv-all").addEventListener("click", () =>
-      downloadCsv(live, `cz-loans-pipeline-${today}.csv`));
+    document.getElementById("csv-opportunity").onclick = () => downloadCsv(opportunity, `cz-loans-opportunity-${today}.csv`);
+    document.getElementById("csv-incumbent").onclick = () => downloadCsv(incumbent, `cz-loans-must-retain-${today}.csv`);
+    document.getElementById("csv-all").onclick = () => downloadCsv(live, `cz-loans-pipeline-${today}.csv`);
     return;
   }
 
   // 'all' view: apply user's selected sort mode
   const filtered = sortDeals(filterDeals());
   const data = filtered.map(buildRow);
+
+  // Switching to all-view: clear pipeline grid cache so next pipeline visit rebuilds
+  pipelineGrids = {};
 
   // Reuse grid instance when possible — avoids destroy/recreate on every sort/filter change
   if (grid && document.getElementById("all-grid")) {
