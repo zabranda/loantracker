@@ -74,6 +74,7 @@
     font-weight: 500;
     border: 1px solid;
   }
+  .build-tag { color: #9c9890; font-size: 11px; }
   .badge-syn { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
   .badge-lbo { background: #fff0e6; color: #8a3d10; border-color: #f5cfb6; }
   .badge-refi { background: #ecf7ed; color: #1f5e2a; border-color: #c4e2c8; }
@@ -250,7 +251,7 @@
 <body>
 <div class="wrap">
   <h1>Czech Corporate Loans — Refi Pipeline</h1>
-  <div class="sub">Refi-pipeline view of Czech corporate facilities. Maturity-based prioritisation; WB role highlighted; coal excluded. As of <span id="asof"></span>.</div>
+  <div class="sub">Refi-pipeline view of Czech corporate facilities. Maturity-based prioritisation; WB role highlighted; coal excluded. As of <span id="asof"></span>. <span id="buildtag" class="build-tag"></span></div>
 
   <div class="stats" id="stats"></div>
 
@@ -753,9 +754,15 @@ function companyKey(borrower) {
 
 const TODAY = new Date();
 const REFI_WINDOW_MONTHS = 18;
+// Bump this string on every content/logic change so it's obvious in the browser
+// whether the page you're looking at is the version you expect — compare it (and
+// the "Total tracked" deal count in the stats panel) against what was just pushed.
+const BUILD_TAG = "build 2026-08-04.1 · 138 deals · Allwyn TLB/bond backfill";
 document.addEventListener("DOMContentLoaded", () => {
   const e = document.getElementById("asof");
   if (e) e.textContent = TODAY.toISOString().slice(0, 10);
+  const bt = document.getElementById("buildtag");
+  if (bt) bt.textContent = "· " + BUILD_TAG;
 
   setupCompanyFilterToggle();
   populateCompanyDropdown();
