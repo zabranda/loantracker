@@ -2,15 +2,15 @@
 
 A static, self-contained HTML view of major Czech corporate loan transactions
 (syndicated/club loans, acquisition / LBO financing, refinancings, and commercial
-real estate finance) covering 2021 – Q1 2026.
+real estate finance) covering 2021 – 2026.
 
 Live page: **https://zabranda.github.io/loantracker/**
 
 ## What's tracked
 
-~33 transactions involving Czech borrowers or Czech assets, with for each deal:
+132 transactions involving Czech borrowers or Czech assets, with for each deal:
 borrower, deal type, amount, date, lenders / mandated lead arrangers, purpose,
-and a source link.
+confidence label (Confirmed / Likely / Inferred), and a source link.
 
 Filters by deal type and year; selections persist in `localStorage`.
 
