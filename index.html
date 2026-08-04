@@ -78,9 +78,11 @@
   .badge-lbo { background: #fff0e6; color: #8a3d10; border-color: #f5cfb6; }
   .badge-refi { background: #ecf7ed; color: #1f5e2a; border-color: #c4e2c8; }
   .badge-re { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
-  .conf-confirmed { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
-  .conf-likely    { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
-  .conf-inferred  { background: #f0f0f0; color: #555;    border-color: #d0d0d0; }
+  .conf-100 { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
+  .conf-75  { background: #eefbe9; color: #2f7a3c; border-color: #c8e8bd; }
+  .conf-50  { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
+  .conf-25  { background: #fdeee0; color: #9a4a12; border-color: #f3cda3; }
+  .conf-0   { background: #f0f0f0; color: #555;    border-color: #d0d0d0; }
   .badge-export, .badge-project, .badge-intermediated { background: #eef0ff; color: #303a8a; border-color: #c8cef5; }
   .ing-incumbent { background: #d1fae5; color: #065f46; border-color: #6ee7b7; font-weight: 600; }
   .ing-participant { background: #fef3c7; color: #78350f; border-color: #fcd34d; font-weight: 500; }
@@ -770,13 +772,37 @@ function monthsToMaturity(deal) {
   return monthsBetween(TODAY, deriveMaturity(deal));
 }
 
+// Certainty score (0/25/50/75/100%) — one of four independently-verifiable
+// parameters must hold for each 25% increment. 100% requires all four:
+//  1) source is a direct primary announcement/filing (confidence === "Confirmed")
+//  2) amount is a specific disclosed figure (not "n/d" / estimated)
+//  3) lenders are specifically named (not vague/inferred/undisclosed)
+//  4) date is precise to the month (not a bare year or multi-year range)
+function certaintyPct(d) {
+  let score = 0;
+  if (d.confidence === "Confirmed") score += 25;
+
+  const amt = (d.amount || "").toLowerCase();
+  if (!/n\/d|est\.|estimated|unknown/.test(amt)) score += 25;
+
+  const lend = (d.lenders || "").toLowerCase();
+  if (!/likely|inferred|undisclosed|not disclosed|reportedly|typical|standard bank stack|specifics? \(?not\)? disclosed|specific (structure|facility|syndicate) (undisclosed|not disclosed)|n\/d/.test(lend)) score += 25;
+
+  const dt = d.date || "";
+  const hasMonth = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(dt);
+  const isDashRange = /[–—]/.test(dt);
+  if (hasMonth && !isDashRange) score += 25;
+
+  return score;
+}
+
 function dealsToCsv(deals) {
-  const rows = [["Borrower","Type","Confidence","ING role","Amount","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
+  const rows = [["Borrower","Type","Certainty %","ING role","Amount","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
   deals.forEach(d => {
     rows.push([
       d.borrower,
       d.type,
-      d.confidence,
+      certaintyPct(d) + "%",
       d.ing_status,
       d.amount,
       maturityIso(d),
@@ -1156,7 +1182,7 @@ function buildRow(d) {
     maturityIso(d),
     monthsToMaturity(d),
     d.lenders,
-    d.confidence || "Confirmed",
+    certaintyPct(d),
     d.source
   ];
 }
@@ -1174,7 +1200,7 @@ const FMT_URGENCY = cell => {
   return gridjs.html(`<span class="badge ${x.cls}">${x.text}</span>`);
 };
 const FMT_ING  = cell => gridjs.html(ingBadge(cell));
-const FMT_CONF = cell => { const cls = cell === "Confirmed" ? "conf-confirmed" : (cell === "Likely" ? "conf-likely" : "conf-inferred"); return gridjs.html(`<span class="badge ${cls}">${cell}</span>`); };
+const FMT_CONF = cell => { const cls = "conf-" + cell; return gridjs.html(`<span class="badge ${cls}" title="Share of parameters (source, amount, lenders, date) independently verified">${cell}%</span>`); };
 const FMT_SRC  = cell => gridjs.html(`<a href="${cell}" target="_blank" rel="noopener">link</a>`);
 
 function renderTable() {
@@ -1222,7 +1248,7 @@ function renderTable() {
       { name: "Maturity", width: "8%" },
       { name: "Months till maturity", width: "10%" },
       { name: "Lenders", width: "15%" },
-      { name: "Conf.", width: "6%", formatter: FMT_CONF },
+      { name: "Cert.", width: "6%", formatter: FMT_CONF },
       { name: "Src", width: "5%", formatter: FMT_SRC },
     ];
     const PIPE_STYLE = {
@@ -1284,7 +1310,7 @@ function renderTable() {
     { name: "Maturity", width: "8%" },
     { name: "Months till maturity", width: "10%" },
     { name: "Lenders", width: "15%" },
-    { name: "Conf.", width: "6%", formatter: FMT_CONF },
+    { name: "Cert.", width: "6%", formatter: FMT_CONF },
     { name: "Src", width: "5%", formatter: FMT_SRC },
   ];
   grid = new gridjs.Grid({
