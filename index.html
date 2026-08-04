@@ -861,8 +861,19 @@ function sortDeals(deals) {
   } else if (sortMode === "amount") {
     arr.sort((a, b) => (b.value_eur || 0) - (a.value_eur || 0));
   } else {
-    // default: months-to-maturity ascending (most urgent first)
-    arr.sort((a, b) => monthsToMaturity(a) - monthsToMaturity(b));
+    // default: chronological timeline relative to today (recomputed on every load/refresh).
+    // Upcoming deals first (soonest maturity first); already-matured deals are pushed to the
+    // bottom, ordered most-recently-matured first, so the whole list still reads as one timeline
+    // running forward from today and then backward into the past — instead of very old,
+    // long-past deals bubbling to the top just because their months-to-maturity is a large negative number.
+    arr.sort((a, b) => {
+      const ma = monthsToMaturity(a);
+      const mb = monthsToMaturity(b);
+      const aFuture = ma >= 0;
+      const bFuture = mb >= 0;
+      if (aFuture !== bFuture) return aFuture ? -1 : 1;
+      return aFuture ? ma - mb : mb - ma;
+    });
   }
   return arr;
 }
