@@ -369,7 +369,20 @@ const DEALS = [
   { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "€1,600m", currency: "EUR", value_eur: 1600, lenders: "Bank syndicate; UniCredit Global Coordinator (Clifford Chance / A&O)", date: "Nov 2022", year: 2022, purpose: "Senior Facilities Agreement — refi €623m loan + Camelot UK acquisition + GCP", source: "https://www.cliffordchance.com/news/news/2022/11/clifford-chance-advises-allwyn-on-its-1-6bn-senior-facilities-a.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-11-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "Cube Infrastructure Fund III (MVV Energie CZ)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Kommunalkredit Austria + Komerční banka (A&O Shearman advised)", date: "Aug–Dec 2022", year: 2022, purpose: "Syndicated leveraged infra acquisition financing — Czech district heating", source: "https://www.aoshearman.com/en/news/allen-overy-advises-on-the-financing-for-acquisition-of-mvv-energie-cz", confidence: "Confirmed", tenor_y: 7, signed_iso: "2022-12-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "Kofola ČeskoSlovensko", type: "Refinancing", amount: "up to CZK 1,000m new line + refi", currency: "CZK", value_eur: 40, lenders: "Česká spořitelna & ČSOB", date: "Jul 2022", year: 2022, purpose: "Refi to 60/40 EUR/CZK structure + new investment line", source: "https://ceelegalmatters.com/in-house/20933-deal-5-kofola-cfo-martin-pisklak-on-the-group-s-refinancing", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-07-15", ing_status: "opportunity", coal_excluded: false },
-  { borrower: "Allwyn (Sazka Delta — OPAP minority)", type: "Acquisition/LBO", amount: "€327m + €600m bond", currency: "EUR", value_eur: 327, lenders: "Cash from balance sheet incl. €600m bond proceeds", date: "Feb 2022", year: 2022, purpose: "Acquired remaining Sazka minority — Allwyn stake in OPAP to 48.1%", source: "https://www.globenewswire.com/news-release/2022/02/17/2387312/0/en/Allwyn-increases-its-economic-interest-in-OPAP-to-48-1.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-02-15", ing_status: "opportunity", coal_excluded: false },
+  // NOTE (Aug 2026 review): this was an equity stake purchase, cash/bond-funded — not itself
+  // a facility with an ongoing maturity. The bond that helped fund it is now tracked as its own
+  // entry below ("SAZKA Group / Allwyn Entertainment Financing... €600m combined notes"); tenor_y
+  // set low here so this historical entry doesn't linger as a phantom live refi "opportunity".
+  { borrower: "Allwyn (Sazka Delta — OPAP minority)", type: "Acquisition/LBO", amount: "€327.4m", currency: "EUR", value_eur: 327, lenders: "Cash from balance sheet + proceeds of SAZKA Group's Feb 2022 €600m bond tap (see separate bond entry)", date: "Feb 2022", year: 2022, purpose: "Acquired remaining Sazka Delta minority (from Yeonama Holdings) — Allwyn's economic interest in OPAP increased from 41.2% to 48.1%", source: "https://www.globenewswire.com/news-release/2022/02/17/2387312/0/en/Allwyn-increases-its-economic-interest-in-OPAP-to-48-1.html", confidence: "Confirmed", tenor_y: 1, signed_iso: "2022-02-15", ing_status: "opportunity", coal_excluded: false },
+
+  // SAZKA Group / Allwyn — Feb 2022 €600m combined bond offering (funded part of the OPAP stake buy above).
+  // Verified chain: 5 Feb 2020 SAZKA issued €300m 3.875% notes due 2027 (pre-window, not tracked) →
+  // 9 Feb 2022 taps additional €200m of the same 2027 notes (combined €500m) + issues new €400m FRN
+  // due 2028 (margin 4.125%) — combined €600m priced together. The €500m 3.875%/2027 tranche was fully
+  // redeemed via the Aug 2025 €600m notes refinancing (see that entry) — that piece is closed. The €400m
+  // FRN due 2028 tranche was NOT mentioned in the Aug 2025 redemption notice and appears to remain
+  // outstanding — i.e. a real, still-live ~2028 refinancing need, not phantom.
+  { borrower: "SAZKA Group / Allwyn Entertainment Financing (UK) plc", type: "Refinancing", amount: "€200m tap of 3.875% notes due 2027 (→€500m combined w/ 2020 issue, since redeemed Aug 2025) + €400m new FRN due 2028 (margin 4.125%, appears still outstanding)", currency: "EUR", value_eur: 600, lenders: "Bond investors (144A/Reg S) — Milbank advised", date: "9 Feb 2022", year: 2022, purpose: "Combined €600m offering; proceeds partly funded the Sazka Delta/OPAP stake increase to 48.1% (see entry above) + GCP", source: "https://www.milbank.com/en/news/milbank-advises-sazka-group-on-its-euro600-million-offering.html", confidence: "Confirmed", tenor_y: 6, signed_iso: "2022-02-09", ing_status: "opportunity", coal_excluded: false },
 
   // ===== 2021 =====
   { borrower: "Tanemo a.s. (PPF SPV)", type: "Acquisition/LBO", amount: "€1,100m", currency: "EUR", value_eur: 1100, lenders: "Syndicate led by WB", date: "2021", year: 2021, purpose: "Certain-funds facility for Moneta Money Bank voluntary tender — first Czech VTO certain-funds loan", source: "https://www.prkpartners.com/files/013-czech-republic.pdf", confidence: "Confirmed", tenor_y: 1, signed_iso: "2021-06-15", ing_status: "incumbent", coal_excluded: false },
@@ -757,7 +770,7 @@ const REFI_WINDOW_MONTHS = 18;
 // Bump this string on every content/logic change so it's obvious in the browser
 // whether the page you're looking at is the version you expect — compare it (and
 // the "Total tracked" deal count in the stats panel) against what was just pushed.
-const BUILD_TAG = "build 2026-08-04.1 · 138 deals · Allwyn TLB/bond backfill";
+const BUILD_TAG = "build 2026-08-04.2 · 139 deals · Sazka/OPAP bond chain traced (2020→2022→2025)";
 document.addEventListener("DOMContentLoaded", () => {
   const e = document.getElementById("asof");
   if (e) e.textContent = TODAY.toISOString().slice(0, 10);
