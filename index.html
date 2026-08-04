@@ -250,7 +250,7 @@
 <body>
 <div class="wrap">
   <h1>Czech Corporate Loans — Refi Pipeline</h1>
-  <div class="sub">Refi-pipeline view of Czech corporate facilities. Maturity-based prioritisation; ING role highlighted; coal excluded. As of <span id="asof"></span>.</div>
+  <div class="sub">Refi-pipeline view of Czech corporate facilities. Maturity-based prioritisation; WB role highlighted; coal excluded. As of <span id="asof"></span>.</div>
 
   <div class="stats" id="stats"></div>
 
@@ -320,7 +320,7 @@ const DEALS = [
   // ===== 2025 =====
   { borrower: "Allwyn International (ex-Sazka)", type: "Refinancing", amount: "€2,150m", currency: "EUR", value_eur: 2150, lenders: "Syndicate of lenders (5y maturity all): €400m amortising TL + €900m bullet TL + €350m multi-currency RCF + €500m delayed-drawdown TL", date: "Jul 2025", year: 2025, purpose: "Refi €1.7bn syndicated facility (€1.2bn drawn), margin −150bps; growth & GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-2-15bn-syndicated-credit-facility-and-refinancing-of-existing-syndicated-credit-facility", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-07-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "Škoda Transportation (PPF Group)", type: "Syndicated", amount: "€1,500m", currency: "EUR", value_eur: 1500, lenders: "Syndicate led by ČSOB (incl. KB, ČS, UniCredit CZ&SK)", date: "2025", year: 2025, purpose: "Umbrella facility — term, revolving & corporate guarantee tranches", source: "https://practiceguides.chambers.com/practice-guides/banking-regulation-2026/czech-republic/trends-and-developments", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "opportunity", coal_excluded: false },
-  { borrower: "CTP N.V.", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING global coordinators (SLL, 3.7%)", date: "Jul 2025", year: 2025, purpose: "5y unsecured SLL refinancing 2024 facility + bond buyback", source: "https://ctp.eu/news/ctp-announces-the-signing-of-a-e500-million-unsecured-syndicated-sustainability-linked-loan-facility/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-07-15", ing_status: "incumbent", coal_excluded: false },
+  { borrower: "CTP N.V.", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & WB global coordinators (SLL, 3.7%)", date: "Jul 2025", year: 2025, purpose: "5y unsecured SLL refinancing 2024 facility + bond buyback", source: "https://ctp.eu/news/ctp-announces-the-signing-of-a-e500-million-unsecured-syndicated-sustainability-linked-loan-facility/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-07-15", ing_status: "incumbent", coal_excluded: false },
   { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "JPY 80bn (~$528m / ~€480m)", currency: "JPY", value_eur: 480, lenders: "Samurai loan, SMBC Group", date: "Feb 2025", year: 2025, purpose: "Debut Japanese term loan — corporate liquidity", source: "https://www.epholding.cz/en/press-releases/smbc-group-supports-eph-in-securing-jpy80-billion-samurai-loan/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-02-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "UniCredit Bank Czech Republic & Slovakia", type: "Refinancing", amount: "€200m guarantee → €400m lending", currency: "EUR", value_eur: 400, lenders: "European Investment Bank (guarantee)", date: "2025", year: 2025, purpose: "EIB-backed mid-cap lending programme", source: "https://mf.gov.cz/en/about-ministry/media-room/news-and-press-releases/2026/czechia-gets-eib-group-financing-of-close-to--8364-62854", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "CTP N.V.", type: "Syndicated", amount: "JPY 30bn (~€185m)", currency: "JPY", value_eur: 185, lenders: "Asian bank syndicate", date: "2025", year: 2025, purpose: "5y unsecured SLL, TONAR + 130bps", source: "https://realassetinsight.com/2025/07/24/ctp-secures-e500m-sustainability-linked-loan-for-bond-buyback/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-06-15", ing_status: "opportunity", coal_excluded: false },
@@ -335,14 +335,14 @@ const DEALS = [
   // ===== 2024 =====
   { borrower: "ČEZ, a.s.", type: "Acquisition/LBO", amount: "€840m", currency: "EUR", value_eur: 840, lenders: "2y term loan syndicate: Barclays, CaixaBank, Citigroup, Commerzbank, Intesa Sanpaolo, SMBC, Komerční banka / Société Générale (facility agent) (W&C advised arrangers)", date: "Mar 2024", year: 2024, purpose: "Bridge-to-bond facility for 55.21% GasNet stake (€846.5m EV)", source: "https://www.cez.cz/en/investors/inside-information/cez-a.s.-successfully-signed-a-loan-agreement-for-840-mil.-eur-to-finance-the-acquisition-of-a-55.21-stake-in-gasnet-189803", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-03-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "ČEPS a.s. (transmission system operator)", type: "Syndicated", amount: "CZK 24,000m (~€960m)", currency: "CZK", value_eur: 960, lenders: "Česká spořitelna, ČSOB, Komerční banka (Dentons advised lenders)", date: "2024", year: 2024, purpose: "Corporate facility — TSO investments", source: "https://ceelegalmatters.com/dentons", confidence: "Confirmed", tenor_y: 12, signed_iso: "2024-06-15", ing_status: "opportunity", coal_excluded: false },
-  { borrower: "CTP N.V.", type: "Syndicated", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & ING coordinators (SLL, 4.7%)", date: "Jun 2024", year: 2024, purpose: "5y unsecured SLL — GCP including developments", source: "https://www.businesswire.com/news/home/20240627835705/en/CTP-announces-the-signing-of-a-%E2%82%AC500-million-unsecured-syndicated-sustainability-linked-loan-facility-and-%E2%82%AC500-million-bond-tender-offer", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "incumbent", coal_excluded: false },
+  { borrower: "CTP N.V.", type: "Syndicated", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & WB coordinators (SLL, 4.7%)", date: "Jun 2024", year: 2024, purpose: "5y unsecured SLL — GCP including developments", source: "https://www.businesswire.com/news/home/20240627835705/en/CTP-announces-the-signing-of-a-%E2%82%AC500-million-unsecured-syndicated-sustainability-linked-loan-facility-and-%E2%82%AC500-million-bond-tender-offer", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-06-15", ing_status: "incumbent", coal_excluded: false },
   { borrower: "Allwyn International", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "Lenders under existing Senior Facilities Agreement", date: "Q1 2024", year: 2024, purpose: "Accordion facilities — Instant Win Gaming investment + GCP", source: "https://www.allwyn.com/investors-news/allwyn-international-a-s-announces-500-million-accordion-facility", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-02-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "Kofola ČeskoSlovensko (Pivovary CZ Group)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "ČSOB & Česká spořitelna (Clifford Chance advised lenders)", date: "Mar 2024", year: 2024, purpose: "51% acquisition of Pivovary CZ Group (Holba/Zubr/Litovel)", source: "https://www.cliffordchance.com/news/news/2024/03/clifford-chance-advises-eskoslovenska-obchodni-banka-and-eska-sp.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-03-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "CPI Property Group (3 office assets)", type: "Refinancing", amount: "€277m", currency: "EUR", value_eur: 277, lenders: "Bank financing", date: "2024", year: 2024, purpose: "Refi three office assets — debt management programme", source: "https://www.property-forum.eu/news/cpipg-gets-eur277-million-to-refinance-three-office-assets/18471", confidence: "Confirmed", tenor_y: 3, signed_iso: "2024-06-15", ing_status: "opportunity", coal_excluded: false },
   { borrower: "Accolade Industrial Fund", type: "Refinancing", amount: ">€200m", currency: "EUR", value_eur: 200, lenders: "Česká spořitelna", date: "Dec 2024", year: 2024, purpose: "Refi 4 CZ + PL industrial parks — 5y stable financing", source: "https://accolade.eu/en/news/170/accolade-refinanced-the-czech-and-polish-industrial-real-estate-portfolio-for-more-than-eur-200-million", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-12-15", ing_status: "opportunity", coal_excluded: false },
 
   // České Radiokomunikace (CRA) — CZK 5bn landmark refinancing, 7-bank syndicate (2024 backfill, found during Aug-2026 sweep)
-  { borrower: "České Radiokomunikace (CRA — Cordiant Digital Infrastructure)", type: "Refinancing", amount: "CZK 5,000m (~€200m)", currency: "CZK", value_eur: 200, lenders: "Komerční banka, Česká spořitelna, ING, Citibank, PKO Bank Polski, Raiffeisen Bank, Tatra banka (A&O Shearman + Clifford Chance advised)", date: "Aug 2024", year: 2024, purpose: "Landmark refinancing of broadcast/telecom infrastructure group (towers, data centres) — 7-bank syndicate", source: "https://ceelegalmatters.com/czech-republic/27291-a-o-shearman-and-clifford-chance-advise-on-cra-s-czk-5-billion-refinancing", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-08-15", ing_status: "incumbent", coal_excluded: false },
+  { borrower: "České Radiokomunikace (CRA — Cordiant Digital Infrastructure)", type: "Refinancing", amount: "CZK 5,000m (~€200m)", currency: "CZK", value_eur: 200, lenders: "Komerční banka, Česká spořitelna, WB, Citibank, PKO Bank Polski, Raiffeisen Bank, Tatra banka (A&O Shearman + Clifford Chance advised)", date: "Aug 2024", year: 2024, purpose: "Landmark refinancing of broadcast/telecom infrastructure group (towers, data centres) — 7-bank syndicate", source: "https://ceelegalmatters.com/czech-republic/27291-a-o-shearman-and-clifford-chance-advise-on-cra-s-czk-5-billion-refinancing", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-08-15", ing_status: "incumbent", coal_excluded: false },
 
   // ===== 2023 =====
   { borrower: "Heimstaden Bostad (Czech subsidiaries)", type: "Real Estate", amount: "€700m", currency: "EUR", value_eur: 700, lenders: "Bank syndicate (Dentons advised)", date: "Sep 2023", year: 2023, purpose: "Sustainability-linked bank financing — CZ residential portfolio", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2023/september/dentons-advises-heimstaden-bostad-on-eur-700-million-of-sustainability-linked-financing", confidence: "Confirmed", tenor_y: 5, signed_iso: "2023-09-15", ing_status: "opportunity", coal_excluded: false },
@@ -357,8 +357,8 @@ const DEALS = [
   { borrower: "Allwyn (Sazka Delta — OPAP minority)", type: "Acquisition/LBO", amount: "€327m + €600m bond", currency: "EUR", value_eur: 327, lenders: "Cash from balance sheet incl. €600m bond proceeds", date: "Feb 2022", year: 2022, purpose: "Acquired remaining Sazka minority — Allwyn stake in OPAP to 48.1%", source: "https://www.globenewswire.com/news-release/2022/02/17/2387312/0/en/Allwyn-increases-its-economic-interest-in-OPAP-to-48-1.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-02-15", ing_status: "opportunity", coal_excluded: false },
 
   // ===== 2021 =====
-  { borrower: "Tanemo a.s. (PPF SPV)", type: "Acquisition/LBO", amount: "€1,100m", currency: "EUR", value_eur: 1100, lenders: "Syndicate led by ING", date: "2021", year: 2021, purpose: "Certain-funds facility for Moneta Money Bank voluntary tender — first Czech VTO certain-funds loan", source: "https://www.prkpartners.com/files/013-czech-republic.pdf", confidence: "Confirmed", tenor_y: 1, signed_iso: "2021-06-15", ing_status: "incumbent", coal_excluded: false },
-  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "€1,000m", currency: "EUR", value_eur: 1000, lenders: "Bank of China, Commerzbank, Credit Suisse, HSBC, ING, KB (agent), SMBC, UniCredit CZ&SK as MLAB; Citibank as MLA", date: "Mar 2021", year: 2021, purpose: "3y unsecured term + revolving — refi other indebtedness + GCP", source: "https://www.bakermckenzie.com/en/newsroom/2021/04/eph-secures-a-eur-1-bn-loan", confidence: "Confirmed", tenor_y: 3, signed_iso: "2021-03-15", ing_status: "incumbent", coal_excluded: false },
+  { borrower: "Tanemo a.s. (PPF SPV)", type: "Acquisition/LBO", amount: "€1,100m", currency: "EUR", value_eur: 1100, lenders: "Syndicate led by WB", date: "2021", year: 2021, purpose: "Certain-funds facility for Moneta Money Bank voluntary tender — first Czech VTO certain-funds loan", source: "https://www.prkpartners.com/files/013-czech-republic.pdf", confidence: "Confirmed", tenor_y: 1, signed_iso: "2021-06-15", ing_status: "incumbent", coal_excluded: false },
+  { borrower: "EPH (Energetický a průmyslový holding)", type: "Syndicated", amount: "€1,000m", currency: "EUR", value_eur: 1000, lenders: "Bank of China, Commerzbank, Credit Suisse, HSBC, WB, KB (agent), SMBC, UniCredit CZ&SK as MLAB; Citibank as MLA", date: "Mar 2021", year: 2021, purpose: "3y unsecured term + revolving — refi other indebtedness + GCP", source: "https://www.bakermckenzie.com/en/newsroom/2021/04/eph-secures-a-eur-1-bn-loan", confidence: "Confirmed", tenor_y: 3, signed_iso: "2021-03-15", ing_status: "incumbent", coal_excluded: false },
 
   // ===== Newly added via alternative-source research (EGAP/ČEB, EIB/EBRD direct, JV disclosures, law-firm deals) =====
 
@@ -797,7 +797,7 @@ function certaintyPct(d) {
 }
 
 function dealsToCsv(deals) {
-  const rows = [["Borrower","Type","Certainty %","ING role","Amount","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
+  const rows = [["Borrower","Type","Certainty %","WB role","Amount","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
   deals.forEach(d => {
     rows.push([
       d.borrower,
@@ -902,8 +902,8 @@ function renderStats() {
 
   const html = [
     `<div class="stat"><div class="label">Live refi window (≤18m)</div><div class="value">${liveRefi.length}</div><div class="sub">€${(liveTotal/1000).toFixed(2)}bn EUR-eq</div></div>`,
-    `<div class="stat" style="border-left:3px solid #166534;"><div class="label">ING must-retain (defend)</div><div class="value">${mustRetain.length}</div><div class="sub">€${(mustRetainTotal/1000).toFixed(2)}bn at risk · ${incumbent.length} incumbent + ${participant.length} participant</div></div>`,
-    `<div class="stat" style="border-left:3px solid #b91c1c;"><div class="label">ING opportunity</div><div class="value">${oppCount.length}</div><div class="sub">€${(oppTotal/1000).toFixed(2)}bn — refi pipeline</div></div>`,
+    `<div class="stat" style="border-left:3px solid #166534;"><div class="label">WB must-retain (defend)</div><div class="value">${mustRetain.length}</div><div class="sub">€${(mustRetainTotal/1000).toFixed(2)}bn at risk · ${incumbent.length} incumbent + ${participant.length} participant</div></div>`,
+    `<div class="stat" style="border-left:3px solid #b91c1c;"><div class="label">WB opportunity</div><div class="value">${oppCount.length}</div><div class="sub">€${(oppTotal/1000).toFixed(2)}bn — refi pipeline</div></div>`,
     `<div class="stat"><div class="label">Total tracked</div><div class="value">${filtered.length}</div><div class="sub">${coalIncluded ? "incl. coal" : "coal excluded"}</div></div>`,
   ].join("");
   document.getElementById("stats").innerHTML = html;
@@ -1222,13 +1222,13 @@ function renderTable() {
     // Always rebuild so sort chips always take effect
     document.getElementById("table").innerHTML = `
       <div class="watchlist-section">
-        <h3 class="watchlist-title">🎯 ING opportunity — refi within 18 months
+        <h3 class="watchlist-title">🎯 WB opportunity — refi within 18 months
           <button class="csv-btn" id="csv-opportunity">⬇ CSV</button>
         </h3>
         <div id="wl-opportunity"></div>
       </div>
       <div class="watchlist-section">
-        <h3 class="watchlist-title">🛡️ Must-retain — ING incumbent or participant, maturity ≤18m
+        <h3 class="watchlist-title">🛡️ Must-retain — WB incumbent or participant, maturity ≤18m
           <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
         </h3>
         <div id="wl-incumbent"></div>
@@ -1254,7 +1254,7 @@ function renderTable() {
       { name: "Borrower", width: "17%" },
       { name: "Type", width: "9%", formatter: FMT_TYPE },
       { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
-      { name: "ING", width: "8%", formatter: FMT_ING },
+      { name: "WB", width: "8%", formatter: FMT_ING },
       { name: "Amount", width: "10%" },
       { name: "Maturity", width: "8%" },
       { name: "Months till maturity", width: "10%" },
@@ -1274,8 +1274,8 @@ function renderTable() {
       new gridjs.Grid({ columns: PIPE_COLS, data: rows.map(buildRow), sort: false, style: PIPE_STYLE }).render(el);
     }
 
-    makeGrid("wl-opportunity", opportunity, "No ING-opportunity refis within 18 months under current filters.");
-    makeGrid("wl-incumbent",   incumbent,   "No ING-incumbent or participant exposures maturing within 18 months.");
+    makeGrid("wl-opportunity", opportunity, "No WB-opportunity refis within 18 months under current filters.");
+    makeGrid("wl-incumbent",   incumbent,   "No WB-incumbent or participant exposures maturing within 18 months.");
     makeGrid("wl-all",         live,        "No deals maturing in the next 18 months under current filters.");
 
     const today = TODAY.toISOString().slice(0, 10);
@@ -1316,7 +1316,7 @@ function renderTable() {
     { name: "Borrower", width: "17%" },
     { name: "Type", width: "9%", formatter: FMT_TYPE },
     { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
-    { name: "ING", width: "8%", formatter: FMT_ING },
+    { name: "WB", width: "8%", formatter: FMT_ING },
     { name: "Amount", width: "10%" },
     { name: "Maturity", width: "8%" },
     { name: "Months till maturity", width: "10%" },
