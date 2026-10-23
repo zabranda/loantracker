@@ -244,6 +244,33 @@
     border: 1px solid #d6d2cb; border-radius: 6px;
     font-family: inherit;
   }
+  #lenderFilter {
+    width: min(420px, 100%);
+    padding: 8px 12px;
+    font-size: 13px;
+    border: 1px solid #d6d2cb;
+    border-radius: 6px;
+    font-family: inherit;
+    background: #fff;
+  }
+  .borrower-name { font-weight: 500; }
+  .borrower-purpose {
+    color: #6b6863;
+    font-size: 11px;
+    margin-top: 3px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .conf-label { margin-left: 4px; font-size: 11px; color: #3f3f3f; }
+  .st-outstanding { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
+  .st-refinanced { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
+  .st-repaid { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+  .st-not_a_bank_loan { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
+  .st-memo { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
+  .urg-unknown { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; }
   .status-msg { font-size: 12px; color: #6b6863; }
   .status-msg.error { color: #b91c1c; }
 </style>
@@ -251,9 +278,10 @@
 <body>
 <div class="wrap">
   <h1>Czech Corporate Loans — Refi Pipeline</h1>
-  <div class="sub">Refi-pipeline view of Czech corporate facilities. Maturity-based prioritisation; WB role highlighted; coal excluded. As of <span id="asof"></span>. <span id="buildtag" class="build-tag"></span></div>
+  <div class="sub">Refi-pipeline view of Czech corporate facilities. The 18-month lists count outstanding bank loans only. WB role tags are illustrative personal labels on a public page. Data vintage <span id="asof"></span> <span id="buildtag" class="build-tag"></span>. Latest dated row <span id="latestRow"></span>. Window counted from <span id="viewed"></span>.</div>
 
   <div class="stats" id="stats"></div>
+  <div class="sub" id="statsNote"></div>
 
   <div class="panel">
     <h2>View</h2>
@@ -274,6 +302,8 @@
       </button>
       <div class="company-filter-dropdown" id="groupFilterDropdown" hidden role="listbox"></div>
     </div>
+    <h2 style="margin-top: 16px;">Filter by lender</h2>
+    <input id="lenderFilter" type="search" placeholder="Lender name contains…" autocomplete="off" aria-label="Filter by lender" />
     <h2 style="margin-top: 16px;">Sort</h2>
     <div class="filters" id="sortChips"></div>
     <h2 style="margin-top: 16px;">Filter by deal type</h2>
@@ -284,18 +314,21 @@
   </div>
 
   <div class="panel">
-    <h2>Confirmed transactions</h2>
+    <h2 id="listHeading">Outstanding bank loans in the refi window</h2>
     <div id="table"></div>
   </div>
 
   <div class="footer">
-    Curated from public sources (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie, plus issuer press releases from Allwyn / CTP / EPH / Penta / Accolade / CPI Property Group / ČEZ). Coverage is best-effort and not exhaustive — private club deals not publicly announced are excluded. Not investment advice.
+    Curated from public sources (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie, plus issuer press releases from Allwyn / CTP / EPH / Penta / Accolade / CPI Property Group / ČEZ). Coverage is best-effort and not exhaustive — private club deals not publicly announced are excluded. WB role tags (incumbent, participant, opportunity) are illustrative personal labels, not a confirmed lender role; this page is public. Not investment advice.
   </div>
 </div>
 
 <script>
 // ---- Curated baseline deal list (2021 – Q1 2026) ----
-// Each deal: { borrower, type, amount, currency, value_eur (mm), lenders, date, year, purpose, source }
+// Each deal: borrower, type, amount, currency, value_eur (EUR millions), lenders, date, year,
+// purpose, source, confidence, tenor_y, wb_status, coal_excluded.
+// status / instrument / successor are filled from ROW_FACTS (default: outstanding bank loan).
+// A year-only date does not invent a maturity month.
 const DEALS = [
   // ===== 2026 =====
   // Allwyn — €500m senior notes + €100m EUR TLB add-on funding OPAP minority cash-exit (found via Allwyn IR sweep)
@@ -346,7 +379,8 @@ const DEALS = [
   // ===== 2024 =====
   // Allwyn — debut USD institutional TLB
   { borrower: "Allwyn International (Allwyn Entertainment Financing US LLC)", type: "Refinancing", amount: "USD 450m debut TLB (~€415m)", currency: "USD", value_eur: 415, lenders: "Institutional TLB lender group (SOFR+225bps, 7y)", date: "31 May 2024", year: 2024, purpose: "Debut USD institutional term loan B — redeems €400m senior secured FRN due 2028 + GCP", source: "https://www.allwyn.com/investors-news/allwyn-announces-the-successful-syndication-of-usd-450-million-debut-term-loan-facility", confidence: "Confirmed", tenor_y: 7, signed_iso: "2024-05-31", wb_status: "opportunity", coal_excluded: false },
-  { borrower: "ČEZ, a.s.", type: "Acquisition/LBO", amount: "€840m", currency: "EUR", value_eur: 840, lenders: "2y term loan syndicate: Barclays, CaixaBank, Citigroup, Commerzbank, Intesa Sanpaolo, SMBC, Komerční banka / Société Générale (facility agent) (W&C advised arrangers)", date: "Mar 2024", year: 2024, purpose: "Bridge-to-bond facility for 55.21% GasNet stake (€846.5m EV)", source: "https://www.cez.cz/en/investors/inside-information/cez-a.s.-successfully-signed-a-loan-agreement-for-840-mil.-eur-to-finance-the-acquisition-of-a-55.21-stake-in-gasnet-189803", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-03-15", wb_status: "opportunity", coal_excluded: false },
+  // 2-year bridge (the lender line says "2y term loan"), signed Mar 2024 → maturity Mar 2026, now past.
+  { borrower: "ČEZ, a.s.", type: "Acquisition/LBO", amount: "€840m", currency: "EUR", value_eur: 840, lenders: "2y term loan syndicate: Barclays, CaixaBank, Citigroup, Commerzbank, Intesa Sanpaolo, SMBC, Komerční banka / Société Générale (facility agent) (W&C advised arrangers)", date: "Mar 2024", year: 2024, purpose: "Bridge-to-bond facility for 55.21% GasNet stake (€846.5m EV)", source: "https://www.cez.cz/en/investors/inside-information/cez-a.s.-successfully-signed-a-loan-agreement-for-840-mil.-eur-to-finance-the-acquisition-of-a-55.21-stake-in-gasnet-189803", confidence: "Confirmed", tenor_y: 2, signed_iso: "2024-03-15", wb_status: "opportunity", coal_excluded: false },
   { borrower: "ČEPS a.s. (transmission system operator)", type: "Syndicated", amount: "CZK 24,000m (~€960m)", currency: "CZK", value_eur: 960, lenders: "Česká spořitelna, ČSOB, Komerční banka (Dentons advised lenders)", date: "2024", year: 2024, purpose: "Corporate facility — TSO investments", source: "https://ceelegalmatters.com/dentons", confidence: "Confirmed", tenor_y: 12, signed_iso: "2024-06-15", wb_status: "opportunity", coal_excluded: false },
   { borrower: "CTP N.V.", type: "Syndicated", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "13-bank syndicate; SMBC & WB coordinators (SLL, 4.7%)", date: "Jun 2024", year: 2024, purpose: "5y unsecured SLL — GCP including developments", source: "https://www.businesswire.com/news/home/20240627835705/en/CTP-announces-the-signing-of-a-%E2%82%AC500-million-unsecured-syndicated-sustainability-linked-loan-facility-and-%E2%82%AC500-million-bond-tender-offer", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-06-15", wb_status: "incumbent", coal_excluded: false },
   { borrower: "Allwyn International", type: "Refinancing", amount: "€500m", currency: "EUR", value_eur: 500, lenders: "Lenders under existing Senior Facilities Agreement", date: "Q1 2024", year: 2024, purpose: "Accordion facilities — Instant Win Gaming investment + GCP", source: "https://www.allwyn.com/investors-news/allwyn-international-a-s-announces-500-million-accordion-facility", confidence: "Confirmed", tenor_y: 5, signed_iso: "2024-02-15", wb_status: "opportunity", coal_excluded: false },
@@ -369,20 +403,15 @@ const DEALS = [
   { borrower: "Allwyn International (ex-Sazka)", type: "Acquisition/LBO", amount: "€1,600m", currency: "EUR", value_eur: 1600, lenders: "Bank syndicate; UniCredit Global Coordinator (Clifford Chance / A&O)", date: "Nov 2022", year: 2022, purpose: "Senior Facilities Agreement — refi €623m loan + Camelot UK acquisition + GCP", source: "https://www.cliffordchance.com/news/news/2022/11/clifford-chance-advises-allwyn-on-its-1-6bn-senior-facilities-a.html", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-11-15", wb_status: "opportunity", coal_excluded: false },
   { borrower: "Cube Infrastructure Fund III (MVV Energie CZ)", type: "Acquisition/LBO", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Kommunalkredit Austria + Komerční banka (A&O Shearman advised)", date: "Aug–Dec 2022", year: 2022, purpose: "Syndicated leveraged infra acquisition financing — Czech district heating", source: "https://www.aoshearman.com/en/news/allen-overy-advises-on-the-financing-for-acquisition-of-mvv-energie-cz", confidence: "Confirmed", tenor_y: 7, signed_iso: "2022-12-15", wb_status: "opportunity", coal_excluded: false },
   { borrower: "Kofola ČeskoSlovensko", type: "Refinancing", amount: "up to CZK 1,000m new line + refi", currency: "CZK", value_eur: 40, lenders: "Česká spořitelna & ČSOB", date: "Jul 2022", year: 2022, purpose: "Refi to 60/40 EUR/CZK structure + new investment line", source: "https://ceelegalmatters.com/in-house/20933-deal-5-kofola-cfo-martin-pisklak-on-the-group-s-refinancing", confidence: "Confirmed", tenor_y: 5, signed_iso: "2022-07-15", wb_status: "opportunity", coal_excluded: false },
-  // NOTE (Aug 2026 review): this was an equity stake purchase, cash/bond-funded — not itself
-  // a facility with an ongoing maturity. The bond that helped fund it is now tracked as its own
-  // entry below ("SAZKA Group / Allwyn Entertainment Financing... €600m combined notes"); tenor_y
-  // set low here so this historical entry doesn't linger as a phantom live refi "opportunity".
+  // Equity stake purchase funded by cash and the Feb 2022 bond tap. Not a bank loan.
   { borrower: "Allwyn (Sazka Delta — OPAP minority)", type: "Acquisition/LBO", amount: "€327.4m", currency: "EUR", value_eur: 327, lenders: "Cash from balance sheet + proceeds of SAZKA Group's Feb 2022 €600m bond tap (see separate bond entry)", date: "Feb 2022", year: 2022, purpose: "Acquired remaining Sazka Delta minority (from Yeonama Holdings) — Allwyn's economic interest in OPAP increased from 41.2% to 48.1%", source: "https://www.globenewswire.com/news-release/2022/02/17/2387312/0/en/Allwyn-increases-its-economic-interest-in-OPAP-to-48-1.html", confidence: "Confirmed", tenor_y: 1, signed_iso: "2022-02-15", wb_status: "opportunity", coal_excluded: false },
 
   // SAZKA Group / Allwyn — Feb 2022 €600m combined bond offering (funded part of the OPAP stake buy above).
-  // Verified chain: 5 Feb 2020 SAZKA issued €300m 3.875% notes due 2027 (pre-window, not tracked) →
-  // 9 Feb 2022 taps additional €200m of the same 2027 notes (combined €500m) + issues new €400m FRN
-  // due 2028 (margin 4.125%) — combined €600m priced together. The €500m 3.875%/2027 tranche was fully
-  // redeemed via the Aug 2025 €600m notes refinancing (see that entry) — that piece is closed. The €400m
-  // FRN due 2028 tranche was NOT mentioned in the Aug 2025 redemption notice and appears to remain
-  // outstanding — i.e. a real, still-live ~2028 refinancing need, not phantom.
-  { borrower: "SAZKA Group / Allwyn Entertainment Financing (UK) plc", type: "Refinancing", amount: "€200m tap of 3.875% notes due 2027 (→€500m combined w/ 2020 issue, since redeemed Aug 2025) + €400m new FRN due 2028 (margin 4.125%, appears still outstanding)", currency: "EUR", value_eur: 600, lenders: "Bond investors (144A/Reg S) — Milbank advised", date: "9 Feb 2022", year: 2022, purpose: "Combined €600m offering; proceeds partly funded the Sazka Delta/OPAP stake increase to 48.1% (see entry above) + GCP", source: "https://www.milbank.com/en/news/milbank-advises-sazka-group-on-its-euro600-million-offering.html", confidence: "Confirmed", tenor_y: 6, signed_iso: "2022-02-09", wb_status: "opportunity", coal_excluded: false },
+  // Chain: 5 Feb 2020 €300m 3.875% notes due 2027 (pre-window) → 9 Feb 2022 taps €200m of those 2027s
+  // and issues €400m FRN due 2028. The 2027s (including this tap) were redeemed by the Aug 2025 notes.
+  // The €400m FRN due 2028 was redeemed by the May 2024 USD 450m TLB (that row's purpose says so).
+  // Both pieces are closed, and the row is a bond, so it stays out of the bank-loan hunt.
+  { borrower: "SAZKA Group / Allwyn Entertainment Financing (UK) plc", type: "Refinancing", amount: "€200m tap of 3.875% notes due 2027 (redeemed Aug 2025) + €400m FRN due 2028 (redeemed May 2024 by the USD 450m TLB)", currency: "EUR", value_eur: 600, lenders: "Bond investors (144A/Reg S) — Milbank advised", date: "9 Feb 2022", year: 2022, purpose: "Combined €600m bond offering; proceeds partly funded the Sazka Delta/OPAP stake increase to 48.1% (see entry above) + GCP. Both tranches later refinanced.", source: "https://www.milbank.com/en/news/milbank-advises-sazka-group-on-its-euro600-million-offering.html", confidence: "Confirmed", tenor_y: 6, signed_iso: "2022-02-09", wb_status: "opportunity", coal_excluded: false },
 
   // ===== 2021 =====
   { borrower: "Tanemo a.s. (PPF SPV)", type: "Acquisition/LBO", amount: "€1,100m", currency: "EUR", value_eur: 1100, lenders: "Syndicate led by WB", date: "2021", year: 2021, purpose: "Certain-funds facility for Moneta Money Bank voluntary tender — first Czech VTO certain-funds loan", source: "https://www.prkpartners.com/files/013-czech-republic.pdf", confidence: "Confirmed", tenor_y: 1, signed_iso: "2021-06-15", wb_status: "incumbent", coal_excluded: false },
@@ -529,8 +558,7 @@ const DEALS = [
   // Genesis Capital / AV MEDIA
   { borrower: "Genesis Capital / AV MEDIA", type: "Acquisition/LBO", amount: "n/d (est. €30–50m for CZ AV-integration leader)", currency: "EUR", value_eur: 40, lenders: "Genesis-side financing under GPEF IV", date: "2023", year: 2023, purpose: "Majority stake acquisition of AV MEDIA (AV systems integration + events tech)", source: "https://www.genesis.cz/en/private-equity/news", confidence: "Inferred", tenor_y: 5, signed_iso: "2023-06-15", wb_status: "opportunity", coal_excluded: false },
 
-  // Genesis Capital / Slevomat — debut deal of GPEF V
-  { borrower: "Genesis Capital (GPEF V) / Slevomat Group", type: "Acquisition/LBO", amount: "n/d (debut deal of €270m GPEF V fund)", currency: "EUR", value_eur: 50, lenders: "Genesis-side financing — GPEF V fund (€270m total commitments)", date: "2024", year: 2024, purpose: "Acquisition of Slevomat Group (CZ leading e-commerce voucher platform)", source: "https://www.genesis.cz/en/private-equity/our-portfolio", confidence: "Inferred", tenor_y: 5, signed_iso: "2024-06-15", wb_status: "opportunity", coal_excluded: false },
+  // Genesis / Slevomat: the inferred 2024 placeholder duplicated the Nov 2025 majority close below.
 
   // PFX Group (Genesis-owned) / Cine Chromatix VFX
   { borrower: "Genesis Capital / PFX Group (Cine Chromatix VFX add-on)", type: "Acquisition/LBO", amount: "n/d (smaller add-on; lifted PFX to ~250 staff)", currency: "EUR", value_eur: 30, lenders: "PFX Group / Genesis-side financing (specific facility not disclosed)", date: "2024", year: 2024, purpose: "Acquisition of German VFX division of Cine Chromatix — PFX's CEE post-production roll-up", source: "https://www.genesis.cz/en/private-equity/news", confidence: "Inferred", tenor_y: 5, signed_iso: "2024-06-15", wb_status: "opportunity", coal_excluded: false },
@@ -693,6 +721,82 @@ const DEALS = [
   { borrower: "Genesis Capital (GPEF V) / Slevomat Group", type: "Acquisition/LBO", amount: "n/d (debut deal of €270m GPEF V; CZ/SK leading travel + leisure platform)", currency: "EUR", value_eur: 70, lenders: "Genesis-side acquisition financing (Dentons advised buyer)", date: "Nov 2025", year: 2025, purpose: "Majority stake in Slevomat (online travel/leisure marketplace, CZ/SK)", source: "https://www.dentons.com/en/about-dentons/news-events-and-awards/news/2025/november/dentons-advised-genesis-capital-on-the-acquisition-of-a-majority-stake-in-the-slevomat-group", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-11-15", wb_status: "opportunity", coal_excluded: false },
 ];
 
+// Rows that are not a plain outstanding bank loan, plus ids other rows point at.
+// Match is borrower + amount + year. Unlisted rows default to outstanding / bank_loan.
+const ROW_FACTS = [
+  { borrower: "Allwyn International (ex-Sazka)", amount: "€1,600m", year: 2022, id: "allwyn-2022-11-sfa", status: "refinanced", instrument: "bank_loan", successor: "allwyn-2025-07-sfa", status_note: "Nov 2022 €1.6bn SFA. The Jul 2025 facility refinances the €1.7bn syndicated facility." },
+  { borrower: "Allwyn International", amount: "€335m", year: 2023, id: "allwyn-2023-accordion", status: "refinanced", instrument: "bank_loan", successor: "allwyn-2025-07-sfa", status_note: "Accordion under the Nov 2022 SFA, taken out by the Jul 2025 refinancing." },
+  { borrower: "Allwyn International", amount: "€500m", year: 2024, id: "allwyn-2024-accordion", status: "refinanced", instrument: "bank_loan", successor: "allwyn-2025-07-sfa", status_note: "Accordion under the Nov 2022 SFA, taken out by the Jul 2025 refinancing." },
+  { borrower: "Allwyn International (ex-Sazka)", amount: "€2,150m", year: 2025, id: "allwyn-2025-07-sfa", status: "outstanding", instrument: "bank_loan" },
+  { borrower: "SAZKA Group / Allwyn Entertainment Financing (UK) plc", amount: "€200m tap of 3.875% notes due 2027 (redeemed Aug 2025) + €400m FRN due 2028 (redeemed May 2024 by the USD 450m TLB)", year: 2022, id: "allwyn-2022-02-notes", status: "refinanced", instrument: "bond", successor: "allwyn-2024-05-usd-tlb+allwyn-2025-08-notes", status_note: "Bond. 2027s redeemed by the Aug 2025 notes; €400m FRN due 2028 redeemed by the May 2024 USD TLB." },
+  { borrower: "Allwyn International (Allwyn Entertainment Financing US LLC)", amount: "USD 450m debut TLB (~€415m)", year: 2024, id: "allwyn-2024-05-usd-tlb", status: "outstanding", instrument: "bank_loan" },
+  { borrower: "Allwyn International (Allwyn Entertainment Financing UK plc)", amount: "€600m senior secured notes, 4.125% due 2031 (upsized from €500m)", year: 2025, id: "allwyn-2025-08-notes", status: "not_a_bank_loan", instrument: "bond", status_note: "Senior secured notes. Partially redeemed other Allwyn notes; this row is itself a bond." },
+  { borrower: "Allwyn International (Allwyn Entertainment Financing UK plc)", amount: "€665m 7.250% notes due 2030 + USD 700m (~€644m) 7.875% notes due 2029", year: 2023, id: "allwyn-2023-04-notes", status: "not_a_bank_loan", instrument: "bond", status_note: "Debut notes. Aug 2025 partially redeemed USD 70m of the 2029s and €66.5m of the 2030s." },
+  { borrower: "Allwyn International (Allwyn Entertainment Financing UK plc)", amount: "€500m senior secured notes + €100m EUR TLB add-on (€600m combined)", year: 2026, id: "allwyn-2026-02-mixed", status: "outstanding", instrument: "mixed", bank_value_eur: 100, nonloan_value_eur: 500, status_note: "€100m EUR TLB add-on is the bank piece. €500m senior secured notes are excluded from bank commitments." },
+  { borrower: "Allwyn (Sazka Delta — OPAP minority)", amount: "€327.4m", year: 2022, id: "allwyn-2022-02-opap-stake", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Equity stake purchase funded by cash and the Feb 2022 bond, not a loan." },
+  { borrower: "ČEZ, a.s.", amount: "€840m", year: 2024, id: "cez-2024-03-gasnet-bridge", status: "repaid", instrument: "bank_loan", status_note: "2-year bridge signed Mar 2024, so maturity is Mar 2026, which is past this build." },
+  { borrower: "Czech Grid Holdings (GasNet) — Macquarie/BCI/Allianz consortium SOLD to ČEZ", amount: "€846.5m for 55.21% (€4bn EV)", year: 2024, id: "gasnet-2024-sale", status: "not_a_bank_loan", instrument: "ma_ev", no_own_maturity: true, status_note: "Sale-side enterprise value. The ČEZ buy-side bridge is a separate row." },
+  { borrower: "TotalEnergies / EPH 50% Western European flexible-power platform JV", amount: "€10,600m EV (€5,100m to EPH in TotalEnergies shares)", year: 2025, id: "total-eph-2025-shares", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Share-for-asset deal. No senior bank debt disclosed at JV level." },
+  { borrower: "e& (Etisalat / UAE) / PPF Telecom Group CEE", amount: "€2,250m upfront + up to €350m earnout (~€2.6bn)", year: 2024, id: "eand-ppf-2024-cash", status: "not_a_bank_loan", instrument: "ma_ev", no_own_maturity: true, status_note: "Cash purchase of a controlling stake. Not a bank facility." },
+  { borrower: "Draslovka Holding (BPD Partners — Pudil/Bobela/Dobrovský)", amount: "USD 150m preferred equity", year: 2022, id: "draslovka-2022-oaktree-pref", status: "not_a_bank_loan", instrument: "preferred_equity", no_own_maturity: true, status_note: "Oaktree preferred equity, not a bank loan." },
+  { borrower: "SAZKA Entertainment AG (KKCG / Sazka)", amount: "€500m", year: 2021, id: "sazka-2021-apollo-pe", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Apollo direct private-equity investment, not a bank loan." },
+  { borrower: "Hartenberg Capital / enterstore platform (e-commerce roll-up)", amount: "€560m equity AUM (platform; 58 cumulative acquisitions through 2024)", year: 2024, id: "hartenberg-enterstore-aum", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Platform equity AUM, not a facility." },
+  { borrower: "BlackRock GRP III / SOLEK Group (200 MW Chile framework)", amount: "n/d (200 MW build-out commitment)", year: 2022, id: "blackrock-solek-2022", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Develop-and-sell framework with a fund buyer, not a bank loan." },
+  { borrower: "CTP N.V.", amount: "€500m", year: 2024, id: "ctp-2024-06-sll", status: "refinanced", instrument: "bank_loan", successor: "ctp-2025-07-sll", status_note: "2024 SLL refinanced by the Jul 2025 €500m SLL." },
+  { borrower: "CTP N.V.", amount: "€500m", year: 2025, id: "ctp-2025-07-sll", status: "outstanding", instrument: "bank_loan" },
+  { borrower: "EPH (Energetický a průmyslový holding)", amount: "€1,000m", year: 2021, id: "eph-2021-03", status: "refinanced", instrument: "bank_loan", successor: "eph-2023-06", status_note: "Replaced by the Jun 2023 €3.745bn term and revolving facilities." },
+  { borrower: "EPH (Energetický a průmyslový holding)", amount: "€3,745m", year: 2023, id: "eph-2023-06", status: "outstanding", instrument: "bank_loan" },
+  { borrower: "CPI Property Group (IMMOFINANZ takeover bridge)", amount: "€2,500m", year: 2021, id: "cpi-2021-11-immofinanz-bridge", status: "refinanced", instrument: "bank_loan", successor: "cpi-2022-09-forward", status_note: "2-year takeover bridge refinanced by the Sep 2022 forward-start." },
+  { borrower: "CPI Property Group (S IMMO takeover bridge)", amount: "€1,250m", year: 2022, id: "cpi-2022-simmo-bridge", status: "refinanced", instrument: "bank_loan", successor: "cpi-2022-09-forward", status_note: "2-year takeover bridge refinanced by the Sep 2022 forward-start." },
+  { borrower: "CPI Property Group", amount: "€1,852m", year: 2022, id: "cpi-2022-09-forward", status: "refinanced", instrument: "bank_loan", successor: "cpi-2023-11-bridge", status_note: "Forward-start of the IMMOFINANZ / S IMMO bridges. Replaced by the Nov 2023 €635m bridge; a 3-year tenor from Sep 2022 would also have run off by Sep 2025." },
+  { borrower: "CPI Property Group", amount: "€635m", year: 2023, id: "cpi-2023-11-bridge", status: "outstanding", instrument: "bank_loan" },
+  { borrower: "CPI Property Group (revolving credit facility)", amount: "€500m (increased from €450m)", year: 2026, id: "cpi-2026-rcf", status: "outstanding", instrument: "bank_loan", maturity_ym: "2029-03", status_note: "Signing month is only known as 2026. The results release states maturity of Mar 2029." },
+  { borrower: "Czechoslovak Group (CSG)", amount: "USD 2,150m (~€2,000m)", year: 2024, id: "csg-2024-12-kinetic", status: "refinanced", instrument: "bank_loan", successor: "csg-2026-07", status_note: "Kinetic acquisition debt consolidated into the Jul 2026 CSG facility." },
+  { borrower: "Czechoslovak Group (CSG) N.V.", amount: "€3,062m (€717m TLB + €850m TLC + €1.3bn RCF + $225m tranche)", year: 2026, id: "csg-2026-07", status: "outstanding", instrument: "bank_loan" },
+  { borrower: "ENERGO-PRO (Xeal Spain — Galicia hydropower)", amount: "€300m bridge", year: 2023, id: "energopro-2023-xeal-bridge", status: "refinanced", instrument: "bank_loan", successor: "ext:green-eurobonds", status_note: "Bridge subsequently refinanced via green Eurobonds, which are not a separate row." },
+  { borrower: "CETIN Group N.V. (PPF / GIC telecom infra)", amount: "€1,650m", year: 2021, id: "cetin-2021-08", status: "outstanding", instrument: "bank_loan" },
+  { borrower: "CETIN Group N.V. (RCF utilization)", amount: "€197m", year: 2023, id: "cetin-2023-12-draw", status: "outstanding", instrument: "bank_loan", separate_facility: false, no_own_maturity: true, status_note: "Drawdown under the €1.65bn CETIN facility, not an extra commitment and not its own maturity." },
+  { borrower: "CETIN Group N.V. (term loan early repayment)", amount: "€417m", year: 2024, id: "cetin-2024-term-repaid", status: "repaid", instrument: "bank_loan", no_own_maturity: true, status_note: "Early repayment of the term loan, not a live facility." },
+  { borrower: "Tanemo a.s. (PPF SPV)", amount: "€1,100m", year: 2021, id: "tanemo-2021-vto", status: "repaid", instrument: "bank_loan", status_note: "1-year certain-funds facility for the 2021 Moneta tender. Long past maturity." },
+  { borrower: "Emma Alpha Holding (Emma Capital / Šmejc)", amount: "€100m (8.1% indirect stake to J&T ARCH Investments)", year: 2024, id: "emma-alpha-2024-equity", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Minority equity stake, described on the row as a quasi-credit instrument rather than a bank loan." },
+  { borrower: "Shimadzu Corporation / Tescan Group (Carlyle exit)", amount: "USD 850m EV", year: 2026, id: "shimadzu-2026-tescan-ev", status: "not_a_bank_loan", instrument: "ma_ev", no_own_maturity: true, status_note: "Headline enterprise value of the sale. No bank facility is disclosed." },
+  { borrower: "France Retail Holdings (EP / Fimalac / Attestor) — Casino Group", amount: "€1,200m new money + €925m capital increase (€6.1bn debt reduction)", year: 2024, id: "casino-2024-equity", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "New money and capital increase from the equity consortium, not a bank syndicate." },
+  { borrower: "International Media Invest (CMI/Křetínský) / Editis", amount: "€653m", year: 2023, id: "editis-2023-acquisition", status: "not_a_bank_loan", instrument: "ma_ev", no_own_maturity: true, status_note: "Acquisition consideration described as a Vivendi receivable, not a bank loan." },
+  { borrower: "Sev.en Global Investments / Delta Electricity (Vales Point, Australia)", amount: "~AUD 1bn / USD ~700m est", year: 2022, id: "seven-2022-vales-point", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Row describes equity-heavy financing, and banks were reportedly reluctant on the coal asset." },
+  { borrower: "Sev.en Global Investments / Mong Duong 2 (Vietnam, 51%)", amount: "n/d (1.2 GW plant, 'Europe's largest energy investment in Vietnam')", year: 2023, id: "seven-2023-mong-duong", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Row describes largely equity financing." },
+  { borrower: "Sev.en Global Investments / Mong Duong 2 (Vietnam, +19% to 70%)", amount: "n/d", year: 2024, id: "seven-2024-mong-duong-topup", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Follow-on equity stake, not a bank loan." },
+  { borrower: "Sev.en Global Investments / Golden Eagle Land Company (Illinois Basin, US)", amount: "n/d (2bn+ tons recoverable thermal coal reserves)", year: 2023, id: "seven-2023-illinois", status: "not_a_bank_loan", instrument: "equity", no_own_maturity: true, status_note: "Row describes largely equity financing." },
+  { borrower: "BHM Group / Alvo (mezzanine)", amount: "n/d", year: 2024, id: "bhm-alvo-mezz", status: "not_a_bank_loan", instrument: "mezzanine", no_own_maturity: true, status_note: "BHM provided the mezzanine itself. Not a bank loan." },
+];
+const ROW_FACT_ERRORS = [];
+function applyRowFacts() {
+  const copyKeys = ["id", "status", "instrument", "successor", "bank_value_eur", "nonloan_value_eur", "no_own_maturity", "maturity_ym", "status_note", "separate_facility"];
+  ROW_FACTS.forEach(fact => {
+    const hits = DEALS.filter(d => d.borrower === fact.borrower && d.amount === fact.amount && d.year === fact.year);
+    if (hits.length !== 1) {
+      ROW_FACT_ERRORS.push((fact.id || fact.borrower) + " matched " + hits.length);
+      return;
+    }
+    copyKeys.forEach(k => { if (fact[k] !== undefined) hits[0][k] = fact[k]; });
+  });
+  DEALS.forEach((d, i) => {
+    if (!d.id) d.id = "row-" + i;
+    if (!d.status) d.status = "outstanding";
+    if (!d.instrument) d.instrument = "bank_loan";
+    if (d.separate_facility === undefined) d.separate_facility = true;
+  });
+  const ids = new Set(DEALS.map(d => d.id));
+  DEALS.forEach(d => {
+    if (!d.successor) return;
+    d.successor.split("+").forEach(raw => {
+      const id = raw.trim();
+      if (!id || id.startsWith("ext:")) return;
+      if (!ids.has(id)) ROW_FACT_ERRORS.push(d.id + " successor missing " + id);
+    });
+  });
+}
+applyRowFacts();
+
 const TYPE_BADGE = {
   "Syndicated":      { cls: "badge-syn",     q: 'Czech "syndicated loan" 2026 borrower facility signed' },
   "Acquisition/LBO": { cls: "badge-lbo",     q: 'Czech acquisition financing 2026 LBO buyout loan' },
@@ -703,6 +807,7 @@ const TYPE_BADGE = {
   "Intermediated":   { cls: "badge-intermediated", q: 'Czech intermediated EIB EBRD bank facility' },
 };
 
+const LENDER_KEY = "cz_loans_lender_v1";
 const STATE_KEY = "cz_loans_filter_v2";
 const YEAR_STATE_KEY = "cz_loans_year_filter_v1";
 const VIEW_KEY = "cz_loans_view_v1";
@@ -719,6 +824,8 @@ let companyFilter = (() => {
   catch { return []; }
 })();
 let groupFilter = localStorage.getItem(GROUP_KEY) || "";
+let lenderQueryRaw = localStorage.getItem(LENDER_KEY) || "";
+let lenderQuery = lenderQueryRaw.trim().toLowerCase();
 
 // ---- Group definitions (parent → substring patterns in borrower name) ----
 const DEAL_GROUPS = {
@@ -767,43 +874,92 @@ function companyKey(borrower) {
 
 const TODAY = new Date();
 const REFI_WINDOW_MONTHS = 18;
-// Bump this string on every content/logic change so it's obvious in the browser
-// whether the page you're looking at is the version you expect — compare it (and
-// the "Total tracked" deal count in the stats panel) against what was just pushed.
-const BUILD_TAG = "build 2026-08-04.2 · 139 deals · Sazka/OPAP bond chain traced (2020→2022→2025)";
+// Vintage of this file. The on-page "as of" date comes from here, not from the viewer's clock.
+const DATA_AS_OF = "2026-10-23";
+const BUILD_TAG = "build " + DATA_AS_OF + ".1 · " + DEALS.length + " deals · outstanding bank loans only in the 18-month lists";
 document.addEventListener("DOMContentLoaded", () => {
   const e = document.getElementById("asof");
-  if (e) e.textContent = TODAY.toISOString().slice(0, 10);
+  if (e) e.textContent = DATA_AS_OF;
   const bt = document.getElementById("buildtag");
   if (bt) bt.textContent = "· " + BUILD_TAG;
+  const viewed = document.getElementById("viewed");
+  if (viewed) viewed.textContent = TODAY.toISOString().slice(0, 10);
+  const latest = document.getElementById("latestRow");
+  if (latest) latest.textContent = latestDatedLabel();
+  const lenderInput = document.getElementById("lenderFilter");
+  if (lenderInput) {
+    lenderInput.value = lenderQueryRaw;
+    lenderInput.addEventListener("input", (ev) => {
+      lenderQueryRaw = ev.target.value;
+      lenderQuery = lenderQueryRaw.trim().toLowerCase();
+      localStorage.setItem(LENDER_KEY, lenderQueryRaw);
+      render();
+    });
+  }
 
   setupCompanyFilterToggle();
   populateCompanyDropdown();
   setupGroupFilterToggle();
 });
 
-function monthsBetween(d1, d2) {
-  return (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+const MONTH_INDEX = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+function monthIndex(name) {
+  if (!name) return null;
+  const idx = MONTH_INDEX[String(name).slice(0, 3).toLowerCase()];
+  return idx == null ? null : idx;
 }
+// Month is known only when the source states one. A bare year, a quarter, or a range
+// stays unknown — do not invent 15 June from signed_iso.
+function parseDealDate(dateStr) {
+  const s = String(dateStr || "").trim();
+  const monthName = "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*";
+  let m = s.match(new RegExp("^(\\d{1,2})\\s+" + monthName + "\\s+(\\d{4})\\b", "i"));
+  if (m) return { year: +m[3], month: monthIndex(m[2]), day: +m[1], precision: "day" };
 
+  m = s.match(new RegExp(monthName + "\\s+(\\d{4})\\s*\\(?\\s*(?:close|closed|closing)\\b", "i"));
+  if (m) return { year: +m[2], month: monthIndex(m[1]), day: null, precision: "month" };
+
+  const vague = /[–—]|\d{4}\s*[-–—]\s*\d|\bQ[1-4]\b|\bH[12]\b|\bEarly\b|\bSpring\b|\bAutumn\b|\bWinter\b|\bongoing\b|\bannounce/i.test(s);
+  if (!vague) {
+    m = s.match(new RegExp("^" + monthName + "\\s+(\\d{4})\\b", "i"));
+    if (m) return { year: +m[2], month: monthIndex(m[1]), day: null, precision: "month" };
+  }
+  const y = s.match(/(\d{4})/);
+  return { year: y ? +y[1] : null, month: null, day: null, precision: "year" };
+}
+function latestDatedLabel() {
+  let best = null;
+  DEALS.forEach(d => {
+    const p = parseDealDate(d.date);
+    if (!p || p.precision === "year" || p.month == null || p.year == null) return;
+    const t = Date.UTC(p.year, p.month, p.day || 1);
+    if (!best || t > best.t) best = { t, label: d.date };
+  });
+  return best ? best.label : "n/a";
+}
 function deriveMaturity(deal) {
-  const signed = new Date(deal.signed_iso);
-  const m = new Date(signed);
-  m.setFullYear(m.getFullYear() + (deal.tenor_y || 5));
-  return m;
+  if (!deal || deal.no_own_maturity) return null;
+  if (deal.maturity_ym) {
+    const m = /^(\d{4})-(\d{2})$/.exec(deal.maturity_ym);
+    if (!m) return null;
+    return new Date(Date.UTC(+m[1], +m[2] - 1, 1));
+  }
+  if (deal.tenor_y == null || deal.tenor_y === "") return null;
+  const p = parseDealDate(deal.date);
+  if (!p || p.precision === "year" || p.month == null || p.year == null) return null;
+  const day = p.precision === "day" && p.day ? p.day : 1;
+  return new Date(Date.UTC(p.year + Number(deal.tenor_y), p.month, day));
 }
-function maturityIso(deal) {
-  return deriveMaturity(deal).toISOString().slice(0, 7); // YYYY-MM
-}
-function monthsToRefi(deal) {
-  // Refi window opens (maturity - 18 months); months_to_refi = (refi_window_open - today)
+function maturityLabel(deal) {
   const m = deriveMaturity(deal);
-  const refiOpen = new Date(m);
-  refiOpen.setMonth(refiOpen.getMonth() - REFI_WINDOW_MONTHS);
-  return monthsBetween(TODAY, refiOpen);
+  if (!m) return "unknown";
+  return m.getUTCFullYear() + "-" + String(m.getUTCMonth() + 1).padStart(2, "0");
 }
-function monthsToMaturity(deal) {
-  return monthsBetween(TODAY, deriveMaturity(deal));
+function monthsToMaturity(deal, asOf) {
+  const m = deriveMaturity(deal);
+  if (!m) return null;
+  const t = asOf || TODAY;
+  return (m.getUTCFullYear() - t.getFullYear()) * 12 + (m.getUTCMonth() - t.getMonth());
 }
 
 // Certainty score (0/25/50/75/100%) — one of four independently-verifiable
@@ -830,34 +986,39 @@ function certaintyPct(d) {
   return score;
 }
 
+function csvEscape(value) {
+  const s = String(value == null ? "" : value);
+  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
 function dealsToCsv(deals) {
-  const rows = [["Borrower","Type","Certainty %","WB role","Amount","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
+  const rows = [["Borrower","Type","Status","Instrument","Successor","Confidence","Certainty %","WB role","Amount","Value EUR m","Bank value EUR m","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
   deals.forEach(d => {
+    const m2m = monthsToMaturity(d);
     rows.push([
       d.borrower,
       d.type,
+      d.separate_facility === false ? "memo" : (d.status || ""),
+      d.instrument || "",
+      d.successor || "",
+      d.confidence || "",
       certaintyPct(d) + "%",
       d.wb_status,
       d.amount,
-      maturityIso(d),
-      monthsToMaturity(d),
+      d.value_eur,
+      d.bank_value_eur != null ? d.bank_value_eur : "",
+      maturityLabel(d),
+      m2m == null ? "" : m2m,
       d.lenders,
       d.purpose,
       d.source,
     ]);
   });
-  return rows.map(r =>
-    r.map(c => {
-      const s = String(c == null ? "" : c);
-      // CSV-escape: quote and double internal quotes
-      if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
-      return s;
-    }).join(",")
-  ).join("\n");
+  return rows.map(r => r.map(csvEscape).join(",")).join("\n");
 }
 function downloadCsv(deals, filename) {
   const csv = dealsToCsv(deals);
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -870,22 +1031,61 @@ function downloadCsv(deals, filename) {
 
 function refiUrgency(deal) {
   const m2m = monthsToMaturity(deal);
-  if (m2m < 0) return "past";       // already matured
-  if (m2m <= 12) return "live";     // within 12 months
-  if (m2m <= 18) return "imminent"; // 12-18m
+  if (m2m == null) return "unknown";
+  if (m2m < 0) return "past";
+  if (m2m <= 12) return "live";
+  if (m2m <= 18) return "imminent";
   if (m2m <= 24) return "approaching";
   if (m2m <= 36) return "distant";
   return "far";
 }
 
+function isHuntLoan(d) {
+  if (!d || d.separate_facility === false) return false;
+  if ((d.status || "outstanding") !== "outstanding") return false;
+  const inst = d.instrument || "bank_loan";
+  return inst === "bank_loan" || inst === "mixed";
+}
+function bankCommitmentEur(d) {
+  if (!isHuntLoan(d)) return 0;
+  if (d.bank_value_eur != null) return d.bank_value_eur;
+  return d.value_eur || 0;
+}
+function amountIsEstimate(d) {
+  const amt = (d.amount || "").toLowerCase();
+  if (/n\/d|est\.|estimated|\bunknown\b|\blikely\b|~|approx|up to /.test(amt)) return true;
+  if (d.confidence !== "Confirmed") return true;
+  const bank = d.bank_value_eur != null ? d.bank_value_eur : d.value_eur;
+  if (!bank) return true;
+  return false;
+}
+function inRefiWindow(d) {
+  if (!isHuntLoan(d)) return false;
+  const m2m = monthsToMaturity(d);
+  return m2m != null && m2m >= -3 && m2m <= REFI_WINDOW_MONTHS;
+}
+function lenderHit(d) {
+  if (!lenderQuery) return true;
+  return (d.lenders || "").toLowerCase().includes(lenderQuery);
+}
+function groupHit(d) {
+  if (!groupFilter) return true;
+  const g = dealGroup(d.borrower);
+  if (groupFilter === "__ungrouped__") return !g;
+  return g === groupFilter;
+}
+function passesBaseFilters(d) {
+  return (activeFilter === "All" || d.type === activeFilter) &&
+    (activeYear === "All" || String(d.year) === activeYear) &&
+    (coalIncluded || !d.coal_excluded) &&
+    lenderHit(d);
+}
 function filterDeals() {
   const sel = companyFilter || [];
   return DEALS.filter(d =>
-    (activeFilter === "All" || d.type === activeFilter) &&
-    (activeYear === "All" || String(d.year) === activeYear) &&
-    (coalIncluded || !d.coal_excluded) &&
+    passesBaseFilters(d) &&
     (sel.length === 0 || sel.includes(companyKey(d.borrower))) &&
-    (groupFilter === "" || dealGroup(d.borrower) === groupFilter)
+    groupHit(d)
   );
 }
 function sortDeals(deals) {
@@ -895,14 +1095,18 @@ function sortDeals(deals) {
   } else if (sortMode === "amount") {
     arr.sort((a, b) => (b.value_eur || 0) - (a.value_eur || 0));
   } else {
-    // default: chronological timeline relative to today (recomputed on every load/refresh).
-    // Upcoming deals first (soonest maturity first); already-matured deals are pushed to the
-    // bottom, ordered most-recently-matured first, so the whole list still reads as one timeline
-    // running forward from today and then backward into the past — instead of very old,
-    // long-past deals bubbling to the top just because their months-to-maturity is a large negative number.
+    // Dated deals first: upcoming soonest, then past most-recently-matured.
+    // Unknown maturity (year-only sources) sorts under every dated deal.
     arr.sort((a, b) => {
       const ma = monthsToMaturity(a);
       const mb = monthsToMaturity(b);
+      const aKnown = ma != null;
+      const bKnown = mb != null;
+      if (aKnown !== bKnown) return aKnown ? -1 : 1;
+      if (!aKnown) {
+        if ((b.year || 0) !== (a.year || 0)) return (b.year || 0) - (a.year || 0);
+        return a.borrower.localeCompare(b.borrower, "cs", { sensitivity: "base" });
+      }
       const aFuture = ma >= 0;
       const bFuture = mb >= 0;
       if (aFuture !== bFuture) return aFuture ? -1 : 1;
@@ -911,36 +1115,69 @@ function sortDeals(deals) {
   }
   return arr;
 }
-function pipelineDeals(monthsMaxFromMaturity) {
-  // deals where today is within `monthsMaxFromMaturity` months OF maturity (past or future)
-  return filterDeals().filter(d => {
-    const m2m = monthsToMaturity(d);
-    return m2m >= -3 && m2m <= monthsMaxFromMaturity; // include past 3 months (recently matured = recently refi'd)
+function fmtBn(eurM) {
+  return "€" + ((eurM || 0) / 1000).toFixed(2) + "bn";
+}
+function euroBuckets(deals) {
+  const b = {
+    disclosed: { n: 0, eur: 0 },
+    estimate: { n: 0, eur: 0 },
+    excluded: { n: 0, eur: 0, slices: 0 },
+    closed: { n: 0, eur: 0 },
+    memo: { n: 0 },
+  };
+  deals.forEach(d => {
+    if (d.separate_facility === false) { b.memo.n += 1; return; }
+    const status = d.status || "outstanding";
+    if (status === "not_a_bank_loan") {
+      b.excluded.n += 1;
+      b.excluded.eur += d.value_eur || 0;
+      return;
+    }
+    if (status === "refinanced" || status === "repaid") {
+      b.closed.n += 1;
+      b.closed.eur += d.value_eur || 0;
+      return;
+    }
+    const bank = d.bank_value_eur != null ? d.bank_value_eur : (d.value_eur || 0);
+    const non = d.nonloan_value_eur || 0;
+    if (amountIsEstimate(d)) { b.estimate.n += 1; b.estimate.eur += bank; }
+    else { b.disclosed.n += 1; b.disclosed.eur += bank; }
+    if (non) { b.excluded.eur += non; b.excluded.slices += 1; }
   });
+  return b;
 }
 
 // ---- Render stats ----
 function renderStats() {
   const filtered = filterDeals();
-  const liveRefi = filtered.filter(d => {
-    const m2m = monthsToMaturity(d);
-    return m2m >= 0 && m2m <= REFI_WINDOW_MONTHS;
-  });
-  const liveTotal = liveRefi.reduce((s, d) => s + (d.value_eur || 0), 0);
+  const liveRefi = filtered.filter(inRefiWindow);
+  const liveTotal = liveRefi.reduce((s, d) => s + bankCommitmentEur(d), 0);
   const incumbent = liveRefi.filter(d => d.wb_status === "incumbent");
   const participant = liveRefi.filter(d => d.wb_status === "participant");
   const mustRetain = liveRefi.filter(d => d.wb_status === "incumbent" || d.wb_status === "participant");
-  const mustRetainTotal = mustRetain.reduce((s, d) => s + (d.value_eur || 0), 0);
+  const mustRetainTotal = mustRetain.reduce((s, d) => s + bankCommitmentEur(d), 0);
   const oppCount = liveRefi.filter(d => d.wb_status === "opportunity");
-  const oppTotal = oppCount.reduce((s, d) => s + (d.value_eur || 0), 0);
+  const oppTotal = oppCount.reduce((s, d) => s + bankCommitmentEur(d), 0);
+  const buckets = euroBuckets(filtered);
 
   const html = [
-    `<div class="stat"><div class="label">Live refi window (≤18m)</div><div class="value">${liveRefi.length}</div><div class="sub">€${(liveTotal/1000).toFixed(2)}bn EUR-eq</div></div>`,
-    `<div class="stat" style="border-left:3px solid #166534;"><div class="label">WB must-retain (defend)</div><div class="value">${mustRetain.length}</div><div class="sub">€${(mustRetainTotal/1000).toFixed(2)}bn at risk · ${incumbent.length} incumbent + ${participant.length} participant</div></div>`,
-    `<div class="stat" style="border-left:3px solid #b91c1c;"><div class="label">WB opportunity</div><div class="value">${oppCount.length}</div><div class="sub">€${(oppTotal/1000).toFixed(2)}bn — refi pipeline</div></div>`,
-    `<div class="stat"><div class="label">Total tracked</div><div class="value">${filtered.length}</div><div class="sub">${coalIncluded ? "incl. coal" : "coal excluded"}</div></div>`,
+    `<div class="stat"><div class="label">Live refi window (≤18m)</div><div class="value">${liveRefi.length}</div><div class="sub">${fmtBn(liveTotal)} bank commitments</div></div>`,
+    `<div class="stat" style="border-left:3px solid #166534;"><div class="label">WB must-retain (defend)</div><div class="value">${mustRetain.length}</div><div class="sub">${fmtBn(mustRetainTotal)} · ${incumbent.length} incumbent + ${participant.length} participant</div></div>`,
+    `<div class="stat" style="border-left:3px solid #b91c1c;"><div class="label">WB opportunity</div><div class="value">${oppCount.length}</div><div class="sub">${fmtBn(oppTotal)} outstanding bank loans</div></div>`,
+    `<div class="stat"><div class="label">Disclosed bank commitments</div><div class="value">${fmtBn(buckets.disclosed.eur)}</div><div class="sub">${buckets.disclosed.n} outstanding · named amount</div></div>`,
+    `<div class="stat"><div class="label">Estimates</div><div class="value">${fmtBn(buckets.estimate.eur)}</div><div class="sub">${buckets.estimate.n} outstanding bank loans · est. or n/d</div></div>`,
+    `<div class="stat"><div class="label">Excluded non-loans</div><div class="value">${fmtBn(buckets.excluded.eur)}</div><div class="sub">${buckets.excluded.n} non-loan rows${buckets.excluded.slices ? " + " + buckets.excluded.slices + " bond slice" : ""}</div></div>`,
   ].join("");
   document.getElementById("stats").innerHTML = html;
+  const note = document.getElementById("statsNote");
+  if (note) {
+    const coal = coalIncluded ? "coal included" : "coal excluded";
+    note.textContent = "Euro buckets follow the current filters (" + coal + "). Closed facilities (refinanced or repaid): " +
+      buckets.closed.n + " rows, " + fmtBn(buckets.closed.eur) + ", not in the three buckets. " +
+      (buckets.memo.n ? buckets.memo.n + " memo row omitted (drawdown already inside another facility). " : "") +
+      "The 18-month counts above are outstanding bank loans only, including facilities matured in the last 3 months.";
+  }
 }
 
 // ---- Render filter chips ----
@@ -1010,7 +1247,14 @@ function renderFilters() {
 }
 
 function render() {
+  const heading = document.getElementById("listHeading");
+  if (heading) {
+    heading.textContent = activeView === "pipeline"
+      ? "Outstanding bank loans in the refi window"
+      : "All tracked rows";
+  }
   renderFilters();
+  updateGroupLabel();
   renderStats();
   renderTable();
 }
@@ -1020,12 +1264,7 @@ function render() {
 function populateCompanyDropdown() {
   const dd = document.getElementById("companyFilterDropdown");
   if (!dd) return;
-  // Aggregate deals by companyKey, applying current type/year/coal filters
-  const baseFiltered = DEALS.filter(d =>
-    (activeFilter === "All" || d.type === activeFilter) &&
-    (activeYear === "All" || String(d.year) === activeYear) &&
-    (coalIncluded || !d.coal_excluded)
-  );
+  const baseFiltered = DEALS.filter(passesBaseFilters);
   const groups = {};
   baseFiltered.forEach(d => {
     const k = companyKey(d.borrower);
@@ -1092,24 +1331,27 @@ function populateCompanyDropdown() {
 function populateGroupDropdown() {
   const dd = document.getElementById("groupFilterDropdown");
   if (!dd) return;
-  // Count deals per group (using only type/year/coal filters, not company filter)
-  const base = DEALS.filter(d =>
-    (activeFilter === "All" || d.type === activeFilter) &&
-    (activeYear === "All" || String(d.year) === activeYear) &&
-    (coalIncluded || !d.coal_excluded)
-  );
+  const base = DEALS.filter(passesBaseFilters);
   const counts = {};
+  let ungrouped = 0;
   base.forEach(d => {
     const g = dealGroup(d.borrower);
     if (g) counts[g] = (counts[g] || 0) + 1;
+    else ungrouped += 1;
   });
   const grpNames = Object.keys(counts).sort((a, b) => a.localeCompare(b, "cs", { sensitivity: "base" }));
+  const ungroupedItem = `
+        <li class="company-item ${groupFilter === "__ungrouped__" ? "active" : ""}" data-group="__ungrouped__">
+          <span class="company-name">Ungrouped</span>
+          <span class="company-count">${ungrouped}</span>
+        </li>`;
   dd.innerHTML = `
     <div class="company-filter-actions">
       <a href="#" class="company-action" data-action="show-all">Show all</a>
       <a href="#" class="company-action" data-action="close">Close</a>
     </div>
     <ul class="company-list">
+      ${ungroupedItem}
       ${grpNames.map(g => `
         <li class="company-item ${groupFilter === g ? "active" : ""}" data-group="${g.replace(/"/g, '&quot;')}">
           <span class="company-name">${g}</span>
@@ -1144,7 +1386,10 @@ function populateGroupDropdown() {
 
 function updateGroupLabel() {
   const lbl = document.getElementById("groupFilterLabel");
-  if (lbl) lbl.textContent = groupFilter || "All groups";
+  if (!lbl) return;
+  if (!groupFilter) lbl.textContent = "All groups";
+  else if (groupFilter === "__ungrouped__") lbl.textContent = "Ungrouped";
+  else lbl.textContent = groupFilter;
 }
 
 function setupGroupFilterToggle() {
@@ -1201,52 +1446,112 @@ function wbBadge(s) {
   const x = map[s] || map.unknown;
   return `<span class="badge ${x.cls}">${x.text}</span>`;
 }
-function urgencyBadge(d) {
-  const u = refiUrgency(d);
-  const map = {
-    live: { cls: "urg-live", text: "🔴 Live" },
-    imminent: { cls: "urg-imminent", text: "🟠 Imminent" },
-    approaching: { cls: "urg-approaching", text: "🟡 Approaching" },
-    distant: { cls: "urg-distant", text: "⚪ Distant" },
-    far: { cls: "urg-far", text: "⬜ Far" },
-    past: { cls: "urg-past", text: "⬛ Past" },
-  };
-  const x = map[u] || map.far;
-  const m2m = monthsToMaturity(d);
-  return `<span class="badge ${x.cls}" title="${m2m} months to maturity">${x.text}</span>`;
+const URGENCY_MAP = {
+  live:        { cls: "urg-live",        text: "🔴 Live" },
+  imminent:    { cls: "urg-imminent",    text: "🟠 Imminent" },
+  approaching: { cls: "urg-approaching", text: "🟡 Approaching" },
+  distant:     { cls: "urg-distant",     text: "⚪ Distant" },
+  far:         { cls: "urg-far",         text: "⬜ Far" },
+  past:        { cls: "urg-past",        text: "⬛ Past" },
+  unknown:     { cls: "urg-unknown",     text: "◻ Unknown" },
+};
+const STATUS_META = {
+  outstanding: { cls: "st-outstanding", text: "Outstanding" },
+  refinanced: { cls: "st-refinanced", text: "Refinanced" },
+  repaid: { cls: "st-repaid", text: "Repaid" },
+  not_a_bank_loan: { cls: "st-not_a_bank_loan", text: "Not a bank loan" },
+  memo: { cls: "st-memo", text: "Memo" },
+};
+const INSTRUMENT_LABEL = {
+  bank_loan: "Bank loan",
+  bond: "Bond",
+  equity: "Equity",
+  preferred_equity: "Preferred equity",
+  ma_ev: "M&A / EV",
+  mixed: "Mixed",
+  mezzanine: "Mezzanine",
+};
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
-
-
+function successorText(d) {
+  if (!d.successor) return "";
+  const labels = d.successor.split("+").map(raw => {
+    const id = raw.trim();
+    if (!id) return "";
+    if (id.startsWith("ext:")) return id.slice(4).replace(/-/g, " ");
+    const hit = DEALS.find(x => x.id === id);
+    if (!hit) return id;
+    return (hit.date || hit.year) + " " + hit.borrower.split("(")[0].trim();
+  }).filter(Boolean);
+  return labels.length ? "Successor: " + labels.join("; ") : "";
+}
+function borrowerHtml(d) {
+  return `<div class="borrower-name">${esc(d.borrower)}</div><div class="borrower-purpose" title="${esc(d.purpose)}">${esc(d.purpose)}</div>`;
+}
+function statusToken(d) {
+  const key = d.separate_facility === false ? "memo" : (d.status || "outstanding");
+  const inst = INSTRUMENT_LABEL[d.instrument] || d.instrument || "";
+  const note = [d.status_note || "", successorText(d)].filter(Boolean).join(" — ");
+  return [key, inst, note].join("|||");
+}
 function buildRow(d) {
+  const m2m = monthsToMaturity(d);
   return [
-    d.borrower,
+    borrowerHtml(d),
     d.type,
+    statusToken(d),
     refiUrgency(d),
     d.wb_status || "",
     d.amount,
-    maturityIso(d),
-    monthsToMaturity(d),
+    maturityLabel(d),
+    m2m == null ? "—" : m2m,
     d.lenders,
-    certaintyPct(d),
+    (d.confidence || "") + "|" + certaintyPct(d),
     d.source
   ];
 }
-const FMT_TYPE = cell => { const b = TYPE_BADGE[cell] || {cls:""}; return gridjs.html(`<span class="badge ${b.cls}">${cell}</span>`); };
+const FMT_BORROWER = cell => gridjs.html(cell);
+const FMT_TYPE = cell => { const b = TYPE_BADGE[cell] || {cls:""}; return gridjs.html(`<span class="badge ${b.cls}">${esc(cell)}</span>`); };
+const FMT_STATUS = cell => {
+  const parts = String(cell).split("|||");
+  const meta = STATUS_META[parts[0]] || STATUS_META.outstanding;
+  const inst = parts[1] || "";
+  const note = parts[2] || "";
+  return gridjs.html(`<span class="badge ${meta.cls}" title="${esc(note)}">${esc(meta.text)}${inst ? " · " + esc(inst) : ""}</span>`);
+};
 const FMT_URGENCY = cell => {
-  const map = {
-    live:        { cls: "urg-live",        text: "🔴 Live" },
-    imminent:    { cls: "urg-imminent",    text: "🟠 Imminent" },
-    approaching: { cls: "urg-approaching", text: "🟡 Approaching" },
-    distant:     { cls: "urg-distant",     text: "⚪ Distant" },
-    far:         { cls: "urg-far",         text: "⬜ Far" },
-    past:        { cls: "urg-past",        text: "⬛ Past" },
-  };
-  const x = map[cell] || map.far;
+  const x = URGENCY_MAP[cell] || URGENCY_MAP.unknown;
   return gridjs.html(`<span class="badge ${x.cls}">${x.text}</span>`);
 };
 const FMT_WB  = cell => gridjs.html(wbBadge(cell));
-const FMT_CONF = cell => { const cls = "conf-" + cell; return gridjs.html(`<span class="badge ${cls}" title="Share of parameters (source, amount, lenders, date) independently verified">${cell}%</span>`); };
-const FMT_SRC  = cell => gridjs.html(`<a href="${cell}" target="_blank" rel="noopener">link</a>`);
+const FMT_CONF = cell => {
+  const parts = String(cell).split("|");
+  const label = parts[0] || "";
+  const pct = parts[1] || "0";
+  const cls = "conf-" + pct;
+  return gridjs.html(`<span class="badge ${cls}" title="Share of parameters (source, amount, lenders, date) independently verified">${esc(pct)}%</span><span class="conf-label">${esc(label)}</span>`);
+};
+const FMT_SRC  = cell => gridjs.html(`<a href="${esc(cell)}" target="_blank" rel="noopener">link</a>`);
+function tableColumns() {
+  return [
+    { name: "Borrower", width: "18%", formatter: FMT_BORROWER },
+    { name: "Type", width: "8%", formatter: FMT_TYPE },
+    { name: "Status", width: "12%", formatter: FMT_STATUS },
+    { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
+    { name: "WB", width: "8%", formatter: FMT_WB },
+    { name: "Amount", width: "10%" },
+    { name: "Maturity", width: "7%" },
+    { name: "Months", width: "6%" },
+    { name: "Lenders", width: "12%" },
+    { name: "Certainty", width: "8%", formatter: FMT_CONF },
+    { name: "Src", width: "4%", formatter: FMT_SRC },
+  ];
+}
 
 function renderTable() {
   if (activeView === "pipeline") {
@@ -1256,19 +1561,19 @@ function renderTable() {
     // Always rebuild so sort chips always take effect
     document.getElementById("table").innerHTML = `
       <div class="watchlist-section">
-        <h3 class="watchlist-title">🎯 WB opportunity — refi within 18 months
+        <h3 class="watchlist-title">🎯 WB opportunity — outstanding bank loans, refi within 18 months
           <button class="csv-btn" id="csv-opportunity">⬇ CSV</button>
         </h3>
         <div id="wl-opportunity"></div>
       </div>
       <div class="watchlist-section">
-        <h3 class="watchlist-title">🛡️ Must-retain — WB incumbent or participant, maturity ≤18m
+        <h3 class="watchlist-title">🛡️ Must-retain — outstanding bank loans where WB is incumbent or participant, maturity ≤18m
           <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
         </h3>
         <div id="wl-incumbent"></div>
       </div>
       <div class="watchlist-section">
-        <h3 class="watchlist-title">📅 All upcoming refis
+        <h3 class="watchlist-title">📅 Upcoming — outstanding bank loans maturing within 18 months
           <button class="csv-btn" id="csv-all">⬇ CSV</button>
         </h3>
         <div id="wl-all"></div>
@@ -1276,26 +1581,12 @@ function renderTable() {
     `;
 
     // All three sections use sortDeals — sort chips affect all of them
-    const live = sortDeals(filterDeals().filter(d => {
-      const m2m = monthsToMaturity(d);
-      return m2m >= -3 && m2m <= REFI_WINDOW_MONTHS;
-    }));
+    const live = sortDeals(filterDeals().filter(inRefiWindow));
 
     const opportunity = live.filter(d => d.wb_status === "opportunity");
     const incumbent   = live.filter(d => d.wb_status === "incumbent" || d.wb_status === "participant");
 
-    const PIPE_COLS = [
-      { name: "Borrower", width: "17%" },
-      { name: "Type", width: "9%", formatter: FMT_TYPE },
-      { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
-      { name: "WB", width: "8%", formatter: FMT_WB },
-      { name: "Amount", width: "10%" },
-      { name: "Maturity", width: "8%" },
-      { name: "Months till maturity", width: "10%" },
-      { name: "Lenders", width: "15%" },
-      { name: "Certainty", width: "8%", formatter: FMT_CONF },
-      { name: "Src", width: "5%", formatter: FMT_SRC },
-    ];
+    const PIPE_COLS = tableColumns();
     const PIPE_STYLE = {
       table: { "border-collapse": "collapse", "font-size": "12px" },
       td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
@@ -1346,18 +1637,7 @@ function renderTable() {
   document.getElementById("csv-all-view").onclick = () =>
     downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`);
 
-  const COLS = [
-    { name: "Borrower", width: "17%" },
-    { name: "Type", width: "9%", formatter: FMT_TYPE },
-    { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
-    { name: "WB", width: "8%", formatter: FMT_WB },
-    { name: "Amount", width: "10%" },
-    { name: "Maturity", width: "8%" },
-    { name: "Months till maturity", width: "10%" },
-    { name: "Lenders", width: "15%" },
-    { name: "Certainty", width: "8%", formatter: FMT_CONF },
-    { name: "Src", width: "5%", formatter: FMT_SRC },
-  ];
+  const COLS = tableColumns();
   grid = new gridjs.Grid({
     columns: COLS,
     data,

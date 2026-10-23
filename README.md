@@ -8,11 +8,25 @@ Live page: **https://zabranda.github.io/loantracker/**
 
 ## What's tracked
 
-132 transactions involving Czech borrowers or Czech assets, with for each deal:
-borrower, deal type, amount, date, lenders / mandated lead arrangers, purpose,
-confidence label (Confirmed / Likely / Inferred), and a source link.
+Transactions involving Czech borrowers or Czech assets. Each row has borrower,
+deal type, amount, date, lenders / mandated lead arrangers, purpose, a
+confidence label (Confirmed / Likely / Inferred), a source link, a status
+(`outstanding`, `refinanced`, `repaid`, or `not_a_bank_loan`), and an
+instrument (bank loan, bond, equity, preferred equity, M&A / EV, mixed, mezzanine).
 
-Filters by deal type and year; selections persist in `localStorage`.
+The default 18-month lists count **outstanding bank loans** only. Refinanced
+facilities point at a successor id when one is in the tracker. A source that
+gives only a year does not get an invented maturity month.
+
+Filters by deal type, year, company, group (including ungrouped), and lender
+text. Selections persist in `localStorage`.
+
+## House tags on the public page
+
+WB role labels (incumbent, participant, opportunity) are illustrative working
+tags for a personal pipeline. They are not a confirmation that any institution
+holds that role. This site is published on GitHub Pages, so those tags are
+visible to anyone who opens the page.
 
 ## How it's built
 
