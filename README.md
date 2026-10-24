@@ -13,6 +13,7 @@ deal type, amount, date, lenders / mandated lead arrangers, purpose, a
 confidence label (Confirmed / Likely / Inferred), a source link, a status
 (`outstanding`, `refinanced`, `repaid`, or `not_a_bank_loan`), and an
 instrument (bank loan, bond, equity, preferred equity, M&A / EV, mixed, mezzanine).
+Corporate bonds in the tracker are EUR-denominated only. CZK loans stay; CZK bond issues do not.
 
 The default 18-month lists count **outstanding bank loans** only. Refinanced
 facilities point at a successor id when one is in the tracker. A source that

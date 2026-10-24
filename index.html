@@ -330,6 +330,7 @@
 // status / instrument / successor are filled from ROW_FACTS (default: outstanding bank loan).
 // A year-only date does not invent a maturity month.
 // tenor_inferred marks a 5y CRE (or other) tenor used because none was disclosed.
+// Corporate bond rows are EUR-denominated only. CZK loans stay in the list.
 const DEALS = [
   // ===== 2026 =====
   // Allwyn — €500m senior notes + €100m EUR TLB add-on funding OPAP minority cash-exit (found via Allwyn IR sweep)
@@ -730,9 +731,6 @@ const DEALS = [
   // Second source: https://ceelegalmatters.com/news/deals-and-cases/a-o-shearman-advises-dr-max-on-eur-1-86-billion-refinancing/
   { borrower: "Dr. Max Group / Dr. Max Funding CR (Penta)", type: "Refinancing", amount: "€1,860m (€1,400m term loans + €50m RCF + €55m ancillary limits + €350m accordion)", currency: "EUR", value_eur: 1860, lenders: "19-bank club; UniCredit Bank Czech Republic and Slovakia and Komerční banka as coordinators, bookrunners and MLAs; UniCredit CZ&SK facility and security agent (other 17 banks not named)", date: "1 Jul 2026", year: 2026, purpose: "7y refinancing of existing indebtedness, plus liquidity for growth, selective M&A and general corporate purposes; strongly oversubscribed", source: "https://www.drmaxfundingcr.cz/en/news/dr-max-refinancing-2026-en", confidence: "Confirmed", tenor_y: 7, signed_iso: "2026-07-01", wb_status: "opportunity", coal_excluded: false },
 
-  // Dr. Max Funding CR — CZK 20bn programme and CZK 1.25bn 6.20% notes issued 3 Nov 2025, due 3 Nov 2030.
-  { borrower: "Dr. Max Funding CR (Penta) — CZK bond programme", type: "Refinancing", amount: "CZK 20,000m (~€830m) domestic programme; CZK 1,250m (~€50m) 6.20% guaranteed notes issued", currency: "CZK", value_eur: 50, lenders: "Bond investors; joint lead managers Komerční banka, UniCredit Bank Czech Republic and Slovakia, Česká spořitelna; co-manager Privatbanka", date: "3 Nov 2025", year: 2025, purpose: "First drawdown under the new CZK 20bn programme (PSE regulated market); notes guaranteed by Dr. Max Group Holdings Plc; due 3 Nov 2030", source: "https://www.whitecase.com/news/press-release/white-case-advises-dr-maxs-czk-20-billion-domestic-bond-programme-and-czk-125", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-11-03", wb_status: "opportunity", coal_excluded: false },
-
   // Crestyl Dock In — distinct from the NR7 / Helaba revitalisation row.
   { borrower: "Crestyl (Dock In Office Park, Prague 8)", type: "Real Estate", amount: "€185m", currency: "EUR", value_eur: 185, lenders: "Deutsche Pfandbriefbank (pbb) and Helaba as joint lead arrangers (equal shares); pbb facility and security agent", date: "18 May 2026", year: 2026, purpose: "Medium-term refinancing of Dock In Office Park (~87,600 sqm, five phases, Prague 8). Tenor not disclosed — 5y inferred (CRE term loan)", source: "https://www.property-forum.eu/news/crestyl-secures-eur185-million-loan-for-prague-office-park-from-pbb-helaba/21512", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-05-18", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
 
@@ -742,9 +740,6 @@ const DEALS = [
 
   // Novation of the 11 Dec 2023 €800m agreement. Maturity June 2031 is set in ROW_FACTS.
   { borrower: "AmRest Holdings SE", type: "Refinancing", amount: "€800m facilities novated", currency: "EUR", value_eur: 800, lenders: "BBVA and WB (sustainability coordinators); BNP Paribas Bank Polska, Bank Polska Kasa Opieki, Česká spořitelna, Rabobank, PKO BP, Banco Santander (agent), Erste Bank Polska", date: "7 Jul 2026", year: 2026, purpose: "Novation, amendment and extension of the 11 Dec 2023 financing agreement: RCF increased by up to €100m, accordion up to €300m, 2y grace period, lower margin, maturity extended to June 2031 (two optional 1y extensions, lender consent)", source: "https://www.amrest.eu/en/rb-72026-execution-novation-amendment-and-extension-agreement-relation-financing-agreement", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-07-07", wb_status: "incumbent", coal_excluded: false },
-
-  // Issued volume CZK 1.75bn is the PSE listing (ISIN CZ0003576886). Not the SGEF rolling-stock aggregate.
-  { borrower: "RegioJet Finance 2 a.s. (guaranteed by RegioJet a.s.)", type: "Project/Infra", amount: "CZK 1,750m issued (7.15% secured notes; shelf ceiling CZK 4,000m)", currency: "CZK", value_eur: 70, lenders: "Bond investors; Česká spořitelna (administrator) and Komerční banka", date: "23 Oct 2025", year: 2025, purpose: "Secured notes (ISIN CZ0003576886) due 23 Oct 2030 to fund wagon purchases, including rolling stock from Deutsche Bahn; financial guarantee from RegioJet a.s.", source: "https://www.ceskenoviny.cz/zpravy/2725718", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-10-23", wb_status: "opportunity", coal_excluded: false },
 
   { borrower: "GLP Capital Partners / Ares (logistics portfolios, CZ+PL+HU)", type: "Real Estate", amount: "€322m", currency: "EUR", value_eur: 322, lenders: "Deutsche Pfandbriefbank (pbb) — arranger and sole lender", date: "31 Jul 2025", year: 2025, purpose: "Refinancing of existing debt on 13 Class A logistics assets (>678,000 sqm) in the Czech Republic, Poland and Hungary, plus development of logistics assets in Poland. Fund managed by GLP Capital Partners, now part of Ares Management. Tenor not disclosed — 5y inferred (CRE term loan)", source: "https://www.property-forum.eu/news/pbb-provides-eur322-million-for-two-logistics-portfolios-in-cee/20281", confidence: "Confirmed", tenor_y: 5, signed_iso: "2025-07-31", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
 
@@ -762,6 +757,20 @@ const DEALS = [
 
   // Office refinancing — distinct from the CIMEX hotel / OREA rows.
   { borrower: "CIMEX Group (Vyšehrad Garden, Vista House, Garden Eleven — Prague offices)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Raiffeisenbank (JSK advised the lender)", date: "15 Sep 2025", year: 2025, purpose: "Refinancing of three fully let Prague offices (Vyšehrad Garden ~3,900 sqm, Vista House ~7,500 sqm, Garden Eleven ~10,000 sqm). Tenor not disclosed — 5y inferred (CRE term loan)", source: "https://ceerealestatematters.com/cimex-refinances-three-prague-office-properties-with-raiffeisenbank", confidence: "Likely", tenor_y: 5, signed_iso: "2025-09-15", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
+
+  // ===== 24 Oct 2026 pass — CGNI club, Trigea retail parks, Hotusa hotels, Magna MedTech =====
+  // CGNI / GasNet: 1 Oct 2026 counsel release is the EUR 1.171bn / 12-bank figure.
+  // The 3 Jun 2026 issuer notice is the earlier, smaller disclosure of the same refinancing topic; kept in the purpose, not a second row.
+  { borrower: "Czech Gas Networks Investments (CGNI / GasNet, ČEZ 55.21%)", type: "Refinancing", amount: "€1,171m (CZK 18,600m + €426m)", currency: "EUR", value_eur: 1171, lenders: "Club of 12 banks (individual lenders not disclosed); A&O Shearman advised CGNI", date: "1 Oct 2026", year: 2026, purpose: "5y term facilities to refinance existing indebtedness and fund future business activities. Counsel release of 1 Oct 2026: CZK 18.6bn and EUR 426m from 12 banks. ČEZ inside information of 3 Jun 2026 had reported a 5y agreement of CZK 9.7bn and EUR 426m with 11 banks", source: "https://www.britishchamber.cz/ao-shearman-czech-gas-networks-investments-secures-eur1-171-billion-in-long-term-financing/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-10-01", wb_status: "opportunity", coal_excluded: false },
+
+  // Latest 2026 Trigea financing. Amount and tenor are not in the counsel note, so the amount stays n/d.
+  { borrower: "Trigea nemovitostní fond (Retail Park Ostrava + Retail Park Haná)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "UniCredit Bank Czech Republic and Slovakia (Reals advised the lender)", date: "5 Oct 2026", year: 2026, purpose: "Financing of Retail Park Ostrava and Retail Park Haná (Olomouc). Amount not disclosed. Tenor not disclosed — 5y inferred (CRE term loan)", source: "https://ceelegalmatters.com/countries/czech-republic/reals-advises-unicredit-bank-on-financing-of-trigeas-czech-retail-parks/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-10-05", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
+
+  // Two Prague hotel refinancings announced together. Amount and tenor not disclosed.
+  { borrower: "Hotusa Group (Aurea Legends + Exe City Park Praha)", type: "Real Estate", amount: "n/d", currency: "EUR", value_eur: 0, lenders: "Oberbank AG, Czech Republic branch (CMS advised Hotusa Group)", date: "14 Oct 2026", year: 2026, purpose: "Two separate refinancings of Aurea Legends (near Wenceslas Square) and Exe City Park Praha (opposite Prague Main Railway Station). Amount not disclosed. Tenor not disclosed — 5y inferred (CRE term loan)", source: "https://cms.law/en/cze/news-information/cms-advises-hotusa-group-on-refinancing-of-two-prague-hotels-through-facilities-provided-by-oberbank-ag-branch-czech-republic", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-10-14", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
+
+  // NKO Partners stated the EUR 155m split to CEE Legal Matters after the CMS lender note. Tenor was not stated.
+  { borrower: "Magna MedTech Group (EMMA Capital)", type: "Syndicated", amount: "€155m (€85m senior term + €70m RCF)", currency: "EUR", value_eur: 155, lenders: "Club of banks led by Česká spořitelna (other lenders not disclosed); CMS advised the lenders; NKO Partners advised Magna MedTech", date: "8 Oct 2026", year: 2026, purpose: "Increase of existing Magna Pharmacia financing plus new financing for Magna MedTech Group (SEE healthcare distribution; annual turnover above €230m). Tenor not disclosed — 5y placeholder", source: "https://ceelegalmatters.com/countries/czech-republic/cms-advises-lenders-on-financing-for-emma-capitals-magna-medtech/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-10-08", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
 ];
 
 // Rows that are not a plain outstanding bank loan, plus ids other rows point at.
@@ -813,8 +822,6 @@ const ROW_FACTS = [
   { borrower: "W.A.G. Payment Solutions (Eurowag)", amount: "€285m RCF", year: 2021, id: "eurowag-2021-10-rcf", status: "refinanced", instrument: "bank_loan", successor: "eurowag-2026-01-club", status_note: "IPO-era RCF. The live facility is the Club Finance line maturing 31 Mar 2029." },
   { borrower: "W.A.G. Payment Solutions (Eurowag) — Club Finance", amount: "€715m committed lines (€150m TL A + €180m TL B + €50m incr. I + €33.5m incr. II + €285m auxiliary + €16.5m incr. IV drawn 2 Jan 2026)", year: 2026, id: "eurowag-2026-01-club", status: "outstanding", instrument: "bank_loan", maturity_ym: "2029-03", status_note: "Contractual maturity 31 Mar 2029, set by the 6 Jun 2024 amendment. €16.5m incremental drawn 2 Jan 2026." },
   { borrower: "AmRest Holdings SE", amount: "€800m facilities novated", year: 2026, id: "amrest-2026-07-novation", status: "outstanding", instrument: "bank_loan", maturity_ym: "2031-06", status_note: "Novation extends maturity to June 2031 (2Q 2026 investor presentation; the regulatory notice says 2031)." },
-  { borrower: "Dr. Max Funding CR (Penta) — CZK bond programme", amount: "CZK 20,000m (~€830m) domestic programme; CZK 1,250m (~€50m) 6.20% guaranteed notes issued", year: 2025, id: "drmax-2025-11-notes", status: "not_a_bank_loan", instrument: "bond", status_note: "Domestic notes under the CZK 20bn programme, due 3 Nov 2030. Not a bank loan." },
-  { borrower: "RegioJet Finance 2 a.s. (guaranteed by RegioJet a.s.)", amount: "CZK 1,750m issued (7.15% secured notes; shelf ceiling CZK 4,000m)", year: 2025, id: "regiojet-2025-10-notes", status: "not_a_bank_loan", instrument: "bond", status_note: "Secured notes due 23 Oct 2030. Separate from the SGEF rolling-stock bank lines." },
 ];
 const ROW_FACT_ERRORS = [];
 function applyRowFacts() {
@@ -897,6 +904,7 @@ const DEAL_GROUPS = {
   "EPH / Křetínský":  ["EPH", "EP UK Bidco", "EP Corporate", "France Retail Holdings", "International Media Invest"],
   "Eurowag":           ["Eurowag", "W.A.G."],
   "Florentinum / CITIC": ["Florentinum", "CITIC"],
+  "Hotusa":            ["Hotusa"],
   "Genesis Capital":   ["Genesis Capital"],
   "GLP / Ares":        ["GLP Capital"],
   "Hartenberg":        ["Hartenberg"],
@@ -934,8 +942,8 @@ function companyKey(borrower) {
 const TODAY = new Date();
 const REFI_WINDOW_MONTHS = 18;
 // Vintage of this file. The on-page "as of" date comes from here, not from the viewer's clock.
-const DATA_AS_OF = "2026-10-23";
-const BUILD_TAG = "build " + DATA_AS_OF + ".2 · " + DEALS.length + " deals · Oct 2026 club, CRE and bond additions";
+const DATA_AS_OF = "2026-10-24";
+const BUILD_TAG = "build " + DATA_AS_OF + ".1 · " + DEALS.length + " deals · CGNI club, Trigea, Hotusa and Magna";
 document.addEventListener("DOMContentLoaded", () => {
   const e = document.getElementById("asof");
   if (e) e.textContent = DATA_AS_OF;
