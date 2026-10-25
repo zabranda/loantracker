@@ -19,7 +19,7 @@ The action list counts **outstanding bank loans** inside a refi window of
 12, 18, 24, or 36 months (default 18). Refinanced facilities point at a
 successor id when one is in the tracker. A signing date known only to the
 year (or a quarter / half-year) gets a flagged mid-period maturity so the
-loan can enter the radar; it stays on the Doplnit splatnost list until a
+loan can enter the radar; it stays on the Fill in maturity list until a
 real month is known.
 
 Filters (window, WB role, type, group, maturity year, confirmed-only, search)
@@ -38,7 +38,9 @@ visible to anyone who opens the page.
 
 Single `index.html` file. No build step and no runtime dependencies. The
 action list is a native table so column sorting and keyboard access stay
-in the page. Build tag `2026-10-25.1`.
+in the page. Build tag `2026-10-25.2`. The interface, filters and deal
+notes are in English. Proper names of borrowers, places, banks and
+registries stay in their original form. The house bank is labelled WB.
 
 ## Sources
 
