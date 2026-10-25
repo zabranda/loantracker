@@ -15,12 +15,17 @@ confidence label (Confirmed / Likely / Inferred), a source link, a status
 instrument (bank loan, bond, equity, preferred equity, M&A / EV, mixed, mezzanine).
 Corporate bonds in the tracker are EUR-denominated only. CZK loans stay; CZK bond issues do not.
 
-The default 18-month lists count **outstanding bank loans** only. Refinanced
-facilities point at a successor id when one is in the tracker. A source that
-gives only a year does not get an invented maturity month.
+The action list counts **outstanding bank loans** inside a refi window of
+12, 18, 24, or 36 months (default 18). Refinanced facilities point at a
+successor id when one is in the tracker. A signing date known only to the
+year (or a quarter / half-year) gets a flagged mid-period maturity so the
+loan can enter the radar; it stays on the Doplnit splatnost list until a
+real month is known.
 
-Filters by deal type, year, company, group (including ungrouped), and lender
-text. Selections persist in `localStorage`.
+Filters (window, WB role, type, group, maturity year, confirmed-only, search)
+live in the URL hash, so a view can be shared. They are not stored silently.
+Last visit, personal WB-role overrides, notes, stars, and leads stay in
+`localStorage` on this browser only.
 
 ## House tags on the public page
 
@@ -31,7 +36,9 @@ visible to anyone who opens the page.
 
 ## How it's built
 
-Single `index.html` file. Grid.js loaded from CDN; no build step, no dependencies.
+Single `index.html` file. No build step and no runtime dependencies. The
+action list is a native table so column sorting and keyboard access stay
+in the page. Build tag `2026-10-25.1`.
 
 ## Sources
 

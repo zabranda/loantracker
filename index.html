@@ -1,334 +1,208 @@
 <!doctype html>
-<html lang="en">
+<html lang="cs">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Czech Corporate Loans Market — Deal Tracker</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/theme/mermaid.min.css" integrity="sha384-DEJDGyvWh5zxGo8M0lwbXg53b7G69ZYhuHQQS43nlOkTpBwS0rwwVhqWOgIidpcw" crossorigin="anonymous" />
-<script src="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/gridjs.umd.js" integrity="sha384-/XXDzxe4FsGiAe50i/u9pY/Vy/uX654MHB1xoc1BJNnH1WXHhqHga9g3q5tF4gj7" crossorigin="anonymous"></script>
+<title>České korporátní úvěry — refinanční přehled</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231a1a1a'/%3E%3C/svg%3E" />
 <style>
-  :root { color-scheme: light; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    background: #f8f7f4;
-    color: #1a1a1a;
-    line-height: 1.45;
-    font-size: 14px;
-  }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px 60px; }
-  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
-  .sub { color: #6b6863; font-size: 13px; margin-bottom: 20px; }
-  .panel {
-    background: #ffffff;
-    border: 1px solid #e8e5df;
-    border-radius: 10px;
-    padding: 16px 18px;
-    margin-bottom: 16px;
-  }
-  .panel h2 {
-    font-size: 14px;
-    font-weight: 600;
-    margin: 0 0 10px;
-    color: #2a2a2a;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .stats { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 14px; }
-  .stat {
-    background: #ffffff;
-    border: 1px solid #e8e5df;
-    border-radius: 10px;
-    padding: 12px 16px;
-    flex: 1;
-    min-width: 160px;
-  }
-  .stat .label { color: #6b6863; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-  .stat .value { font-size: 20px; font-weight: 600; }
-  .stat .sub { font-size: 11px; color: #8a857d; margin: 2px 0 0; }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .chip {
-    background: #ffffff;
-    border: 1px solid #d6d2cb;
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-size: 12px;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.12s ease;
-    color: #2a2a2a;
-  }
-  .chip:hover { border-color: #b8b3aa; }
-  .chip.active { background: #1a1a1a; border-color: #1a1a1a; color: #ffffff; }
-  .gridjs-container { font-size: 13px; }
-  .gridjs-table { font-size: 13px; }
-  .gridjs-th { background: #f3f1ec !important; font-weight: 600 !important; }
-  .gridjs-td a { color: #1d4ed8; text-decoration: none; }
-  .gridjs-td a:hover { text-decoration: underline; }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 500;
-    border: 1px solid;
-  }
-  .build-tag { color: #9c9890; font-size: 11px; }
-  .badge-syn { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
-  .badge-lbo { background: #fff0e6; color: #8a3d10; border-color: #f5cfb6; }
-  .badge-refi { background: #ecf7ed; color: #1f5e2a; border-color: #c4e2c8; }
-  .badge-re { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
-  .conf-100 { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
-  .conf-75  { background: #eefbe9; color: #2f7a3c; border-color: #c8e8bd; }
-  .conf-50  { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
-  .conf-25  { background: #fdeee0; color: #9a4a12; border-color: #f3cda3; }
-  .conf-0   { background: #f0f0f0; color: #555;    border-color: #d0d0d0; }
-  .badge-export, .badge-project, .badge-intermediated { background: #eef0ff; color: #303a8a; border-color: #c8cef5; }
-  .wb-incumbent { background: #d1fae5; color: #065f46; border-color: #6ee7b7; font-weight: 600; }
-  .wb-participant { background: #fef3c7; color: #78350f; border-color: #fcd34d; font-weight: 500; }
-  .wb-opportunity { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 600; }
-  .wb-unknown { background: #f3f4f6; color: #4b5563; border-color: #d1d5db; }
-  .urg-live { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 600; }
-  .urg-imminent { background: #ffedd5; color: #9a3412; border-color: #fdba74; font-weight: 500; }
-  .urg-approaching { background: #fef9c3; color: #713f12; border-color: #fde047; }
-  .urg-distant { background: #f3f4f6; color: #4b5563; border-color: #d1d5db; }
-  .urg-far { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; }
-  .urg-past { background: #1f2937; color: #f3f4f6; border-color: #374151; }
-  .watchlist-section { margin-top: 18px; }
-  .watchlist-title { font-size: 13px; font-weight: 600; margin: 0 0 8px; color: #1f2937; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
-  .empty-msg { padding: 16px; color: #6b7280; font-style: italic; font-size: 13px; }
-  .view-chip { font-weight: 500; }
-  .coal-toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
-  .csv-btn {
-    margin-left: 8px;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 10px;
-    font-size: 11px;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: 500;
-  }
-  .csv-btn:hover { background: #333; }
-  .watchlist-title { display: flex; justify-content: space-between; align-items: center; }
-  .company-filter-wrap {
-    position: relative;
-    display: inline-block;
-    min-width: 280px;
-  }
-  .company-filter-btn {
-    display: inline-flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #d6d2cb;
-    border-radius: 6px;
-    background: #fff;
-    color: #1a1a1a;
-    font-family: inherit;
-    font-size: 13px;
-    cursor: pointer;
-    text-align: left;
-  }
-  .company-filter-btn:hover { border-color: #1a1a1a; }
-  .company-filter-btn .caret { color: #6b6863; font-size: 10px; margin-left: 8px; }
-  .company-filter-label { font-weight: 500; }
-  .company-filter-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 360px;
-    max-height: 400px;
-    overflow: hidden;
-    background: #fff;
-    border: 1px solid #d6d2cb;
-    border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    margin-top: 4px;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-  }
-  .company-filter-dropdown[hidden] { display: none; }
-  .company-filter-actions {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 12px;
-    border-bottom: 1px solid #f0ede7;
-    font-size: 12px;
-    background: #f8f7f4;
-    flex-shrink: 0;
-  }
-  .company-action {
-    color: #1d4ed8;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .company-action:hover { text-decoration: underline; }
-  .company-list {
-    list-style: none;
-    margin: 0;
-    padding: 4px 0;
-    overflow-y: auto;
-    max-height: 340px;
-    font-size: 13px;
-  }
-  .company-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 14px;
-    cursor: pointer;
-    color: #1a1a1a;
-  }
-  .company-item:hover {
-    background: #f3f4f6;
-  }
-  .company-item.active {
-    background: #dbeafe;
-    color: #1e40af;
-    font-weight: 600;
-  }
-  .company-item.active::before {
-    content: "✓ ";
-    margin-right: 4px;
-  }
-  .company-count {
-    background: #f0f0f0;
-    color: #4b5563;
-    font-size: 11px;
-    padding: 1px 8px;
-    border-radius: 10px;
-    margin-left: 8px;
-  }
-  .company-item.active .company-count {
-    background: #93c5fd;
-    color: #1e40af;
-  }
-  .actions {
-    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-  }
-  button.primary {
-    background: #1a1a1a;
-    color: #ffffff;
-    border: 1px solid #1a1a1a;
-    border-radius: 6px;
-    padding: 7px 14px;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  button.primary:hover { background: #333; }
-  button.primary:disabled { opacity: 0.55; cursor: wait; }
-  .news-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-  .news-item {
-    border-left: 3px solid #d6d2cb;
-    padding: 6px 12px;
-  }
-  .news-item .title { font-weight: 500; margin-bottom: 2px; }
-  .news-item .title a { color: #1a1a1a; text-decoration: none; }
-  .news-item .title a:hover { text-decoration: underline; }
-  .news-item .meta { color: #8a857d; font-size: 12px; }
-  .empty { color: #8a857d; font-style: italic; padding: 8px 0; }
-  .footer { color: #8a857d; font-size: 11px; margin-top: 24px; padding-top: 12px; border-top: 1px solid #e8e5df; }
-  details summary { cursor: pointer; font-size: 12px; color: #6b6863; padding: 6px 0; }
-  details[open] summary { margin-bottom: 8px; }
-  .query-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
-  .query-row input {
-    flex: 1; min-width: 240px;
-    padding: 6px 10px; font-size: 12px;
-    border: 1px solid #d6d2cb; border-radius: 6px;
-    font-family: inherit;
-  }
-  #lenderFilter {
-    width: min(420px, 100%);
-    padding: 8px 12px;
-    font-size: 13px;
-    border: 1px solid #d6d2cb;
-    border-radius: 6px;
-    font-family: inherit;
-    background: #fff;
-  }
-  .borrower-name { font-weight: 500; }
-  .borrower-purpose {
-    color: #6b6863;
-    font-size: 11px;
-    margin-top: 3px;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .conf-label { margin-left: 4px; font-size: 11px; color: #3f3f3f; }
-  .st-outstanding { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
-  .st-refinanced { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
-  .st-repaid { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
-  .st-not_a_bank_loan { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
-  .st-memo { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
-  .urg-unknown { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; }
-  .status-msg { font-size: 12px; color: #6b6863; }
-  .status-msg.error { color: #b91c1c; }
+:root { color-scheme: light; --ink:#1a1a1a; --muted:#6b6863; --line:#e8e5df; --paper:#f8f7f4; --defend:#0f766e; --opp:#1d4ed8; --warn:#9a3412; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.45; font-size: 14px; }
+button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
+.skip { position: absolute; left: 12px; top: -40px; background: #fff; padding: 8px 12px; z-index: 50; }
+.skip:focus { top: 8px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 16px 20px 64px; }
+.top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
+h1 { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; margin: 0; }
+.asof { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.search { flex: 1 1 320px; display: flex; gap: 10px; align-items: center; }
+.search input { width: 100%; padding: 10px 12px; border: 1px solid #d6d2cb; border-radius: 10px; background: #fff; }
+.lead-btn, .primary { background: var(--ink); color: #fff; border: 1px solid var(--ink); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+.lead-btn:hover, .primary:hover { background: #333; }
+.sticky { position: sticky; top: 0; z-index: 6; background: var(--paper); padding: 8px 0; }
+.toolbar, .views, .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.views { margin-top: 8px; }
+.seg { display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.seg span { font-size: 12px; color: var(--muted); padding: 0 6px; }
+.seg button, .tab, .toggle, .textbtn { border: 0; background: transparent; border-radius: 999px; padding: 6px 10px; cursor: pointer; }
+.seg button[aria-pressed="true"], .tab[aria-selected="true"], .toggle[aria-pressed="true"] { background: var(--ink); color: #fff; }
+label.sel { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+label.sel select { padding: 6px 8px; border: 1px solid #d6d2cb; border-radius: 8px; background: #fff; }
+.chips { min-height: 32px; margin-top: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid #d6d2cb; border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 12px; }
+.chip button { border: 0; background: transparent; cursor: pointer; padding: 2px 6px; border-radius: 999px; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 12px 0; }
+.kpi { text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; min-height: 104px; }
+.kpi:hover { border-color: #b8b3aa; }
+.kpi .label { color: var(--muted); font-size: 12px; }
+.kpi .value { font-size: 26px; font-weight: 650; margin: 4px 0; letter-spacing: -0.02em; }
+.kpi .sub { color: #8a857d; font-size: 12px; margin: 0; }
+.dash { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(260px, 0.85fr); gap: 12px; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 14px 16px; }
+.panel h2 { margin: 0 0 8px; font-size: 15px; }
+.chart-row { display: flex; gap: 10px; align-items: stretch; }
+.chart-scroll { overflow-x: auto; flex: 1; }
+.plot { position: relative; height: 230px; min-width: 680px; }
+.shade { position: absolute; top: 0; bottom: 28px; background: rgba(15, 118, 110, 0.1); border-radius: 6px; pointer-events: none; }
+.shade-label { position: absolute; top: 4px; left: 6px; font-size: 11px; color: var(--muted); }
+.bars { position: relative; z-index: 1; display: flex; align-items: flex-end; height: calc(100% - 28px); gap: 2px; }
+.bar { flex: 1 1 0; height: 100%; border: 0; background: transparent; padding: 0 1px; cursor: pointer; display: flex; align-items: flex-end; box-shadow: inset 0 -1px 0 #e7e2da; }
+.stack { width: 72%; margin: 0 auto; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
+.segd, .sego { display: block; width: 100%; }
+.segd { background: var(--defend); }
+.sego { background: var(--opp); }
+.qlabels { display: flex; min-width: 680px; }
+.qlabels span { flex: 1 1 0; text-align: center; font-size: 11px; color: #8a857d; height: 16px; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 6px 0; }
+.sw { width: 12px; height: 12px; display: inline-block; vertical-align: -2px; margin-right: 4px; }
+.unknown-col { width: 118px; flex: none; border: 1px dashed #c4bfb6; background: #f3f1ec; border-radius: 10px; cursor: pointer; padding: 10px; text-align: left; }
+.unknown-col strong { display: block; font-size: 22px; margin: 6px 0; }
+.unknown-col span, .range-note { color: var(--muted); font-size: 12px; }
+.range { margin-top: 8px; }
+.range-bars { display: flex; align-items: flex-end; gap: 3px; height: 46px; min-width: 680px; }
+.range-bars button { flex: 1; border: 0; background: #d6d2cb; padding: 0; cursor: pointer; border-radius: 2px 2px 0 0; }
+.range-years { display: flex; min-width: 680px; }
+.range-years span { flex: 1; text-align: center; font-size: 10px; color: #8a857d; }
+.news-item { display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid #f0ede7; background: transparent; padding: 8px 0; cursor: pointer; }
+.news-item .when { color: #8a857d; font-size: 12px; }
+.news-item .what { font-weight: 600; }
+.list-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; margin: 14px 0 8px; }
+.list-head h2 { margin: 0; font-size: 16px; }
+.actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.actions button, .textbtn { background: #fff; border: 1px solid #d6d2cb; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+table.deal-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.deal-table th, .deal-table td { padding: 8px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid #f0ede7; }
+.deal-table th { background: #f3f1ec; font-size: 12px; font-weight: 600; color: #4b4844; }
+.deal-table th button { background: transparent; border: 0; padding: 0; cursor: pointer; font-weight: 600; color: inherit; }
+.deal-table tr { cursor: pointer; }
+.deal-table tr:hover td { background: #faf9f6; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.name { font-weight: 600; }
+.muted { color: var(--muted); font-size: 12px; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; border: 1px solid transparent; margin: 0 4px 2px 0; }
+.badge-new { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
+.badge-watch { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
+.role-defend { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.role-part { background: #dbeafe; color: #1e3a8a; border-color: #93c5fd; }
+.role-opp { background: #f3f1ec; color: #44403c; border-color: #e7e2da; font-weight: 500; }
+.role-unk { background: #fff; color: #6b6863; border-color: #d6d2cb; font-weight: 500; border-style: dashed; }
+.m2m.past { color: var(--warn); font-weight: 700; }
+.m2m.soon { font-weight: 700; }
+.approx { color: var(--warn); }
+.cards { display: none; flex-direction: column; gap: 8px; }
+.card { text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer; }
+.card-top { display: flex; justify-content: space-between; gap: 8px; }
+.backdrop { position: fixed; inset: 0; background: rgba(26,26,26,.35); z-index: 30; }
+.detail, .dialog { position: fixed; z-index: 40; background: #fff; overflow: auto; }
+.detail { top: 0; right: 0; height: 100%; width: min(460px, 100%); border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgba(0,0,0,.12); padding: 18px 18px 40px; }
+.dialog { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 24px)); max-height: min(86vh, 760px); border-radius: 12px; border: 1px solid var(--line); padding: 18px; }
+.detail h2, .dialog h2 { margin: 0 36px 8px 0; font-size: 18px; }
+.close-x { position: absolute; top: 10px; right: 10px; border: 0; background: transparent; font-size: 20px; cursor: pointer; padding: 4px 8px; }
+.kv { display: grid; grid-template-columns: 120px 1fr; gap: 4px 8px; font-size: 13px; margin: 8px 0; }
+.kv dt { color: var(--muted); }
+.callout { background: #fff7ed; border: 1px solid #fdba74; border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.lenders, .chain { margin: 4px 0 8px; padding-left: 18px; }
+.chain button { background: transparent; border: 0; color: #1d4ed8; cursor: pointer; padding: 0; text-align: left; }
+.src a { color: #1d4ed8; }
+.personal { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 10px; }
+.personal textarea, .dialog textarea, .dialog input { width: 100%; border: 1px solid #d6d2cb; border-radius: 8px; padding: 8px; }
+.field { margin: 8px 0; }
+.field span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+.footer, .history { color: #8a857d; font-size: 12px; margin-top: 18px; }
+.history summary { cursor: pointer; color: var(--muted); }
+.err { background: #fef2f2; color: #991b1b; padding: 8px 10px; border-radius: 8px; }
+#toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 8px 12px; border-radius: 8px; z-index: 60; }
+#toast:empty { display: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 900px) {
+  .kpis { grid-template-columns: 1fr 1fr; }
+  .dash { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .kpis { grid-template-columns: 1fr; }
+  .deal-table { display: none; }
+  .cards { display: flex; }
+  .detail { width: 100%; }
+  .unknown-col { width: 100%; }
+  .chart-row { flex-direction: column; }
+}
+
 </style>
 </head>
 <body>
+<a class="skip" href="#seznam">Přeskočit na seznam</a>
 <div class="wrap">
-  <h1>Czech Corporate Loans — Refi Pipeline</h1>
-  <div class="sub">Refi-pipeline view of Czech corporate facilities. The 18-month lists count outstanding bank loans only. WB role tags are illustrative personal labels on a public page. Data vintage <span id="asof"></span> <span id="buildtag" class="build-tag"></span>. Latest dated row <span id="latestRow"></span>. Window counted from <span id="viewed"></span>.</div>
-
-  <div class="stats" id="stats"></div>
-  <div class="sub" id="statsNote"></div>
-
-  <div class="panel">
-    <h2>View</h2>
-    <div class="filters" id="viewTabs"></div>
-    <h2 style="margin-top: 16px;">Filter by company</h2>
-    <div class="company-filter-wrap">
-      <button class="company-filter-btn" id="companyFilterBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
-        <span class="company-filter-label" id="companyFilterLabel">All companies</span>
-        <span class="caret">▼</span>
-      </button>
-      <div class="company-filter-dropdown" id="companyFilterDropdown" hidden role="listbox"></div>
+  <header class="top">
+    <div>
+      <h1>České korporátní úvěry — refinanční přehled</h1>
+      <p class="asof" id="asofLine"></p>
     </div>
-    <h2 style="margin-top: 16px;">Filter by group</h2>
-    <div class="company-filter-wrap">
-      <button class="company-filter-btn" id="groupFilterBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
-        <span class="company-filter-label" id="groupFilterLabel">All groups</span>
-        <span class="caret">▼</span>
-      </button>
-      <div class="company-filter-dropdown" id="groupFilterDropdown" hidden role="listbox"></div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Hledat dlužníka, skupinu, věřitele…  (/)" aria-label="Hledat dlužníka, skupinu, účel nebo věřitele" autocomplete="off" />
+      <button type="button" class="lead-btn" id="leadBtn">+ Lead</button>
     </div>
-    <h2 style="margin-top: 16px;">Filter by lender</h2>
-    <input id="lenderFilter" type="search" placeholder="Lender name contains…" autocomplete="off" aria-label="Filter by lender" />
-    <h2 style="margin-top: 16px;">Sort</h2>
-    <div class="filters" id="sortChips"></div>
-    <h2 style="margin-top: 16px;">Filter by deal type</h2>
-    <div class="filters" id="filters"></div>
-    <h2 style="margin-top: 16px;">Filter by year</h2>
-    <div class="filters" id="yearFilters"></div>
-    <div id="coalToggle" style="margin-top: 12px; font-size: 12px; color: #6b6863;"></div>
+  </header>
+  <div class="sticky">
+    <div id="filters"></div>
+    <div class="chips" id="chips" aria-label="Aktivní filtry"></div>
   </div>
-
-  <div class="panel">
-    <h2 id="listHeading">Outstanding bank loans in the refi window</h2>
-    <div id="table"></div>
+  <div id="errors" class="err" hidden></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="dash">
+    <section class="panel" id="chart" aria-label="Časová osa splatností"></section>
+    <section class="panel" id="news" aria-label="Nové od poslední návštěvy"></section>
   </div>
-
-  <div class="footer">
-    Curated from public sources (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie, plus issuer press releases from Allwyn / CTP / EPH / Penta / Accolade / CPI Property Group / ČEZ). Coverage is best-effort and not exhaustive — private club deals not publicly announced are excluded. WB role tags (incumbent, participant, opportunity) are illustrative personal labels, not a confirmed lender role; this page is public. Not investment advice.
-  </div>
+  <section id="seznam">
+    <div class="list-head" id="listHead"></div>
+    <div id="tableWrap"></div>
+    <div class="cards" id="cards"></div>
+    <div id="leads" hidden></div>
+  </section>
+  <details class="history">
+    <summary>Co je nového podle buildů</summary>
+    <div id="history"></div>
+  </details>
+  <p class="footer">Sestaveno z veřejných zdrojů (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie a tiskové zprávy emitentů). Pokrytí není úplné: neveřejné klubové obchody v datech nejsou. Štítky role WB jsou pracovní označení na veřejné stránce, ne potvrzení role věřitele. Osobní poznámky, hvězdička Sleduji a leady zůstávají v tomto prohlížeči. Není to investiční doporučení.</p>
 </div>
+<div id="backdrop" class="backdrop" hidden></div>
+<aside id="detail" class="detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle" hidden></aside>
+<div id="leadDialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="leadTitle" hidden>
+  <button type="button" class="close-x" id="leadCancel" aria-label="Zavřít">×</button>
+  <h2 id="leadTitle">Nový lead</h2>
+  <p class="muted">Šablona tipu z LinkedInu. Uloží se jen v tomto prohlížeči. Vedle toho jde otevřít předvyplněné GitHub issue.</p>
+  <form id="leadForm">
+    <label class="field"><span>Dlužník</span><input name="borrower" required placeholder="Firma z příspěvku" /></label>
+    <label class="field"><span>Částka, jak je ve zdroji</span><input name="amount" placeholder="např. 200 mil. EUR, nebo n/d" /></label>
+    <label class="field"><span>Kdy</span><input name="when" placeholder="datum, měsíc nebo jen rok" /></label>
+    <label class="field"><span>Věřitelé</span><input name="lenders" placeholder="kdo prý financuje" /></label>
+    <label class="field"><span>Co tip říká</span><textarea name="purpose" rows="3" placeholder="účel, jestli jde o refinancování, akvizici, reality…"></textarea></label>
+    <label class="field"><span>Odkaz na příspěvek</span><input name="source" placeholder="https://" /></label>
+    <label class="field"><span>Poznámka</span><textarea name="note" rows="2"></textarea></label>
+    <label class="field"><span>Stav</span>
+      <select name="status">
+        <option value="new">Nový</option>
+        <option value="checking">Ověřuji</option>
+        <option value="confirmed">Potvrzeno</option>
+        <option value="rejected">Odmítnuto</option>
+      </select>
+    </label>
+    <div class="actions">
+      <button type="submit" class="primary">Uložit lead</button>
+      <button type="button" class="textbtn" data-act="open-github-issue">Otevřít šablonu issue</button>
+    </div>
+  </form>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 // ---- Curated baseline deal list (2021 – Oct 2026) ----
 // Each deal: borrower, type, amount, currency, value_eur (EUR millions), lenders, date, year,
 // purpose, source, confidence, tenor_y, wb_status, coal_excluded, tenor_inferred?
 // status / instrument / successor are filled from ROW_FACTS (default: outstanding bank loan).
-// A year-only date does not invent a maturity month.
+// A year-only signing date uses a flagged mid-period approximation so the loan can enter the refi radar.
 // tenor_inferred marks a 5y CRE (or other) tenor used because none was disclosed.
 // Corporate bond rows are EUR-denominated only. CZK loans stay in the list.
 const DEALS = [
@@ -852,73 +726,90 @@ function applyRowFacts() {
 }
 applyRowFacts();
 
-const TYPE_BADGE = {
-  "Syndicated":      { cls: "badge-syn",     q: 'Czech "syndicated loan" 2026 borrower facility signed' },
-  "Acquisition/LBO": { cls: "badge-lbo",     q: 'Czech acquisition financing 2026 LBO buyout loan' },
-  "Refinancing":     { cls: "badge-refi",    q: 'Czech corporate refinancing 2026 facility loan signed' },
-  "Real Estate":     { cls: "badge-re",      q: 'Czech real estate loan 2026 property financing Prague' },
-  "Export Finance":  { cls: "badge-export",  q: 'Czech export finance EGAP CEB buyer credit' },
-  "Project/Infra":   { cls: "badge-project", q: 'Czech project finance infrastructure EIB loan' },
-  "Intermediated":   { cls: "badge-intermediated", q: 'Czech intermediated EIB EBRD bank facility' },
+const DATA_AS_OF = "2026-10-24";
+const BUILD = "2026-10-25.1";
+const VISIT_KEY = "cz_loans_last_visit";
+const VISIT_SNAP = "cz_loans_visit_snapshot";
+const PERSONAL_KEY = "cz_loans_personal_v1";
+const LEADS_KEY = "cz_loans_leads_v1";
+const FIRST_VISIT_BASELINE = "2026-10-23";
+const LEGACY_FILTER_KEYS = ["cz_loans_lender_v1","cz_loans_filter_v2","cz_loans_year_filter_v1","cz_loans_view_v1","cz_loans_coal_filter_v1","cz_loans_company_v2","cz_loans_group_v1","cz_loans_sort_v1"];
+
+const CHANGELOG = [
+  { build: "2026-10-25.1", date: "2026-10-25", text: "Přehled s ukazateli a osou splatností, jedna akční tabulka, okno 12 až 36 měsíců, filtry v adrese, detail obchodu, seznam Doplnit splatnost, leady a osobní poznámky v prohlížeči." },
+  { build: "2026-10-24.1", date: "2026-10-24", text: "Nové řádky: klub CGNI / GasNet, retail parky Trigea, hotely Hotusa, Magna MedTech." },
+  { build: "2026-10-23.1", date: "2026-10-23", text: "Doplnění obchodů a smluvních splatností, včetně Dr. Max, Eurowag Club a AmRest." },
+];
+
+const ADDED_ON = {
+  "Czech Gas Networks Investments (CGNI / GasNet, ČEZ 55.21%)": "2026-10-24",
+  "Trigea nemovitostní fond (Retail Park Ostrava + Retail Park Haná)": "2026-10-24",
+  "Hotusa Group (Aurea Legends + Exe City Park Praha)": "2026-10-24",
+  "Magna MedTech Group (EMMA Capital)": "2026-10-24",
+  "Dr. Max Group / Dr. Max Funding CR (Penta)": "2026-10-23",
+  "Crestyl (Dock In Office Park, Prague 8)": "2026-10-23",
+  "Aupark a.s. (Aupark Shopping Centre, Bratislava)": "2026-10-23",
+  "Florentinum ASSET a.s. (CITIC Europe Holdings)": "2026-10-23",
+  "AmRest Holdings SE": "2026-10-23",
+  "GLP Capital Partners / Ares (logistics portfolios, CZ+PL+HU)": "2026-10-23",
+  "Českomoravská Nemovitostní (Crystal + Blox, Prague)": "2026-10-23",
+  "W.A.G. Payment Solutions (Eurowag) — Club Finance": "2026-10-23",
+  "REICO Long Lease (Logistics Park Rokycany)": "2026-10-23",
+  "Smarty Brands Group": "2026-10-23",
+  "BigBoard Praha (BigBoard Group)": "2026-10-23",
+  "CIMEX Group (Vyšehrad Garden, Vista House, Garden Eleven — Prague offices)": "2026-10-23",
 };
 
-const LENDER_KEY = "cz_loans_lender_v1";
-const STATE_KEY = "cz_loans_filter_v2";
-const YEAR_STATE_KEY = "cz_loans_year_filter_v1";
-const VIEW_KEY = "cz_loans_view_v1";
-const COAL_KEY = "cz_loans_coal_filter_v1";
-const COMPANY_KEY = "cz_loans_company_v2"; // array of company keys (multi-select hook)
-const GROUP_KEY  = "cz_loans_group_v1";
-const SORT_KEY = "cz_loans_sort_v1";
-let activeFilter = localStorage.getItem(STATE_KEY) || "All";
-let activeYear = localStorage.getItem(YEAR_STATE_KEY) || "All";
-let activeView = localStorage.getItem(VIEW_KEY) || "pipeline";
-let coalIncluded = localStorage.getItem(COAL_KEY) === "true"; // default = excluded
-let companyFilter = (() => {
-  try { return JSON.parse(localStorage.getItem(COMPANY_KEY) || "[]"); }
-  catch { return []; }
-})();
-let groupFilter = localStorage.getItem(GROUP_KEY) || "";
-let lenderQueryRaw = localStorage.getItem(LENDER_KEY) || "";
-let lenderQuery = lenderQueryRaw.trim().toLowerCase();
+const TYPE_CS = {
+  "Syndicated": "Syndikát",
+  "Acquisition/LBO": "Akvizice",
+  "Refinancing": "Refinancování",
+  "Real Estate": "Reality",
+  "Export Finance": "Export",
+  "Project/Infra": "Projekt",
+  "Intermediated": "Zprostředkovaný",
+};
+const STATUS_CS = { outstanding: "Živý", refinanced: "Refinancován", repaid: "Splacen", not_a_bank_loan: "Není úvěr", memo: "Poznámka" };
+const INST_CS = { bank_loan: "Bankovní úvěr", bond: "Dluhopis", equity: "Equity", preferred_equity: "Preferenční equity", ma_ev: "M&A / hodnota podniku", mixed: "Smíšené", mezzanine: "Mezanin" };
+const CONF_CS = { Confirmed: "Potvrzeno", Likely: "Pravděpodobné", Inferred: "Odvozeno" };
+const LEAD_STATUS = { new: "Nový", checking: "Ověřuji", confirmed: "Potvrzeno", rejected: "Odmítnuto" };
 
-// ---- Group definitions (parent → substring patterns in borrower name) ----
 const DEAL_GROUPS = {
-  "Accolade":          ["Accolade"],
-  "AFI Europe":        ["AFI Europe"],
-  "Allwyn / Sazka":   ["Allwyn", "Sazka"],
-  "AmRest":            ["AmRest"],
-  "Aupark":            ["Aupark"],
-  "BHM Group":         ["BHM Group", "Reinsberg Group"],
-  "BigBoard":          ["BigBoard"],
-  "Carlyle":           ["Carlyle"],
+  "Accolade": ["Accolade"],
+  "AFI Europe": ["AFI Europe"],
+  "Allwyn / Sazka": ["Allwyn", "Sazka"],
+  "AmRest": ["AmRest"],
+  "Aupark": ["Aupark"],
+  "BHM Group": ["BHM Group", "Reinsberg Group"],
+  "BigBoard": ["BigBoard"],
+  "Carlyle": ["Carlyle"],
   "CETIN / PPF Telco": ["CETIN"],
-  "CIMEX":             ["CIMEX"],
-  "Crestyl":           ["Crestyl"],
-  "ČEZ Group":         ["ČEZ", "Czech Grid Holdings (GasNet)"],
-  "ČMN":               ["Českomoravská", "Ceskomoravska"],
-  "CPI Property Group":["CPI Property Group"],
-  "CTP":               ["CTP N.V."],
-  "EMMA Capital":      ["EMMA Capital", "Emma Alpha"],
-  "Enery":             ["Enery"],
-  "EPH / Křetínský":  ["EPH", "EP UK Bidco", "EP Corporate", "France Retail Holdings", "International Media Invest"],
-  "Eurowag":           ["Eurowag", "W.A.G."],
+  "CIMEX": ["CIMEX"],
+  "Crestyl": ["Crestyl"],
+  "ČEZ Group": ["ČEZ", "Czech Grid Holdings (GasNet)"],
+  "ČMN": ["Českomoravská", "Ceskomoravska"],
+  "CPI Property Group": ["CPI Property Group"],
+  "CTP": ["CTP N.V."],
+  "EMMA Capital": ["EMMA Capital", "Emma Alpha"],
+  "Enery": ["Enery"],
+  "EPH / Křetínský": ["EPH", "EP UK Bidco", "EP Corporate", "France Retail Holdings", "International Media Invest"],
+  "Eurowag": ["Eurowag", "W.A.G."],
   "Florentinum / CITIC": ["Florentinum", "CITIC"],
-  "Hotusa":            ["Hotusa"],
-  "Genesis Capital":   ["Genesis Capital"],
-  "GLP / Ares":        ["GLP Capital"],
-  "Hartenberg":        ["Hartenberg"],
-  "Heimstaden":        ["Heimstaden"],
-  "KKCG":              ["KKCG", "SAZKA Entertainment", "Aricoma", "Solitea"],
-  "Kofola":            ["Kofola"],
-  "Penta Group":       ["Penta", "Dr.Max", "Dr. Max"],
-  "PPF Group":         ["PPF", "Škoda Transportation", "Tanemo"],
-  "RegioJet":          ["RegioJet"],
-  "REICO":             ["REICO"],
-  "Sev.en / Tykač":   ["Sev.en"],
-  "Smarty":            ["Smarty"],
-  "Solek":             ["Solek", "SOLEK"],
-  "Trigea":            ["Trigea"],
+  "Hotusa": ["Hotusa"],
+  "Genesis Capital": ["Genesis Capital"],
+  "GLP / Ares": ["GLP Capital"],
+  "Hartenberg": ["Hartenberg"],
+  "Heimstaden": ["Heimstaden"],
+  "KKCG": ["KKCG", "SAZKA Entertainment", "Aricoma", "Solitea"],
+  "Kofola": ["Kofola"],
+  "Penta Group": ["Penta", "Dr.Max", "Dr. Max"],
+  "PPF Group": ["PPF", "Škoda Transportation", "Tanemo"],
+  "RegioJet": ["RegioJet"],
+  "REICO": ["REICO"],
+  "Sev.en / Tykač": ["Sev.en"],
+  "Smarty": ["Smarty"],
+  "Solek": ["Solek", "SOLEK"],
+  "Trigea": ["Trigea"],
 };
 
 function dealGroup(borrower) {
@@ -927,47 +818,54 @@ function dealGroup(borrower) {
   }
   return null;
 }
-let sortMode = localStorage.getItem(SORT_KEY) || "maturity"; // "maturity" | "az" | "amount"
-
-// Company-key extraction: take leading borrower phrase, strip parens/slashes/dashes/legal suffixes.
 function companyKey(borrower) {
   if (!borrower) return "";
   let head = borrower.split(/[\/\(—–\-]/)[0].trim();
   head = head.replace(/\s+(a\.s\.|s\.r\.o\.|GmbH|Ltd\.?|N\.V\.|S\.A\.|SE|plc|AG|Holding|Holdings|Group|fondy|fond|SICAV|s\.r\.l\.)\.?$/gi, "").trim();
-  // Collapse repeated whitespace
-  head = head.replace(/\s+/g, " ");
-  return head;
+  return head.replace(/\s+/g, " ");
 }
 
-const TODAY = new Date();
-const REFI_WINDOW_MONTHS = 18;
-// Vintage of this file. The on-page "as of" date comes from here, not from the viewer's clock.
-const DATA_AS_OF = "2026-10-24";
-const BUILD_TAG = "build " + DATA_AS_OF + ".1 · " + DEALS.length + " deals · CGNI club, Trigea, Hotusa and Magna";
-document.addEventListener("DOMContentLoaded", () => {
-  const e = document.getElementById("asof");
-  if (e) e.textContent = DATA_AS_OF;
-  const bt = document.getElementById("buildtag");
-  if (bt) bt.textContent = "· " + BUILD_TAG;
-  const viewed = document.getElementById("viewed");
-  if (viewed) viewed.textContent = TODAY.toISOString().slice(0, 10);
-  const latest = document.getElementById("latestRow");
-  if (latest) latest.textContent = latestDatedLabel();
-  const lenderInput = document.getElementById("lenderFilter");
-  if (lenderInput) {
-    lenderInput.value = lenderQueryRaw;
-    lenderInput.addEventListener("input", (ev) => {
-      lenderQueryRaw = ev.target.value;
-      lenderQuery = lenderQueryRaw.trim().toLowerCase();
-      localStorage.setItem(LENDER_KEY, lenderQueryRaw);
-      render();
-    });
-  }
+function backfillAddedOn() {
+  DEALS.forEach(d => {
+    if (d.added_on) return;
+    if (ADDED_ON[d.borrower]) d.added_on = ADDED_ON[d.borrower];
+    else if (d.signed_iso && /^\d{4}-\d{2}-\d{2}$/.test(d.signed_iso)) d.added_on = d.signed_iso;
+    else d.added_on = (d.year || 2021) + "-07-01";
+  });
+}
 
-  setupCompanyFilterToggle();
-  populateCompanyDropdown();
-  setupGroupFilterToggle();
-});
+const NOW = new Date();
+const TODAY = new Date(Date.UTC(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()));
+function todayISO() {
+  return NOW.getFullYear() + "-" + String(NOW.getMonth() + 1).padStart(2, "0") + "-" + String(NOW.getDate()).padStart(2, "0");
+}
+function fmtCzDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
+  if (!m) return iso || "";
+  return Number(m[3]) + ". " + Number(m[2]) + ". " + m[1];
+}
+function fmtNum(n) {
+  return Math.round(n).toLocaleString("cs-CZ");
+}
+function fmtMld(eurM) {
+  const v = (eurM || 0) / 1000;
+  const digits = Math.abs(v) >= 10 ? 1 : 2;
+  return v.toLocaleString("cs-CZ", { minimumFractionDigits: digits, maximumFractionDigits: digits }) + " mld. EUR";
+}
+function esc(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function safeUrl(url) {
+  try {
+    const u = new URL(url);
+    if (u.protocol === "http:" || u.protocol === "https:") return u.href;
+  } catch (e) { /* not a url */ }
+  return "";
+}
+function domainOf(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ""); }
+  catch (e) { return url || ""; }
+}
 
 const MONTH_INDEX = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
 function monthIndex(name) {
@@ -975,17 +873,13 @@ function monthIndex(name) {
   const idx = MONTH_INDEX[String(name).slice(0, 3).toLowerCase()];
   return idx == null ? null : idx;
 }
-// Month is known only when the source states one. A bare year, a quarter, or a range
-// stays unknown — do not invent 15 June from signed_iso.
 function parseDealDate(dateStr) {
   const s = String(dateStr || "").trim();
   const monthName = "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*";
   let m = s.match(new RegExp("^(\\d{1,2})\\s+" + monthName + "\\s+(\\d{4})\\b", "i"));
   if (m) return { year: +m[3], month: monthIndex(m[2]), day: +m[1], precision: "day" };
-
   m = s.match(new RegExp(monthName + "\\s+(\\d{4})\\s*\\(?\\s*(?:close|closed|closing)\\b", "i"));
   if (m) return { year: +m[2], month: monthIndex(m[1]), day: null, precision: "month" };
-
   const vague = /[–—]|\d{4}\s*[-–—]\s*\d|\bQ[1-4]\b|\bH[12]\b|\bEarly\b|\bSpring\b|\bAutumn\b|\bWinter\b|\bongoing\b|\bannounce/i.test(s);
   if (!vague) {
     m = s.match(new RegExp("^" + monthName + "\\s+(\\d{4})\\b", "i"));
@@ -994,122 +888,71 @@ function parseDealDate(dateStr) {
   const y = s.match(/(\d{4})/);
   return { year: y ? +y[1] : null, month: null, day: null, precision: "year" };
 }
-function latestDatedLabel() {
-  let best = null;
-  DEALS.forEach(d => {
-    const p = parseDealDate(d.date);
-    if (!p || p.precision === "year" || p.month == null || p.year == null) return;
-    const t = Date.UTC(p.year, p.month, p.day || 1);
-    if (!best || t > best.t) best = { t, label: d.date };
-  });
-  return best ? best.label : "n/a";
-}
-function deriveMaturity(deal) {
-  if (!deal || deal.no_own_maturity) return null;
-  if (deal.maturity_ym) {
-    const m = /^(\d{4})-(\d{2})$/.exec(deal.maturity_ym);
-    if (!m) return null;
-    return new Date(Date.UTC(+m[1], +m[2] - 1, 1));
+function maturityInfo(deal) {
+  if (!deal || deal.no_own_maturity) return { date: null, basis: "neznama", approximate: false };
+  if (deal.maturity_ym && /^\d{4}-\d{2}$/.test(deal.maturity_ym)) {
+    const parts = deal.maturity_ym.split("-");
+    return { date: new Date(Date.UTC(+parts[0], +parts[1] - 1, 1)), basis: "smluvni", approximate: false, signingYear: deal.year };
   }
-  if (deal.tenor_y == null || deal.tenor_y === "") return null;
+  const tenor = deal.tenor_y == null || deal.tenor_y === "" ? null : Number(deal.tenor_y);
   const p = parseDealDate(deal.date);
-  if (!p || p.precision === "year" || p.month == null || p.year == null) return null;
-  const day = p.precision === "day" && p.day ? p.day : 1;
-  return new Date(Date.UTC(p.year + Number(deal.tenor_y), p.month, day));
+  if (tenor == null || !p || p.year == null) {
+    return { date: null, basis: "neznama", approximate: false, signingYear: p && p.year };
+  }
+  if (p.precision !== "year" && p.month != null) {
+    const day = p.precision === "day" && p.day ? p.day : 1;
+    return {
+      date: new Date(Date.UTC(p.year + tenor, p.month, day)),
+      basis: deal.tenor_inferred ? "odhad5" : "tenor",
+      approximate: false,
+      signingYear: p.year,
+      tenor,
+    };
+  }
+  let month = 6, day = 1, kind = "stred-roku";
+  const qm = String(deal.date || "").match(/\bQ([1-4])\b/i);
+  const hm = String(deal.date || "").match(/\bH([12])\b/i);
+  if (qm) { month = (Number(qm[1]) - 1) * 3 + 1; day = 15; kind = "ctvrtleti"; }
+  else if (hm) { month = hm[1] === "1" ? 3 : 9; day = 1; kind = "pololeti"; }
+  return {
+    date: new Date(Date.UTC(p.year + tenor, month, day)),
+    basis: deal.tenor_inferred ? "odhad5" : "tenor",
+    approximate: true,
+    approxKind: kind,
+    signingYear: p.year,
+    tenor,
+  };
 }
-function maturityLabel(deal) {
-  const m = deriveMaturity(deal);
-  if (!m) return "unknown";
-  return m.getUTCFullYear() + "-" + String(m.getUTCMonth() + 1).padStart(2, "0");
+function ymOf(date) {
+  return date.getUTCFullYear() + "-" + String(date.getUTCMonth() + 1).padStart(2, "0");
 }
-function monthsToMaturity(deal, asOf) {
-  const m = deriveMaturity(deal);
-  if (!m) return null;
-  const t = asOf || TODAY;
-  return (m.getUTCFullYear() - t.getFullYear()) * 12 + (m.getUTCMonth() - t.getMonth());
+function maturityText(deal) {
+  const info = maturityInfo(deal);
+  if (!info.date) {
+    const y = info.signingYear || deal.year;
+    return y ? "neznámá, podpis " + y : "neznámá";
+  }
+  const ym = ymOf(info.date);
+  if (info.basis === "smluvni") return ym + " smluvní";
+  if (info.approximate) {
+    const how = info.approxKind === "ctvrtleti" ? "střed čtvrtletí" : info.approxKind === "pololeti" ? "střed pololetí" : "střed roku";
+    const tail = info.basis === "odhad5" ? "odhad 5 let" : "z tenoru";
+    return ym + " přibližně, " + how + ", " + tail;
+  }
+  if (info.basis === "odhad5") return ym + " odhad 5 let";
+  return ym + " z tenoru";
 }
-
-// Certainty score (0/25/50/75/100%) — one of four independently-verifiable
-// parameters must hold for each 25% increment. 100% requires all four:
-//  1) source is a direct primary announcement/filing (confidence === "Confirmed")
-//  2) amount is a specific disclosed figure (not "n/d" / estimated)
-//  3) lenders are specifically named (not vague/inferred/undisclosed)
-//  4) date is precise to the month (not a bare year or multi-year range)
-function certaintyPct(d) {
-  let score = 0;
-  if (d.confidence === "Confirmed") score += 25;
-
-  const amt = (d.amount || "").toLowerCase();
-  if (!/n\/d|est\.|estimated|unknown/.test(amt)) score += 25;
-
-  const lend = (d.lenders || "").toLowerCase();
-  if (!/likely|inferred|undisclosed|not disclosed|reportedly|typical|standard bank stack|specifics? \(?not\)? disclosed|specific (structure|facility|syndicate) (undisclosed|not disclosed)|n\/d/.test(lend)) score += 25;
-
-  const dt = d.date || "";
-  const hasMonth = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(dt);
-  const isDashRange = /[–—]/.test(dt);
-  if (hasMonth && !isDashRange) score += 25;
-
-  // A 5y tenor filled in because none was disclosed is not a verified parameter.
-  if (d.tenor_inferred) score = Math.min(score, 75);
-
-  return score;
+function rangeText(deal) {
+  const info = maturityInfo(deal);
+  const from = info.signingYear || deal.year;
+  if (!from) return "";
+  const to = info.date ? info.date.getUTCFullYear() : (deal.tenor_y ? from + Number(deal.tenor_y) : from);
+  return from + "–" + to;
 }
-
-function csvEscape(value) {
-  const s = String(value == null ? "" : value);
-  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
-  return s;
+function monthsTo(info) {
+  if (!info || !info.date) return null;
+  return (info.date.getUTCFullYear() - TODAY.getUTCFullYear()) * 12 + (info.date.getUTCMonth() - TODAY.getUTCMonth());
 }
-function dealsToCsv(deals) {
-  const rows = [["Borrower","Type","Status","Instrument","Successor","Confidence","Certainty %","WB role","Amount","Value EUR m","Bank value EUR m","Maturity","Months-to-maturity","Lenders","Purpose","Source"]];
-  deals.forEach(d => {
-    const m2m = monthsToMaturity(d);
-    rows.push([
-      d.borrower,
-      d.type,
-      d.separate_facility === false ? "memo" : (d.status || ""),
-      d.instrument || "",
-      d.successor || "",
-      d.confidence || "",
-      certaintyPct(d) + "%",
-      d.wb_status,
-      d.amount,
-      d.value_eur,
-      d.bank_value_eur != null ? d.bank_value_eur : "",
-      maturityLabel(d),
-      m2m == null ? "" : m2m,
-      d.lenders,
-      d.purpose,
-      d.source,
-    ]);
-  });
-  return rows.map(r => r.map(csvEscape).join(",")).join("\n");
-}
-function downloadCsv(deals, filename) {
-  const csv = dealsToCsv(deals);
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function refiUrgency(deal) {
-  const m2m = monthsToMaturity(deal);
-  if (m2m == null) return "unknown";
-  if (m2m < 0) return "past";
-  if (m2m <= 12) return "live";
-  if (m2m <= 18) return "imminent";
-  if (m2m <= 24) return "approaching";
-  if (m2m <= 36) return "distant";
-  return "far";
-}
-
 function isHuntLoan(d) {
   if (!d || d.separate_facility === false) return false;
   if ((d.status || "outstanding") !== "outstanding") return false;
@@ -1121,607 +964,1047 @@ function bankCommitmentEur(d) {
   if (d.bank_value_eur != null) return d.bank_value_eur;
   return d.value_eur || 0;
 }
-function amountIsEstimate(d) {
-  const amt = (d.amount || "").toLowerCase();
-  if (/n\/d|est\.|estimated|\bunknown\b|\blikely\b|~|approx|up to /.test(amt)) return true;
-  if (d.confidence !== "Confirmed") return true;
-  const bank = d.bank_value_eur != null ? d.bank_value_eur : d.value_eur;
-  if (!bank) return true;
-  return false;
+function displayAmount(d) {
+  const n = isHuntLoan(d) ? bankCommitmentEur(d) : (d.value_eur || 0);
+  return n ? n : 0;
 }
-function inRefiWindow(d) {
+function needsDate(d) {
+  const info = maturityInfo(d);
+  return !info.date || info.approximate;
+}
+function confirmedMaturity(d) {
+  const info = maturityInfo(d);
+  return !!(info.date && !info.approximate && info.basis !== "odhad5");
+}
+function inRefiWindow(d, okno) {
   if (!isHuntLoan(d)) return false;
-  const m2m = monthsToMaturity(d);
-  return m2m != null && m2m >= -3 && m2m <= REFI_WINDOW_MONTHS;
+  const m = monthsTo(maturityInfo(d));
+  return m != null && m >= -3 && m <= okno;
 }
-function lenderHit(d) {
-  if (!lenderQuery) return true;
-  return (d.lenders || "").toLowerCase().includes(lenderQuery);
+function quarterKey(date) {
+  return date.getUTCFullYear() + "Q" + (Math.floor(date.getUTCMonth() / 3) + 1);
 }
-function groupHit(d) {
-  if (!groupFilter) return true;
-  const g = dealGroup(d.borrower);
-  if (groupFilter === "__ungrouped__") return !g;
-  return g === groupFilter;
+function quarterLabel(key) {
+  const m = /^(\d{4})Q([1-4])$/.exec(key || "");
+  return m ? m[1] + " Q" + m[2] : key;
 }
-function passesBaseFilters(d) {
-  return (activeFilter === "All" || d.type === activeFilter) &&
-    (activeYear === "All" || String(d.year) === activeYear) &&
-    (coalIncluded || !d.coal_excluded) &&
-    lenderHit(d);
+function addMonthsUTC(date, n) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + n, 1));
 }
-function filterDeals() {
-  const sel = companyFilter || [];
-  return DEALS.filter(d =>
-    passesBaseFilters(d) &&
-    (sel.length === 0 || sel.includes(companyKey(d.borrower))) &&
-    groupHit(d)
-  );
+function enumerateQuarters() {
+  const start = addMonthsUTC(TODAY, -3);
+  const q0m = Math.floor(start.getUTCMonth() / 3) * 3;
+  let cursor = new Date(Date.UTC(start.getUTCFullYear(), q0m, 1));
+  const out = [];
+  for (let i = 0; i < 22; i++) {
+    const q = Math.floor(cursor.getUTCMonth() / 3) + 1;
+    out.push({ key: cursor.getUTCFullYear() + "Q" + q, year: cursor.getUTCFullYear(), q, start: new Date(cursor) });
+    cursor = addMonthsUTC(cursor, 3);
+  }
+  return out;
 }
-function sortDeals(deals) {
-  const arr = deals.slice();
-  if (sortMode === "az") {
-    arr.sort((a, b) => a.borrower.localeCompare(b.borrower, "cs", { sensitivity: "base" }));
-  } else if (sortMode === "amount") {
-    arr.sort((a, b) => (b.value_eur || 0) - (a.value_eur || 0));
+function certaintyPct(d) {
+  let score = 0;
+  if (d.confidence === "Confirmed") score += 25;
+  const amt = (d.amount || "").toLowerCase();
+  if (!/n\/d|est\.|estimated|unknown/.test(amt)) score += 25;
+  const lend = (d.lenders || "").toLowerCase();
+  if (!/likely|inferred|undisclosed|not disclosed|reportedly|typical|standard bank stack|specifics? \(?not\)? disclosed|specific (structure|facility|syndicate) (undisclosed|not disclosed)|n\/d/.test(lend)) score += 25;
+  const dt = d.date || "";
+  const hasMonth = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(dt);
+  const isDashRange = /[–—]/.test(dt);
+  if (hasMonth && !isDashRange) score += 25;
+  if (d.tenor_inferred) score = Math.min(score, 75);
+  return score;
+}
+function verifyHints(d) {
+  const info = maturityInfo(d);
+  const hints = [];
+  if (!info.date) hints.push("Splatnost nejde odvodit. Doplňte datum podpisu a tenor, nebo smluvní datum.");
+  else if (info.approximate) hints.push("Ve zdroji je datum podpisu jen přibližně. Splatnost je střed toho období plus tenor a je označená jako přibližná.");
+  if (d.tenor_inferred) hints.push("Tenor ve zdroji není. Použitý odhad 5 let není smluvní datum.");
+  if (info.date && info.basis !== "smluvni") hints.push("Před hovorem s klientem ověřte smluvní datum splatnosti.");
+  if (certaintyPct(d) < 100) hints.push("Jistota " + certaintyPct(d) + " %. Nejsou potvrzené všechny parametry: zdroj, částka, věřitelé, datum.");
+  return hints;
+}
+function lenderLines(text) {
+  const src = String(text || "");
+  const parts = [];
+  let buf = "", depth = 0;
+  const push = () => { const t = buf.trim().replace(/^[&/+]\s*/, ""); if (t) parts.push(t); buf = ""; };
+  for (const ch of src) {
+    if (ch === "(") depth++;
+    if (ch === ")" && depth) depth--;
+    if (depth === 0 && (ch === ";" || ch === "+" || ch === ",")) { push(); continue; }
+    buf += ch;
+  }
+  push();
+  return parts.length ? parts : (src.trim() ? [src.trim()] : []);
+}
+function sourcesOf(d) {
+  if (Array.isArray(d.sources) && d.sources.length) {
+    return d.sources.map(s => typeof s === "string" ? { url: s, date: d.date } : { url: s.url || s.href || "", date: s.date || d.date, label: s.label || "" });
+  }
+  if (d.source) return [{ url: d.source, date: d.date }];
+  return [];
+}
+function successorParts(d) {
+  if (!d.successor) return [];
+  return d.successor.split("+").map(raw => raw.trim()).filter(Boolean).map(id => {
+    if (id.startsWith("ext:")) return { ext: true, label: id.slice(4).replace(/-/g, " ") };
+    const hit = DEALS.find(x => x.id === id);
+    return { ext: false, id, label: hit ? hit.borrower : id, missing: !hit };
+  });
+}
+function predecessors(id) {
+  return DEALS.filter(d => (d.successor || "").split("+").map(s => s.trim()).includes(id));
+}
+function loanCount(n) {
+  const word = n === 1 ? "úvěr" : (n >= 2 && n <= 4 ? "úvěry" : "úvěrů");
+  return n + " " + word;
+}
+function shortName(borrower) {
+  const head = String(borrower || "").split("(")[0].trim();
+  const first = head.split(/\s+/)[0] || head;
+  const paren = /\(([^)]+)\)/.exec(borrower || "");
+  const generic = /^(czech|the|new|group|international)$/i.test(first);
+  if (paren && (generic || head.split(/\s+/).length >= 4)) {
+    const alias = paren[1].split(/[\/,]/)[0].trim();
+    if (/^[A-Z0-9]{2,10}$/.test(alias)) return alias;
+  }
+  return first;
+}
+
+function defaults() {
+  return { okno: 18, role: "vse", typ: "", skupina: "", rok: "", potvrzene: false, nove: false, sleduji: false, uhli: false, pohled: "akce", ctvrt: "", q: "", razeni: "mesice", lstav: "open" };
+}
+function readState() {
+  const p = new URLSearchParams(location.hash.replace(/^#/, ""));
+  const s = defaults();
+  const okno = Number(p.get("okno"));
+  if ([12, 18, 24, 36].includes(okno)) s.okno = okno;
+  const role = p.get("role");
+  if (role === "vse" || role === "obhajoba" || role === "prilezitost") s.role = role;
+  s.typ = p.get("typ") || "";
+  if (s.typ && !TYPE_CS[s.typ]) s.typ = "";
+  s.skupina = p.get("skupina") || "";
+  s.rok = p.get("rok") || "";
+  s.potvrzene = p.get("potvrzene") === "1";
+  s.nove = p.get("nove") === "1";
+  s.sleduji = p.get("sleduji") === "1";
+  s.uhli = p.get("uhli") === "1";
+  const pohled = p.get("pohled");
+  if (pohled === "akce" || pohled === "vse" || pohled === "doplnit" || pohled === "leady") s.pohled = pohled;
+  s.ctvrt = p.get("ctvrt") || "";
+  s.q = p.get("q") || "";
+  const razeni = p.get("razeni");
+  if (["mesice","mesice-desc","objem","objem-desc","dluznik","dluznik-desc","splatnost","splatnost-desc"].includes(razeni)) s.razeni = razeni;
+  const lstav = p.get("lstav");
+  if (["open","all","new","checking","confirmed","rejected"].includes(lstav)) s.lstav = lstav;
+  return s;
+}
+function writeHash() {
+  const p = new URLSearchParams();
+  const d = defaults();
+  if (state.okno !== d.okno) p.set("okno", String(state.okno));
+  if (state.role !== d.role) p.set("role", state.role);
+  if (state.typ) p.set("typ", state.typ);
+  if (state.skupina) p.set("skupina", state.skupina);
+  if (state.rok) p.set("rok", state.rok);
+  if (state.potvrzene) p.set("potvrzene", "1");
+  if (state.nove) p.set("nove", "1");
+  if (state.sleduji) p.set("sleduji", "1");
+  if (state.uhli) p.set("uhli", "1");
+  if (state.pohled !== d.pohled) p.set("pohled", state.pohled);
+  if (state.ctvrt) p.set("ctvrt", state.ctvrt);
+  if (state.q) p.set("q", state.q);
+  if (state.razeni !== d.razeni) p.set("razeni", state.razeni);
+  if (state.pohled === "leady" && state.lstav !== d.lstav) p.set("lstav", state.lstav);
+  const next = p.toString();
+  const cur = location.hash.replace(/^#/, "");
+  if (cur === next) return;
+  history.replaceState(null, "", next ? "#" + next : location.pathname + location.search);
+}
+function setState(patch) {
+  Object.assign(state, patch);
+  writeHash();
+  render();
+}
+function isDirty() {
+  const d = defaults();
+  return Object.keys(d).some(k => state[k] !== d[k]);
+}
+
+let state = defaults();
+let lastVisit = FIRST_VISIT_BASELINE;
+let firstVisit = false;
+let personal = {};
+let leads = [];
+let detailId = "";
+let leadOpen = false;
+let lastFocus = null;
+
+function loadStore() {
+  LEGACY_FILTER_KEYS.forEach(k => localStorage.removeItem(k));
+  try { personal = JSON.parse(localStorage.getItem(PERSONAL_KEY) || "{}") || {}; }
+  catch (e) { personal = {}; }
+  try { leads = JSON.parse(localStorage.getItem(LEADS_KEY) || "[]") || []; }
+  catch (e) { leads = []; }
+  if (!Array.isArray(leads)) leads = [];
+  const had = localStorage.getItem(VISIT_KEY);
+  let snap = sessionStorage.getItem(VISIT_SNAP);
+  if (!snap) {
+    snap = had || FIRST_VISIT_BASELINE;
+    sessionStorage.setItem(VISIT_SNAP, snap);
+    localStorage.setItem(VISIT_KEY, todayISO());
+    firstVisit = !had;
+  }
+  lastVisit = snap;
+}
+function savePersonal() { localStorage.setItem(PERSONAL_KEY, JSON.stringify(personal)); }
+function saveLeads() { localStorage.setItem(LEADS_KEY, JSON.stringify(leads)); }
+function effectiveRole(d) {
+  const over = personal[d.id] && personal[d.id].role;
+  return over || d.wb_status || "unknown";
+}
+function isDefend(role) { return role === "incumbent" || role === "participant"; }
+function isNew(d) { return !!d.added_on && d.added_on > lastVisit; }
+function isStar(d) { return !!(personal[d.id] && personal[d.id].star); }
+function roleMeta(role) {
+  if (role === "incumbent") return { cls: "role-defend", text: "Obhajoba" };
+  if (role === "participant") return { cls: "role-part", text: "Účast" };
+  if (role === "opportunity") return { cls: "role-opp", text: "Příležitost" };
+  return { cls: "role-unk", text: "Neověřeno" };
+}
+function textHit(d, q) {
+  const n = q.trim().toLowerCase();
+  if (!n) return true;
+  const blob = [d.borrower, dealGroup(d.borrower) || "", d.purpose || "", d.lenders || "", d.amount || ""].join("\n").toLowerCase();
+  return blob.includes(n);
+}
+function passCommon(d) {
+  if (!state.uhli && d.coal_excluded) return false;
+  if (state.typ && d.type !== state.typ) return false;
+  if (state.skupina) {
+    const g = dealGroup(d.borrower);
+    if (state.skupina === "__ungrouped__") { if (g) return false; }
+    else if (g !== state.skupina) return false;
+  }
+  if (state.q && !textHit(d, state.q)) return false;
+  if (state.sleduji && !isStar(d)) return false;
+  if (state.nove && !isNew(d)) return false;
+  if (state.potvrzene && !confirmedMaturity(d)) return false;
+  if (state.rok) {
+    const info = maturityInfo(d);
+    if (!info.date || String(info.date.getUTCFullYear()) !== String(state.rok)) return false;
+  }
+  return true;
+}
+function population() { return DEALS.filter(passCommon); }
+function effectiveSort() {
+  if (state.pohled === "doplnit" && state.razeni === "mesice") return "objem-desc";
+  return state.razeni;
+}
+function sortRows(rows) {
+  const mode = effectiveSort();
+  const desc = mode.endsWith("-desc");
+  const key = desc ? mode.slice(0, -5) : mode;
+  const dir = desc ? -1 : 1;
+  return rows.slice().sort((a, b) => {
+    if (key === "dluznik") return dir * a.borrower.localeCompare(b.borrower, "cs", { sensitivity: "base" });
+    if (key === "objem") return dir * (displayAmount(a) - displayAmount(b)) || a.borrower.localeCompare(b.borrower, "cs");
+    if (key === "splatnost") {
+      const ia = maturityInfo(a), ib = maturityInfo(b);
+      if (!ia.date && !ib.date) return 0;
+      if (!ia.date) return 1;
+      if (!ib.date) return -1;
+      return dir * (ia.date - ib.date);
+    }
+    const ma = monthsTo(maturityInfo(a)), mb = monthsTo(maturityInfo(b));
+    if (ma == null && mb == null) return 0;
+    if (ma == null) return 1;
+    if (mb == null) return -1;
+    return dir * (ma - mb);
+  });
+}
+function beforeRole() {
+  const rows = population();
+  if (state.pohled === "doplnit") return rows.filter(d => isHuntLoan(d) && needsDate(d));
+  if (state.pohled === "vse" || (state.pohled === "akce" && state.q && !state.ctvrt)) return rows;
+  if (state.pohled === "leady") return [];
+  let hunt = rows.filter(isHuntLoan);
+  if (state.ctvrt) {
+    hunt = hunt.filter(d => {
+      const info = maturityInfo(d);
+      return info.date && !info.approximate && quarterKey(info.date) === state.ctvrt;
+    });
   } else {
-    // Dated deals first: upcoming soonest, then past most-recently-matured.
-    // Unknown maturity (year-only sources) sorts under every dated deal.
-    arr.sort((a, b) => {
-      const ma = monthsToMaturity(a);
-      const mb = monthsToMaturity(b);
-      const aKnown = ma != null;
-      const bKnown = mb != null;
-      if (aKnown !== bKnown) return aKnown ? -1 : 1;
-      if (!aKnown) {
-        if ((b.year || 0) !== (a.year || 0)) return (b.year || 0) - (a.year || 0);
-        return a.borrower.localeCompare(b.borrower, "cs", { sensitivity: "base" });
-      }
-      const aFuture = ma >= 0;
-      const bFuture = mb >= 0;
-      if (aFuture !== bFuture) return aFuture ? -1 : 1;
-      return aFuture ? ma - mb : mb - ma;
-    });
+    hunt = hunt.filter(d => inRefiWindow(d, state.okno));
   }
-  return arr;
+  return hunt;
 }
-function fmtBn(eurM) {
-  return "€" + ((eurM || 0) / 1000).toFixed(2) + "bn";
+function applyRole(rows) {
+  if (state.role === "obhajoba") return rows.filter(d => isDefend(effectiveRole(d)));
+  if (state.role === "prilezitost") return rows.filter(d => effectiveRole(d) === "opportunity");
+  return rows;
 }
-function euroBuckets(deals) {
-  const b = {
-    disclosed: { n: 0, eur: 0 },
-    estimate: { n: 0, eur: 0 },
-    excluded: { n: 0, eur: 0, slices: 0 },
-    closed: { n: 0, eur: 0 },
-    memo: { n: 0 },
-  };
-  deals.forEach(d => {
-    if (d.separate_facility === false) { b.memo.n += 1; return; }
-    const status = d.status || "outstanding";
-    if (status === "not_a_bank_loan") {
-      b.excluded.n += 1;
-      b.excluded.eur += d.value_eur || 0;
-      return;
+function tableRows() { return sortRows(applyRole(beforeRole())); }
+
+function kpiRows() {
+  return DEALS.filter(d => {
+    if (!state.uhli && d.coal_excluded) return false;
+    if (state.typ && d.type !== state.typ) return false;
+    if (state.skupina) {
+      const g = dealGroup(d.borrower);
+      if (state.skupina === "__ungrouped__") { if (g) return false; }
+      else if (g !== state.skupina) return false;
     }
-    if (status === "refinanced" || status === "repaid") {
-      b.closed.n += 1;
-      b.closed.eur += d.value_eur || 0;
-      return;
+    if (state.q && !textHit(d, state.q)) return false;
+    if (state.sleduji && !isStar(d)) return false;
+    if (state.nove && !isNew(d)) return false;
+    if (state.rok) {
+      const info = maturityInfo(d);
+      if (!info.date || String(info.date.getUTCFullYear()) !== String(state.rok)) return false;
     }
-    const bank = d.bank_value_eur != null ? d.bank_value_eur : (d.value_eur || 0);
-    const non = d.nonloan_value_eur || 0;
-    if (amountIsEstimate(d)) { b.estimate.n += 1; b.estimate.eur += bank; }
-    else { b.disclosed.n += 1; b.disclosed.eur += bank; }
-    if (non) { b.excluded.eur += non; b.excluded.slices += 1; }
+    return isHuntLoan(d);
   });
-  return b;
-}
-
-// ---- Render stats ----
-function renderStats() {
-  const filtered = filterDeals();
-  const liveRefi = filtered.filter(inRefiWindow);
-  const liveTotal = liveRefi.reduce((s, d) => s + bankCommitmentEur(d), 0);
-  const incumbent = liveRefi.filter(d => d.wb_status === "incumbent");
-  const participant = liveRefi.filter(d => d.wb_status === "participant");
-  const mustRetain = liveRefi.filter(d => d.wb_status === "incumbent" || d.wb_status === "participant");
-  const mustRetainTotal = mustRetain.reduce((s, d) => s + bankCommitmentEur(d), 0);
-  const oppCount = liveRefi.filter(d => d.wb_status === "opportunity");
-  const oppTotal = oppCount.reduce((s, d) => s + bankCommitmentEur(d), 0);
-  const buckets = euroBuckets(filtered);
-
-  const html = [
-    `<div class="stat"><div class="label">Live refi window (≤18m)</div><div class="value">${liveRefi.length}</div><div class="sub">${fmtBn(liveTotal)} bank commitments</div></div>`,
-    `<div class="stat" style="border-left:3px solid #166534;"><div class="label">WB must-retain (defend)</div><div class="value">${mustRetain.length}</div><div class="sub">${fmtBn(mustRetainTotal)} · ${incumbent.length} incumbent + ${participant.length} participant</div></div>`,
-    `<div class="stat" style="border-left:3px solid #b91c1c;"><div class="label">WB opportunity</div><div class="value">${oppCount.length}</div><div class="sub">${fmtBn(oppTotal)} outstanding bank loans</div></div>`,
-    `<div class="stat"><div class="label">Disclosed bank commitments</div><div class="value">${fmtBn(buckets.disclosed.eur)}</div><div class="sub">${buckets.disclosed.n} outstanding · named amount</div></div>`,
-    `<div class="stat"><div class="label">Estimates</div><div class="value">${fmtBn(buckets.estimate.eur)}</div><div class="sub">${buckets.estimate.n} outstanding bank loans · est. or n/d</div></div>`,
-    `<div class="stat"><div class="label">Excluded non-loans</div><div class="value">${fmtBn(buckets.excluded.eur)}</div><div class="sub">${buckets.excluded.n} non-loan rows${buckets.excluded.slices ? " + " + buckets.excluded.slices + " bond slice" : ""}</div></div>`,
-  ].join("");
-  document.getElementById("stats").innerHTML = html;
-  const note = document.getElementById("statsNote");
-  if (note) {
-    const coal = coalIncluded ? "coal included" : "coal excluded";
-    note.textContent = "Euro buckets follow the current filters (" + coal + "). Closed facilities (refinanced or repaid): " +
-      buckets.closed.n + " rows, " + fmtBn(buckets.closed.eur) + ", not in the three buckets. " +
-      (buckets.memo.n ? buckets.memo.n + " memo row omitted (drawdown already inside another facility). " : "") +
-      "The 18-month counts above are outstanding bank loans only, including facilities matured in the last 3 months.";
-  }
-}
-
-// ---- Render filter chips ----
-function renderFilters() {
-  const types = ["All", "Syndicated", "Acquisition/LBO", "Refinancing", "Real Estate", "Export Finance", "Project/Infra", "Intermediated"];
-  document.getElementById("filters").innerHTML = types.map(t =>
-    `<div class="chip ${activeFilter === t ? "active" : ""}" data-filter="type" data-value="${t}">${t}</div>`
-  ).join("");
-
-  const years = Array.from(new Set(DEALS.map(d => d.year))).sort((a, b) => b - a);
-  const yearOptions = ["All", ...years.map(String)];
-  document.getElementById("yearFilters").innerHTML = yearOptions.map(y =>
-    `<div class="chip ${activeYear === y ? "active" : ""}" data-filter="year" data-value="${y}">${y}</div>`
-  ).join("");
-
-  // View tabs
-  const viewOptions = [
-    { v: "pipeline", label: "🔴 Pipeline (refi watchlists)" },
-    { v: "all", label: "📋 Full deal list" },
-  ];
-  document.getElementById("viewTabs").innerHTML = viewOptions.map(o =>
-    `<div class="chip view-chip ${activeView === o.v ? "active" : ""}" data-filter="view" data-value="${o.v}">${o.label}</div>`
-  ).join("");
-
-  // Sort mode chips
-  const sortOptions = [
-    { v: "maturity", label: "⏱️ Maturity (urgent first)" },
-    { v: "az",       label: "🔤 A → Z (borrower)" },
-    { v: "amount",   label: "💰 Amount (largest first)" },
-  ];
-  document.getElementById("sortChips").innerHTML = sortOptions.map(o =>
-    `<div class="chip ${sortMode === o.v ? "active" : ""}" data-filter="sort" data-value="${o.v}">${o.label}</div>`
-  ).join("");
-
-  // Company-filter button label
-  const lbl = document.getElementById("companyFilterLabel");
-  if (lbl) {
-    if (!companyFilter || companyFilter.length === 0) lbl.textContent = "All companies";
-    else if (companyFilter.length === 1) lbl.textContent = companyFilter[0];
-    else lbl.textContent = `${companyFilter.length} companies selected`;
-  }
-  populateCompanyDropdown();
-
-  // Coal toggle
-  document.getElementById("coalToggle").innerHTML =
-    `<label class="coal-toggle"><input type="checkbox" id="coalCheck" ${coalIncluded ? "checked" : ""}/> Include coal/thermal-coal mining (default off — ESG-excluded)</label>`;
-
-  document.querySelectorAll(".chip").forEach(el => {
-    el.addEventListener("click", () => {
-      const kind = el.dataset.filter;
-      const val = el.dataset.value;
-      if (kind === "type") { activeFilter = val; localStorage.setItem(STATE_KEY, val); }
-      else if (kind === "year") { activeYear = val; localStorage.setItem(YEAR_STATE_KEY, val); }
-      else if (kind === "view") { activeView = val; localStorage.setItem(VIEW_KEY, val); }
-      else if (kind === "sort") { sortMode = val; localStorage.setItem(SORT_KEY, val); }
-      render();
-    });
-  });
-  const cc = document.getElementById("coalCheck");
-  if (cc) {
-    cc.addEventListener("change", () => {
-      coalIncluded = cc.checked;
-      localStorage.setItem(COAL_KEY, coalIncluded ? "true" : "false");
-      render();
-    });
-  }
 }
 
 function render() {
-  const heading = document.getElementById("listHeading");
-  if (heading) {
-    heading.textContent = activeView === "pipeline"
-      ? "Outstanding bank loans in the refi window"
-      : "All tracked rows";
-  }
+  renderAsOf();
   renderFilters();
-  updateGroupLabel();
-  renderStats();
-  renderTable();
+  renderKpis();
+  renderChart();
+  renderNews();
+  renderList();
+  renderHistory();
+  if (detailId) fillDetail();
+  const q = document.getElementById("q");
+  if (q && q.value !== state.q && document.activeElement !== q) q.value = state.q;
 }
 
+function renderAsOf() {
+  const fresh = DEALS.filter(isNew);
+  const el = document.getElementById("asofLine");
+  const when = firstVisit ? "první otevření, počítáno od " + fmtCzDate(FIRST_VISIT_BASELINE) : "od " + fmtCzDate(lastVisit);
+  el.textContent = "Data k " + fmtCzDate(DATA_AS_OF) + " · build " + BUILD + " · " + DEALS.length + " obchodů · " + fresh.length + " nové od minula (" + when + ")";
+}
 
-// ---- Excel-style company-filter dropdown ----
-function populateCompanyDropdown() {
-  const dd = document.getElementById("companyFilterDropdown");
-  if (!dd) return;
-  const baseFiltered = DEALS.filter(passesBaseFilters);
-  const groups = {};
-  baseFiltered.forEach(d => {
-    const k = companyKey(d.borrower);
-    if (!k) return;
-    groups[k] = (groups[k] || 0) + 1;
-  });
-  const keys = Object.keys(groups).sort((a, b) =>
-    a.localeCompare(b, "cs", { sensitivity: "base" })
-  );
-  const isActive = (k) => companyFilter && companyFilter.includes(k);
-  let html = `
-    <div class="company-filter-actions">
-      <a href="#" class="company-action" data-action="show-all">Show all (${baseFiltered.length})</a>
-      <a href="#" class="company-action" data-action="close">Close</a>
+function renderFilters() {
+  const pre = beforeRole();
+  const nAll = pre.length;
+  const nDef = pre.filter(d => isDefend(effectiveRole(d))).length;
+  const nOpp = pre.filter(d => effectiveRole(d) === "opportunity").length;
+  const years = Array.from(new Set(DEALS.map(d => { const i = maturityInfo(d); return i.date ? i.date.getUTCFullYear() : null; }).filter(Boolean))).sort((a, b) => a - b);
+  const groups = Object.keys(DEAL_GROUPS).sort((a, b) => a.localeCompare(b, "cs"));
+  const oknoBtns = [12, 18, 24, 36].map(n =>
+    `<button type="button" data-act="okno" data-value="${n}" aria-pressed="${state.okno === n}">${n} m</button>`
+  ).join("");
+  const roleBtns = [
+    ["vse", "Vše (" + nAll + ")"],
+    ["obhajoba", "Obhajoba (" + nDef + ")"],
+    ["prilezitost", "Příležitost (" + nOpp + ")"],
+  ].map(([v, lab]) => `<button type="button" data-act="role" data-value="${v}" aria-pressed="${state.role === v}">${lab}</button>`).join("");
+  const types = Object.keys(TYPE_CS).map(t => `<option value="${esc(t)}" ${state.typ === t ? "selected" : ""}>${esc(TYPE_CS[t])}</option>`).join("");
+  const groupOpts = groups.map(g => `<option value="${esc(g)}" ${state.skupina === g ? "selected" : ""}>${esc(g)}</option>`).join("");
+  const yearOpts = years.map(y => `<option value="${y}" ${String(state.rok) === String(y) ? "selected" : ""}>${y}</option>`).join("");
+  const doplnitN = population().filter(d => isHuntLoan(d) && needsDate(d)).length;
+  const tabs = [
+    ["akce", "Akční seznam"],
+    ["vse", "Všechny řádky"],
+    ["doplnit", "Doplnit splatnost (" + doplnitN + ")"],
+    ["leady", "Leady (" + leads.filter(l => l.status !== "rejected").length + ")"],
+  ].map(([v, lab]) => `<button type="button" class="tab" role="tab" data-act="pohled" data-value="${v}" aria-selected="${state.pohled === v}">${lab}</button>`).join("");
+  document.getElementById("filters").innerHTML = `
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Refinanční okno">${oknoBtns}</div>
+      <div class="seg" role="group" aria-label="Role WB">${roleBtns}</div>
+      <label class="sel">Typ <select data-filter="typ" aria-label="Typ obchodu"><option value="">vše</option>${types}</select></label>
+      <label class="sel">Skupina <select data-filter="skupina" aria-label="Skupina"><option value="">vše</option><option value="__ungrouped__" ${state.skupina === "__ungrouped__" ? "selected" : ""}>bez skupiny</option>${groupOpts}</select></label>
+      <label class="sel">Rok splatnosti <select data-filter="rok" aria-label="Rok splatnosti"><option value="">vše</option>${yearOpts}</select></label>
+      <button type="button" class="toggle" data-act="toggle" data-key="potvrzene" aria-pressed="${state.potvrzene}">Jen potvrzené</button>
+      <button type="button" class="toggle" data-act="toggle" data-key="nove" aria-pressed="${state.nove}">Nové od minula</button>
+      <button type="button" class="toggle" data-act="toggle" data-key="sleduji" aria-pressed="${state.sleduji}">Sleduji</button>
+      <button type="button" class="toggle" data-act="toggle" data-key="uhli" aria-pressed="${state.uhli}">Včetně uhlí</button>
     </div>
-    <ul class="company-list">
-      ${keys.map(k => `
-        <li class="company-item ${isActive(k) ? "active" : ""}" data-company="${k.replace(/"/g, '&quot;')}">
-          <span class="company-name">${k}</span>
-          <span class="company-count">${groups[k]}</span>
-        </li>
-      `).join("")}
-    </ul>
-  `;
-  dd.innerHTML = html;
-  // Wire up clicks
-  dd.querySelectorAll(".company-item").forEach(el => {
-    el.addEventListener("click", (ev) => {
-      const k = el.dataset.company;
-      if (ev.shiftKey || ev.ctrlKey || ev.metaKey) {
-        // Multi-select with modifier keys
-        if (companyFilter.includes(k)) {
-          companyFilter = companyFilter.filter(x => x !== k);
-        } else {
-          companyFilter = companyFilter.concat([k]);
-        }
-      } else {
-        // Single-select (default)
-        companyFilter = [k];
-        document.getElementById("companyFilterDropdown").hidden = true;
-        document.getElementById("companyFilterBtn").setAttribute("aria-expanded", "false");
-      }
-      localStorage.setItem(COMPANY_KEY, JSON.stringify(companyFilter));
-      render();
-    });
-  });
-  dd.querySelectorAll(".company-action").forEach(el => {
-    el.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      const a = el.dataset.action;
-      if (a === "show-all") {
-        companyFilter = [];
-        localStorage.setItem(COMPANY_KEY, JSON.stringify([]));
-        render();
-      } else if (a === "close") {
-        document.getElementById("companyFilterDropdown").hidden = true;
-        document.getElementById("companyFilterBtn").setAttribute("aria-expanded", "false");
-      }
-    });
-  });
+    <div class="views" role="tablist" aria-label="Pohled na seznam">${tabs}</div>`;
+  renderChips();
+}
+function renderChips() {
+  const chips = [];
+  const add = (key, label) => chips.push(`<span class="chip">${esc(label)} <button type="button" data-act="clear" data-key="${key}" aria-label="Zrušit filtr ${esc(label)}">×</button></span>`);
+  if (state.okno !== 18) add("okno", "Okno " + state.okno + " m");
+  if (state.role === "obhajoba") add("role", "Role: obhajoba");
+  if (state.role === "prilezitost") add("role", "Role: příležitost");
+  if (state.typ) add("typ", "Typ: " + (TYPE_CS[state.typ] || state.typ));
+  if (state.skupina) add("skupina", "Skupina: " + (state.skupina === "__ungrouped__" ? "bez skupiny" : state.skupina));
+  if (state.rok) add("rok", "Splatnost " + state.rok);
+  if (state.potvrzene) add("potvrzene", "Jen potvrzené");
+  if (state.nove) add("nove", "Nové od minula");
+  if (state.sleduji) add("sleduji", "Sleduji");
+  if (state.uhli) add("uhli", "Včetně uhlí");
+  if (state.pohled !== "akce") add("pohled", state.pohled === "vse" ? "Všechny řádky" : state.pohled === "doplnit" ? "Doplnit splatnost" : "Leady");
+  if (state.ctvrt) add("ctvrt", "Čtvrtletí " + quarterLabel(state.ctvrt));
+  if (state.q) add("q", "Hledání: " + state.q);
+  if (state.razeni !== "mesice") add("razeni", "Řazení: " + state.razeni);
+  if (state.pohled === "leady" && state.lstav !== "open") add("lstav", "Stav leadu: " + (LEAD_STATUS[state.lstav] || state.lstav));
+  const clear = `<button type="button" class="textbtn" data-act="clear-all" ${isDirty() ? "" : "disabled"}>Zrušit vše</button>`;
+  document.getElementById("chips").innerHTML = chips.join("") + clear;
+}
+function clearKey(key) {
+  const d = defaults();
+  const patch = {};
+  patch[key] = d[key];
+  if (key === "q") {
+    const input = document.getElementById("q");
+    if (input) input.value = "";
+  }
+  setState(patch);
 }
 
-// ---- Group-filter dropdown ----
-function populateGroupDropdown() {
-  const dd = document.getElementById("groupFilterDropdown");
-  if (!dd) return;
-  const base = DEALS.filter(passesBaseFilters);
+function renderKpis() {
+  const rows = kpiRows().filter(d => !state.potvrzene || confirmedMaturity(d));
+  const inWin = rows.filter(d => inRefiWindow(d, state.okno));
+  const approx = inWin.filter(d => maturityInfo(d).approximate);
+  const solid = inWin.filter(d => !maturityInfo(d).approximate);
+  const defend = inWin.filter(d => isDefend(effectiveRole(d)));
+  const defendEur = defend.reduce((s, d) => s + bankCommitmentEur(d), 0);
+  const missing = kpiRows().filter(needsDate);
+  const missingEur = missing.reduce((s, d) => s + bankCommitmentEur(d), 0);
+  const fresh = DEALS.filter(isNew);
+  const biggest = defend.slice().sort((a, b) => bankCommitmentEur(b) - bankCommitmentEur(a))[0];
+  const defendSub = biggest ? shortName(biggest.borrower) + " " + fmtMld(bankCommitmentEur(biggest)) : "v okně nikdo";
+  const freshSub = fresh.slice(0, 4).map(d => shortName(d.borrower)).join(", ") || "žádné";
+  const winEur = inWin.reduce((s, d) => s + bankCommitmentEur(d), 0);
+  const cards = [
+    ["win", "V refi okně (" + state.okno + " m)", loanCount(inWin.length), fmtMld(winEur) + " · " + solid.length + " s měsícem, " + approx.length + " přibližně"],
+    ["defend", "Obhajoba WB (" + state.okno + " m)", loanCount(defend.length), defendSub + (defend.length > 1 ? " · celkem " + fmtMld(defendEur) : "")],
+    ["missing", "Bez známé splatnosti", loanCount(missing.length), fmtMld(missingEur) + ", doplnit"],
+    ["fresh", "Nové od poslední návštěvy", String(fresh.length), freshSub],
+  ];
+  document.getElementById("kpis").innerHTML = cards.map(([id, label, value, sub]) =>
+    `<button type="button" class="kpi" data-act="kpi" data-kpi="${id}"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div><p class="sub">${esc(sub)}</p></button>`
+  ).join("");
+}
+
+function renderChart() {
+  const base = kpiRows();
+  const rows = state.potvrzene ? base.filter(d => confirmedMaturity(d)) : base;
+  const quarters = enumerateQuarters();
+  const map = {};
+  quarters.forEach(q => { map[q.key] = { defend: 0, opp: 0, n: 0 }; });
+  let unknownN = 0, unknownEur = 0, later = 0;
+  base.filter(needsDate).forEach(d => { unknownN++; unknownEur += bankCommitmentEur(d); });
+  rows.forEach(d => {
+    const info = maturityInfo(d);
+    const eur = bankCommitmentEur(d);
+    if (!info.date || info.approximate) return;
+    const bucket = map[quarterKey(info.date)];
+    if (!bucket) { later += eur; return; }
+    bucket.n++;
+    if (isDefend(effectiveRole(d))) bucket.defend += eur;
+    else bucket.opp += eur;
+  });
+  const max = Math.max(1, ...quarters.map(q => map[q.key].defend + map[q.key].opp));
+  const plotPx = 190;
+  let shadeFrom = -1, shadeTo = -1;
+  quarters.forEach((q, i) => {
+    const m = (q.start.getUTCFullYear() - TODAY.getUTCFullYear()) * 12 + (q.start.getUTCMonth() - TODAY.getUTCMonth());
+    if (m + 2 >= -3 && m <= state.okno) {
+      if (shadeFrom < 0) shadeFrom = i;
+      shadeTo = i;
+    }
+  });
+  const bars = quarters.map(q => {
+    const b = map[q.key];
+    const hd = Math.round((b.defend / max) * plotPx);
+    const ho = Math.round((b.opp / max) * plotPx);
+    const label = quarterLabel(q.key) + ": obhajoba " + fmtNum(b.defend) + " mil. EUR, příležitost " + fmtNum(b.opp) + " mil. EUR, " + b.n + " úvěrů";
+    return `<button type="button" class="bar" data-act="quarter" data-ctvrt="${q.key}" aria-label="${esc(label)}" aria-pressed="${state.ctvrt === q.key}"><span class="stack"><span class="sego" style="height:${ho}px"></span><span class="segd" style="height:${hd}px"></span></span></button>`;
+  }).join("");
+  const labels = quarters.map(q => `<span>${q.q === 1 ? q.year : ""}</span>`).join("");
+  const shade = shadeFrom >= 0
+    ? `<div class="shade" style="left:${(shadeFrom / quarters.length) * 100}%;width:${((shadeTo - shadeFrom + 1) / quarters.length) * 100}%"><span class="shade-label">refi okno ${state.okno} m</span></div>`
+    : "";
+  const summary = "Splatnosti po čtvrtletích. Neznámá splatnost: " + unknownN + " úvěrů, " + fmtMld(unknownEur) + ".";
+  const range = rangeStrip(base.filter(needsDate));
+  document.getElementById("chart").innerHTML = `
+    <h2>Splatnosti po čtvrtletích (mil. EUR)</h2>
+    <div class="legend"><span><i class="sw segd"></i>obhajoba WB</span><span><i class="sw sego"></i>příležitost</span></div>
+    <div class="chart-row">
+      <div class="chart-scroll">
+        <div class="plot" role="group" aria-label="${esc(summary)}">${shade}<div class="bars">${bars}</div><div class="qlabels">${labels}</div></div>
+        ${range}
+      </div>
+      <button type="button" class="unknown-col" data-act="unknown" aria-label="Neznámá splatnost, ${unknownN} úvěrů, otevřít seznam Doplnit splatnost">
+        <span>Neznámá</span>
+        <strong>${unknownN}</strong>
+        <span>${esc(fmtMld(unknownEur))}</span>
+      </button>
+    </div>
+    <p class="range-note">Sloupce počítají jen splatnost s měsícem ve zdroji. Úvěry jen s rokem podpisu jsou v samostatném sloupci Neznámá a v radaru se středem období, označené jako přibližné.${later ? " Po konci osy zbývá " + esc(fmtMld(later)) + "." : ""}</p>`;
+}
+function rangeStrip(rows) {
+  if (!rows.length) return "";
   const counts = {};
-  let ungrouped = 0;
-  base.forEach(d => {
-    const g = dealGroup(d.borrower);
-    if (g) counts[g] = (counts[g] || 0) + 1;
-    else ungrouped += 1;
+  rows.forEach(d => {
+    const info = maturityInfo(d);
+    const from = info.signingYear || d.year;
+    if (!from) return;
+    const to = info.date ? info.date.getUTCFullYear() : from + (Number(d.tenor_y) || 0);
+    for (let y = from; y <= to; y++) counts[y] = (counts[y] || 0) + 1;
   });
-  const grpNames = Object.keys(counts).sort((a, b) => a.localeCompare(b, "cs", { sensitivity: "base" }));
-  const ungroupedItem = `
-        <li class="company-item ${groupFilter === "__ungrouped__" ? "active" : ""}" data-group="__ungrouped__">
-          <span class="company-name">Ungrouped</span>
-          <span class="company-count">${ungrouped}</span>
-        </li>`;
-  dd.innerHTML = `
-    <div class="company-filter-actions">
-      <a href="#" class="company-action" data-action="show-all">Show all</a>
-      <a href="#" class="company-action" data-action="close">Close</a>
+  const years = Object.keys(counts).map(Number).sort((a, b) => a - b);
+  if (!years.length) return "";
+  const max = Math.max(...years.map(y => counts[y]));
+  const bars = years.map(y => `<button type="button" data-act="range-year" data-year="${y}" style="height:${Math.max(4, Math.round((counts[y] / max) * 46))}px" aria-label="Rozpětí ${y}: ${counts[y]} úvěrů"></button>`).join("");
+  const labs = years.map(y => `<span>${String(y).slice(2)}</span>`).join("");
+  return `<div class="range"><div class="range-note">Rozpětí let (podpis + tenor), počet úvěrů k doplnění</div><div class="range-bars">${bars}</div><div class="range-years">${labs}</div></div>`;
+}
+
+function renderNews() {
+  const fresh = DEALS.filter(isNew).sort((a, b) => (b.added_on || "").localeCompare(a.added_on || ""));
+  const items = fresh.slice(0, 8).map(d => {
+    const amt = displayAmount(d) ? fmtNum(displayAmount(d)) + " mil. EUR" : "částka neuvedena";
+    const sentence = String(d.purpose || "").split(/(?<=\.)\s/)[0].slice(0, 140);
+    return `<button type="button" class="news-item" data-act="open" data-id="${esc(d.id)}"><div class="when">${esc(d.date || fmtCzDate(d.added_on))}</div><div class="what">${esc(shortName(d.borrower))} · ${esc(amt)}</div><div class="muted">${esc(sentence)}</div></button>`;
+  }).join("");
+  const empty = firstVisit
+    ? "První otevření v tomto prohlížeči. Přírůstky se počítají od buildu " + fmtCzDate(FIRST_VISIT_BASELINE) + "."
+    : "Od poslední návštěvy " + fmtCzDate(lastVisit) + " nic nového.";
+  document.getElementById("news").innerHTML = `
+    <h2>Nové od poslední návštěvy</h2>
+    ${items || `<p class="muted">${esc(empty)}</p>`}
+    <button type="button" class="textbtn" data-act="mark-seen">Označit jako přečtené</button>`;
+}
+
+function ariaSort(key) {
+  const mode = effectiveSort();
+  if (mode === key) return "ascending";
+  if (mode === key + "-desc") return "descending";
+  return "none";
+}
+function th(key, label, cls) {
+  return `<th class="${cls || ""}" scope="col" aria-sort="${ariaSort(key)}"><button type="button" data-act="sort" data-sort="${key}">${label}</button></th>`;
+}
+function rowHtml(d) {
+  const info = maturityInfo(d);
+  const role = roleMeta(effectiveRole(d));
+  const local = personal[d.id] && personal[d.id].role;
+  const m = monthsTo(info);
+  const mCls = m == null ? "" : m < 0 ? "past" : m <= 12 ? "soon" : "";
+  const mTxt = m == null ? "—" : (m < 0 ? "−" + Math.abs(m) : String(m));
+  const mNote = m == null ? "" : m < 0 ? "po splatnosti" : m === 0 ? "tento měsíc" : "";
+  const amt = displayAmount(d);
+  const src = sourcesOf(d)[0];
+  const href = src ? safeUrl(src.url) : "";
+  const badges = (isNew(d) ? `<span class="badge badge-new">NOVÉ</span>` : "") + (isStar(d) ? `<span class="badge badge-watch">Sleduji</span>` : "");
+  const status = d.separate_facility === false ? "memo" : (d.status || "outstanding");
+  const statusBit = status === "outstanding" ? "" : `<div class="muted">${esc(STATUS_CS[status] || status)}</div>`;
+  const approxCls = info.approximate || !info.date ? "approx" : "";
+  const range = (state.pohled === "doplnit" || info.approximate) && rangeText(d) ? `<div class="muted">rozpětí ${esc(rangeText(d))}</div>` : "";
+  const srcCell = href
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(domainOf(href))}</a>`
+    : "—";
+  return `<tr data-act="open" data-id="${esc(d.id)}" tabindex="0">
+    <td><div class="name">${esc(d.borrower)}</div>${badges}${statusBit}</td>
+    <td class="${approxCls}">${esc(maturityText(d))}${range}</td>
+    <td class="num"><span class="m2m ${mCls}">${mTxt}</span>${mNote ? `<div class="muted">${mNote}</div>` : ""}</td>
+    <td><span class="badge ${role.cls}" ${local ? `title="Místní úprava v tomto prohlížeči"` : ""}>${esc(role.text)}</span></td>
+    <td class="num">${amt ? esc(fmtNum(amt)) : "n/d"}</td>
+    <td class="src">${srcCell}</td>
+  </tr>`;
+}
+function cardHtml(d) {
+  const role = roleMeta(effectiveRole(d));
+  const amt = displayAmount(d);
+  return `<button type="button" class="card" data-act="open" data-id="${esc(d.id)}">
+    <div class="card-top"><span class="name">${esc(d.borrower)}</span><span>${amt ? esc(fmtNum(amt)) + " mil. EUR" : "n/d"}</span></div>
+    <div class="${maturityInfo(d).approximate ? "approx" : ""}">${esc(maturityText(d))}</div>
+    <div style="margin-top:6px"><span class="badge ${role.cls}">${esc(role.text)}</span>${isNew(d) ? `<span class="badge badge-new">NOVÉ</span>` : ""}</div>
+  </button>`;
+}
+function renderList() {
+  const head = document.getElementById("listHead");
+  const table = document.getElementById("tableWrap");
+  const cards = document.getElementById("cards");
+  const leadsEl = document.getElementById("leads");
+  if (state.pohled === "leady") {
+    head.innerHTML = `<h2>Leady</h2>`;
+    table.innerHTML = "";
+    cards.innerHTML = "";
+    leadsEl.hidden = false;
+    renderLeads();
+    return;
+  }
+  leadsEl.hidden = true;
+  leadsEl.innerHTML = "";
+  const rows = tableRows();
+  const titles = { akce: state.ctvrt ? "Čtvrtletí " + quarterLabel(state.ctvrt) : "Akční seznam", vse: "Všechny řádky", doplnit: "Doplnit splatnost" };
+  const sub = state.pohled === "akce" && state.q && !state.ctvrt
+    ? "Hledání prochází celý seznam, ne jen refinanční okno."
+    : state.pohled === "akce" && !state.ctvrt
+    ? "Živé bankovní úvěry v okně " + state.okno + " měsíců, včetně 3 měsíců po splatnosti. Přibližné datum je označené."
+    : state.pohled === "doplnit"
+      ? "Živé úvěry bez měsíce splatnosti ve zdroji, seřazené podle objemu. Rozpětí je podpis plus tenor."
+      : "Všechny sledované řádky, včetně splacených a neúvěrových.";
+  head.innerHTML = `<div><h2 id="listTitle">${esc(titles[state.pohled] || "Seznam")} <span class="muted">(${rows.length})</span></h2><p class="muted" style="margin:2px 0 0">${esc(sub)}</p></div>
+    <div class="actions">
+      <button type="button" data-act="csv">CSV</button>
+      <button type="button" data-act="ics">Kalendář (.ics, okno ${state.okno} m)</button>
+      <button type="button" data-act="mail">Kopírovat do e-mailu</button>
+    </div>`;
+  if (!rows.length) {
+    table.innerHTML = `<p class="muted">Pod těmito filtry tu nic není.</p>`;
+    cards.innerHTML = "";
+    return;
+  }
+  table.innerHTML = `<table class="deal-table"><thead><tr>
+    ${th("dluznik", "Dlužník")}
+    ${th("splatnost", "Splatnost a základ")}
+    ${th("mesice", "Měsíců", "num")}
+    <th scope="col">Role WB</th>
+    ${th("objem", "Objem mil. EUR", "num")}
+    <th scope="col">Zdroj</th>
+  </tr></thead><tbody>${rows.map(rowHtml).join("")}</tbody></table>`;
+  cards.innerHTML = rows.map(cardHtml).join("");
+}
+
+function renderLeads() {
+  const visible = leads.filter(l => {
+    if (state.lstav === "all" || state.lstav === "open") return state.lstav === "all" ? true : l.status !== "rejected";
+    return l.status === state.lstav;
+  });
+  const filters = [["open", "Neověřené"], ["all", "Vše"], ["new", "Nový"], ["checking", "Ověřuji"], ["confirmed", "Potvrzeno"], ["rejected", "Odmítnuto"]];
+  const bar = filters.map(([v, lab]) => `<button type="button" class="toggle" data-act="lstav" data-value="${v}" aria-pressed="${state.lstav === v}">${lab}</button>`).join("");
+  const cards = visible.map(l => {
+    const href = safeUrl(l.source || "");
+    const opts = Object.keys(LEAD_STATUS).map(k => `<option value="${k}" ${l.status === k ? "selected" : ""}>${LEAD_STATUS[k]}</option>`).join("");
+    return `<article class="panel" style="margin-bottom:8px">
+      <div class="card-top"><strong>${esc(l.borrower || "Bez jména")}</strong><span class="muted">${esc(fmtCzDate(l.created_on))}</span></div>
+      <p>${esc(l.amount || "částka neuvedena")} · ${esc(l.when || "datum neuvedeno")}</p>
+      <p>${esc(l.purpose || "")}</p>
+      <p class="muted">${esc(l.lenders || "")}</p>
+      ${href ? `<p class="src"><a href="${esc(href)}" target="_blank" rel="noopener">${esc(domainOf(href))}</a></p>` : ""}
+      ${l.note ? `<p>${esc(l.note)}</p>` : ""}
+      <div class="actions">
+        <label class="sel">Stav <select data-lead="${esc(l.id)}" class="lead-status">${opts}</select></label>
+        <button type="button" data-act="lead-issue" data-id="${esc(l.id)}">Kopírovat issue</button>
+        <button type="button" data-act="lead-del" data-id="${esc(l.id)}">Smazat</button>
+      </div>
+    </article>`;
+  }).join("");
+  document.getElementById("leads").innerHTML = `
+    <div class="toolbar" style="margin-bottom:8px">${bar}
+      <button type="button" class="textbtn" data-act="leads-json">Export JSON</button>
+      <button type="button" class="textbtn" data-act="leads-csv">Export CSV</button>
+      <label class="textbtn">Načíst JSON<input type="file" id="leadImport" accept="application/json" hidden></label>
     </div>
-    <ul class="company-list">
-      ${ungroupedItem}
-      ${grpNames.map(g => `
-        <li class="company-item ${groupFilter === g ? "active" : ""}" data-group="${g.replace(/"/g, '&quot;')}">
-          <span class="company-name">${g}</span>
-          <span class="company-count">${counts[g]}</span>
-        </li>`).join("")}
-    </ul>
-  `;
-  dd.querySelectorAll(".company-item").forEach(el => {
-    el.addEventListener("click", () => {
-      groupFilter = el.dataset.group;
-      localStorage.setItem(GROUP_KEY, groupFilter);
-      dd.hidden = true;
-      document.getElementById("groupFilterBtn").setAttribute("aria-expanded", "false");
-      updateGroupLabel();
-      render();
-    });
-  });
-  dd.querySelectorAll(".company-action").forEach(el => {
-    el.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      if (el.dataset.action === "show-all") {
-        groupFilter = "";
-        localStorage.setItem(GROUP_KEY, "");
-        render();
-      }
-      dd.hidden = true;
-      document.getElementById("groupFilterBtn").setAttribute("aria-expanded", "false");
-      updateGroupLabel();
-    });
-  });
+    ${cards || `<p class="muted">Zatím žádný lead. Tlačítko + Lead uloží tip z LinkedInu jen do tohoto prohlížeče.</p>`}`;
 }
 
-function updateGroupLabel() {
-  const lbl = document.getElementById("groupFilterLabel");
-  if (!lbl) return;
-  if (!groupFilter) lbl.textContent = "All groups";
-  else if (groupFilter === "__ungrouped__") lbl.textContent = "Ungrouped";
-  else lbl.textContent = groupFilter;
+function openDetail(id) {
+  const d = DEALS.find(x => x.id === id);
+  if (!d) return;
+  if (leadOpen) { leadOpen = false; document.getElementById("leadDialog").hidden = true; }
+  lastFocus = document.activeElement;
+  detailId = id;
+  document.getElementById("backdrop").hidden = false;
+  const panel = document.getElementById("detail");
+  panel.hidden = false;
+  fillDetail();
+  const close = panel.querySelector(".close-x");
+  if (close) close.focus();
+}
+function closeDetail() {
+  detailId = "";
+  document.getElementById("detail").hidden = true;
+  document.getElementById("backdrop").hidden = leadOpen;
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+}
+function fillDetail() {
+  const d = DEALS.find(x => x.id === detailId);
+  const panel = document.getElementById("detail");
+  if (!d) { panel.hidden = true; return; }
+  const info = maturityInfo(d);
+  const role = effectiveRole(d);
+  const meta = roleMeta(role);
+  const hints = verifyHints(d);
+  const lenders = lenderLines(d.lenders);
+  const chain = successorParts(d);
+  const prev = predecessors(d.id);
+  const sources = sourcesOf(d);
+  const pers = personal[d.id] || {};
+  const status = d.separate_facility === false ? "memo" : (d.status || "outstanding");
+  const amt = displayAmount(d);
+  const chainHtml = chain.map(p => p.ext || p.missing
+    ? `<li>${esc(p.label)}${p.missing ? " (není v datech)" : ""}</li>`
+    : `<li><button type="button" data-act="open" data-id="${esc(p.id)}">${esc(p.label)}</button></li>`
+  ).join("");
+  const prevHtml = prev.map(p => `<li><button type="button" data-act="open" data-id="${esc(p.id)}">${esc(p.borrower)}</button></li>`).join("");
+  const srcHtml = sources.map(s => {
+    const href = safeUrl(s.url);
+    const label = href ? domainOf(href) : (s.label || s.url || "zdroj");
+    return `<li>${href ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>` : esc(label)} <span class="muted">${esc(s.date || "")}</span></li>`;
+  }).join("");
+  const roleOpts = [["", "podle zveřejněných dat (" + roleMeta(d.wb_status || "unknown").text + ")"], ["incumbent", "Obhajoba"], ["participant", "Účast"], ["opportunity", "Příležitost"], ["unknown", "Neověřeno"]];
+  panel.innerHTML = `
+    <button type="button" class="close-x" data-act="close-detail" aria-label="Zavřít detail">×</button>
+    <h2 id="detailTitle">${esc(d.borrower)}</h2>
+    <div>${isNew(d) ? `<span class="badge badge-new">NOVÉ</span>` : ""}<span class="badge">${esc(TYPE_CS[d.type] || d.type)}</span><span class="badge">${esc(STATUS_CS[status] || status)}</span><span class="badge ${meta.cls}">${esc(meta.text)}</span>${isStar(d) ? `<span class="badge badge-watch">Sleduji</span>` : ""}</div>
+    <dl class="kv">
+      <dt>Objem</dt><dd>${amt ? esc(fmtNum(amt)) + " mil. EUR" : "n/d"}</dd>
+      <dt>Částka ve zdroji</dt><dd>${esc(d.amount || "—")}</dd>
+      <dt>Splatnost</dt><dd class="${info.approximate || !info.date ? "approx" : ""}">${esc(maturityText(d))}</dd>
+      <dt>Měsíce</dt><dd>${monthsTo(info) == null ? "—" : (monthsTo(info) < 0 ? "−" + Math.abs(monthsTo(info)) : String(monthsTo(info)))}</dd>
+      <dt>Rozpětí</dt><dd>${esc(rangeText(d) || "—")}</dd>
+      <dt>Skupina</dt><dd>${esc(dealGroup(d.borrower) || "bez skupiny")}</dd>
+      <dt>Nástroj</dt><dd>${esc(INST_CS[d.instrument] || d.instrument || "—")}</dd>
+      <dt>Jistota</dt><dd>${certaintyPct(d)} % · ${esc(CONF_CS[d.confidence] || d.confidence || "")}</dd>
+      <dt>Přidáno</dt><dd>${esc(fmtCzDate(d.added_on))}</dd>
+    </dl>
+    ${hints.length ? `<div class="callout"><strong>Co ověřit</strong><ul>${hints.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>` : ""}
+    ${d.status_note ? `<h3>Poznámka ke stavu</h3><p>${esc(d.status_note)}</p>` : ""}
+    <h3>Účel</h3><p>${esc(d.purpose || "—")}</p>
+    <h3>Věřitelé</h3><ul class="lenders">${lenders.map(x => `<li>${esc(x)}</li>`).join("") || "<li>—</li>"}</ul>
+    <h3>Nástupci</h3>${chainHtml ? `<ul class="chain">${chainHtml}</ul>` : `<p class="muted">Žádný nástupce v datech.</p>`}
+    <h3>Předchůdci</h3>${prevHtml ? `<ul class="chain">${prevHtml}</ul>` : `<p class="muted">Žádný předchůdce v datech.</p>`}
+    <h3>Zdroje</h3><ul class="src">${srcHtml || "<li>—</li>"}</ul>
+    <div class="personal">
+      <h3>Osobní vrstva</h3>
+      <p class="muted">Role, poznámka a Sleduji zůstávají v tomto prohlížeči. Na veřejné stránce se neukládají.</p>
+      <div class="field"><span>Místní role WB</span>
+        <select id="personalRole">${roleOpts.map(([v, lab]) => `<option value="${v}" ${ (pers.role || "") === v ? "selected" : ""}>${esc(lab)}</option>`).join("")}</select>
+      </div>
+      <label class="field"><input type="checkbox" id="personalStar" ${pers.star ? "checked" : ""}/> Sleduji</label>
+      <div class="field"><span>Poznámka</span><textarea id="personalNote" rows="3">${esc(pers.note || "")}</textarea></div>
+      <button type="button" class="textbtn" data-act="personal-json">Exportovat osobní vrstvu (JSON)</button>
+    </div>`;
 }
 
-function setupGroupFilterToggle() {
-  const btn = document.getElementById("groupFilterBtn");
-  const dd  = document.getElementById("groupFilterDropdown");
-  if (!btn || !dd) return;
-  updateGroupLabel();
-  btn.addEventListener("click", (ev) => {
-    ev.stopPropagation();
-    const open = !dd.hidden;
-    dd.hidden = open;
-    btn.setAttribute("aria-expanded", String(!open));
-    if (!open) populateGroupDropdown();
-  });
-  document.addEventListener("click", (ev) => {
-    if (!dd.contains(ev.target) && ev.target !== btn && !btn.contains(ev.target)) {
-      dd.hidden = true;
-      btn.setAttribute("aria-expanded", "false");
-    }
-  });
+function openLead() {
+  if (detailId) { detailId = ""; document.getElementById("detail").hidden = true; }
+  leadOpen = true;
+  lastFocus = document.activeElement;
+  document.getElementById("backdrop").hidden = false;
+  const dlg = document.getElementById("leadDialog");
+  dlg.hidden = false;
+  const form = document.getElementById("leadForm");
+  form.reset();
+  form.elements.borrower.focus();
 }
-
-// Toggle company-filter dropdown via header button
-function setupCompanyFilterToggle() {
-  const btn = document.getElementById("companyFilterBtn");
-  const dd = document.getElementById("companyFilterDropdown");
-  if (!btn || !dd) return;
-  btn.addEventListener("click", (ev) => {
-    ev.stopPropagation();
-    const open = !dd.hidden;
-    dd.hidden = open;
-    btn.setAttribute("aria-expanded", String(!open));
-    if (!open) populateCompanyDropdown();
-  });
-  document.addEventListener("click", (ev) => {
-    if (!dd.contains(ev.target) && ev.target !== btn && !btn.contains(ev.target)) {
-      dd.hidden = true;
-      btn.setAttribute("aria-expanded", "false");
-    }
-  });
+function closeLead() {
+  leadOpen = false;
+  document.getElementById("leadDialog").hidden = true;
+  if (!detailId) document.getElementById("backdrop").hidden = true;
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
 }
-
-// ---- Render table ----
-let grid = null;
-let pipelineGrids = {};
-
-function wbBadge(s) {
-  const map = {
-    incumbent: { cls: "wb-incumbent", text: "Incumbent" },
-    participant: { cls: "wb-participant", text: "Participant" },
-    opportunity: { cls: "wb-opportunity", text: "Opportunity" },
-    unknown: { cls: "wb-unknown", text: "Unknown" },
+function leadFromForm() {
+  const form = document.getElementById("leadForm");
+  const data = Object.fromEntries(new FormData(form).entries());
+  return {
+    id: "lead-" + Date.now().toString(36),
+    borrower: String(data.borrower || "").trim(),
+    amount: String(data.amount || "").trim(),
+    when: String(data.when || "").trim(),
+    lenders: String(data.lenders || "").trim(),
+    purpose: String(data.purpose || "").trim(),
+    source: String(data.source || "").trim(),
+    note: String(data.note || "").trim(),
+    status: data.status || "new",
+    created_on: todayISO(),
   };
-  const x = map[s] || map.unknown;
-  return `<span class="badge ${x.cls}">${x.text}</span>`;
 }
-const URGENCY_MAP = {
-  live:        { cls: "urg-live",        text: "🔴 Live" },
-  imminent:    { cls: "urg-imminent",    text: "🟠 Imminent" },
-  approaching: { cls: "urg-approaching", text: "🟡 Approaching" },
-  distant:     { cls: "urg-distant",     text: "⚪ Distant" },
-  far:         { cls: "urg-far",         text: "⬜ Far" },
-  past:        { cls: "urg-past",        text: "⬛ Past" },
-  unknown:     { cls: "urg-unknown",     text: "◻ Unknown" },
-};
-const STATUS_META = {
-  outstanding: { cls: "st-outstanding", text: "Outstanding" },
-  refinanced: { cls: "st-refinanced", text: "Refinanced" },
-  repaid: { cls: "st-repaid", text: "Repaid" },
-  not_a_bank_loan: { cls: "st-not_a_bank_loan", text: "Not a bank loan" },
-  memo: { cls: "st-memo", text: "Memo" },
-};
-const INSTRUMENT_LABEL = {
-  bank_loan: "Bank loan",
-  bond: "Bond",
-  equity: "Equity",
-  preferred_equity: "Preferred equity",
-  ma_ev: "M&A / EV",
-  mixed: "Mixed",
-  mezzanine: "Mezzanine",
-};
-function esc(s) {
-  return String(s == null ? "" : s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-function successorText(d) {
-  if (!d.successor) return "";
-  const labels = d.successor.split("+").map(raw => {
-    const id = raw.trim();
-    if (!id) return "";
-    if (id.startsWith("ext:")) return id.slice(4).replace(/-/g, " ");
-    const hit = DEALS.find(x => x.id === id);
-    if (!hit) return id;
-    return (hit.date || hit.year) + " " + hit.borrower.split("(")[0].trim();
-  }).filter(Boolean);
-  return labels.length ? "Successor: " + labels.join("; ") : "";
-}
-function borrowerHtml(d) {
-  return `<div class="borrower-name">${esc(d.borrower)}</div><div class="borrower-purpose" title="${esc(d.purpose)}">${esc(d.purpose)}</div>`;
-}
-function statusToken(d) {
-  const key = d.separate_facility === false ? "memo" : (d.status || "outstanding");
-  const inst = INSTRUMENT_LABEL[d.instrument] || d.instrument || "";
-  const note = [d.status_note || "", successorText(d)].filter(Boolean).join(" — ");
-  return [key, inst, note].join("|||");
-}
-function buildRow(d) {
-  const m2m = monthsToMaturity(d);
+function issueMarkdown(l) {
   return [
-    borrowerHtml(d),
-    d.type,
-    statusToken(d),
-    refiUrgency(d),
-    d.wb_status || "",
-    d.amount,
-    maturityLabel(d),
-    m2m == null ? "—" : m2m,
-    d.lenders,
-    (d.confidence || "") + "|" + certaintyPct(d),
-    d.source
-  ];
+    "### LinkedIn tip",
+    "",
+    "- Dlužník: " + (l.borrower || ""),
+    "- Částka: " + (l.amount || ""),
+    "- Kdy: " + (l.when || ""),
+    "- Věřitelé: " + (l.lenders || ""),
+    "- Co tip říká: " + (l.purpose || ""),
+    "- Odkaz: " + (l.source || ""),
+    "- Stav: " + (LEAD_STATUS[l.status] || l.status || ""),
+    "- Poznámka: " + (l.note || ""),
+  ].join("\n");
 }
-const FMT_BORROWER = cell => gridjs.html(cell);
-const FMT_TYPE = cell => { const b = TYPE_BADGE[cell] || {cls:""}; return gridjs.html(`<span class="badge ${b.cls}">${esc(cell)}</span>`); };
-const FMT_STATUS = cell => {
-  const parts = String(cell).split("|||");
-  const meta = STATUS_META[parts[0]] || STATUS_META.outstanding;
-  const inst = parts[1] || "";
-  const note = parts[2] || "";
-  return gridjs.html(`<span class="badge ${meta.cls}" title="${esc(note)}">${esc(meta.text)}${inst ? " · " + esc(inst) : ""}</span>`);
-};
-const FMT_URGENCY = cell => {
-  const x = URGENCY_MAP[cell] || URGENCY_MAP.unknown;
-  return gridjs.html(`<span class="badge ${x.cls}">${x.text}</span>`);
-};
-const FMT_WB  = cell => gridjs.html(wbBadge(cell));
-const FMT_CONF = cell => {
-  const parts = String(cell).split("|");
-  const label = parts[0] || "";
-  const pct = parts[1] || "0";
-  const cls = "conf-" + pct;
-  return gridjs.html(`<span class="badge ${cls}" title="Share of parameters (source, amount, lenders, date) independently verified. An inferred tenor caps the score at 75%.">${esc(pct)}%</span><span class="conf-label">${esc(label)}</span>`);
-};
-const FMT_SRC  = cell => gridjs.html(`<a href="${esc(cell)}" target="_blank" rel="noopener">link</a>`);
-function tableColumns() {
-  return [
-    { name: "Borrower", width: "18%", formatter: FMT_BORROWER },
-    { name: "Type", width: "8%", formatter: FMT_TYPE },
-    { name: "Status", width: "12%", formatter: FMT_STATUS },
-    { name: "Urgency", width: "8%", formatter: FMT_URGENCY },
-    { name: "WB", width: "8%", formatter: FMT_WB },
-    { name: "Amount", width: "10%" },
-    { name: "Maturity", width: "7%" },
-    { name: "Months", width: "6%" },
-    { name: "Lenders", width: "12%" },
-    { name: "Certainty", width: "8%", formatter: FMT_CONF },
-    { name: "Src", width: "4%", formatter: FMT_SRC },
-  ];
+function githubIssueUrl(l) {
+  const title = "LinkedIn tip: " + (l.borrower || "nový lead");
+  return "https://github.com/zabranda/loantracker/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(issueMarkdown(l));
 }
 
-function renderTable() {
-  if (activeView === "pipeline") {
-    grid = null;
-    pipelineGrids = {};
-
-    // Always rebuild so sort chips always take effect
-    document.getElementById("table").innerHTML = `
-      <div class="watchlist-section">
-        <h3 class="watchlist-title">🎯 WB opportunity — outstanding bank loans, refi within 18 months
-          <button class="csv-btn" id="csv-opportunity">⬇ CSV</button>
-        </h3>
-        <div id="wl-opportunity"></div>
-      </div>
-      <div class="watchlist-section">
-        <h3 class="watchlist-title">🛡️ Must-retain — outstanding bank loans where WB is incumbent or participant, maturity ≤18m
-          <button class="csv-btn" id="csv-incumbent">⬇ CSV</button>
-        </h3>
-        <div id="wl-incumbent"></div>
-      </div>
-      <div class="watchlist-section">
-        <h3 class="watchlist-title">📅 Upcoming — outstanding bank loans maturing within 18 months
-          <button class="csv-btn" id="csv-all">⬇ CSV</button>
-        </h3>
-        <div id="wl-all"></div>
-      </div>
-    `;
-
-    // All three sections use sortDeals — sort chips affect all of them
-    const live = sortDeals(filterDeals().filter(inRefiWindow));
-
-    const opportunity = live.filter(d => d.wb_status === "opportunity");
-    const incumbent   = live.filter(d => d.wb_status === "incumbent" || d.wb_status === "participant");
-
-    const PIPE_COLS = tableColumns();
-    const PIPE_STYLE = {
-      table: { "border-collapse": "collapse", "font-size": "12px" },
-      td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
-    };
-
-    function makeGrid(elId, rows, emptyMsg) {
-      const el = document.getElementById(elId);
-      if (!el) return;
-      if (rows.length === 0) { el.innerHTML = `<div class="empty-msg">${emptyMsg}</div>`; return; }
-      new gridjs.Grid({ columns: PIPE_COLS, data: rows.map(buildRow), sort: false, style: PIPE_STYLE }).render(el);
-    }
-
-    makeGrid("wl-opportunity", opportunity, "No WB-opportunity refis within 18 months under current filters.");
-    makeGrid("wl-incumbent",   incumbent,   "No WB-incumbent or participant exposures maturing within 18 months.");
-    makeGrid("wl-all",         live,        "No deals maturing in the next 18 months under current filters.");
-
-    const today = TODAY.toISOString().slice(0, 10);
-    document.getElementById("csv-opportunity").onclick = () => downloadCsv(opportunity, `cz-loans-opportunity-${today}.csv`);
-    document.getElementById("csv-incumbent").onclick   = () => downloadCsv(incumbent,   `cz-loans-must-retain-${today}.csv`);
-    document.getElementById("csv-all").onclick         = () => downloadCsv(live,        `cz-loans-pipeline-${today}.csv`);
-    return;
-  }
-
-  // 'all' view
-
-  // 'all' view: apply user's selected sort mode
-  const filtered = sortDeals(filterDeals());
-  const data = filtered.map(buildRow);
-
-  // Switching to all-view: clear pipeline grid cache so next pipeline visit rebuilds
-  pipelineGrids = {};
-
-  // Reuse grid instance when possible — avoids destroy/recreate on every sort/filter change
-  if (grid && document.getElementById("all-grid")) {
-    grid.updateConfig({ data }).forceRender();
-    const btn = document.getElementById("csv-all-view");
-    if (btn) btn.onclick = () => downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`);
-    return;
-  }
-
-  // First render (or after switching back from pipeline view)
-  document.getElementById("table").innerHTML = `
-    <div style="margin-bottom: 8px; text-align: right;">
-      <button class="csv-btn" id="csv-all-view">⬇ Export ${filtered.length} deals to CSV</button>
-    </div>
-    <div id="all-grid"></div>
-  `;
-  document.getElementById("csv-all-view").onclick = () =>
-    downloadCsv(filtered, `cz-loans-full-${TODAY.toISOString().slice(0,10)}.csv`);
-
-  const COLS = tableColumns();
-  grid = new gridjs.Grid({
-    columns: COLS,
-    data,
-    sort: false,
-    style: {
-      table: { "border-collapse": "collapse", "font-size": "12px" },
-      td: { "vertical-align": "top", "padding": "6px 8px", "border-bottom": "1px solid #f0ede7" },
-    }
+function csvEscape(value) {
+  const s = String(value == null ? "" : value);
+  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function dealsToCsv(rows) {
+  const head = ["Dlužník","Typ","Stav","Nástroj","Nástupce","Základ splatnosti","Splatnost","Přibližně","Měsíce","Role WB","Objem mil. EUR","Částka","Věřitelé","Účel","Zdroj","Přidáno","Jistota %"];
+  const lines = [head.join(",")];
+  rows.forEach(d => {
+    const info = maturityInfo(d);
+    const status = d.separate_facility === false ? "memo" : (d.status || "");
+    lines.push([
+      d.borrower, d.type, status, d.instrument || "", d.successor || "",
+      info.basis, info.date ? ymOf(info.date) : "", info.approximate ? "ano" : "ne",
+      monthsTo(info) == null ? "" : monthsTo(info), effectiveRole(d), displayAmount(d) || "",
+      d.amount, d.lenders, d.purpose, d.source || "", d.added_on || "", certaintyPct(d),
+    ].map(csvEscape).join(","));
   });
-  grid.render(document.getElementById("all-grid"));
+  return lines.join("\n");
+}
+function downloadText(filename, mime, text) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function icsEscape(s) {
+  return String(s || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+}
+function icsDate(date) {
+  return date.getUTCFullYear() + String(date.getUTCMonth() + 1).padStart(2, "0") + String(date.getUTCDate()).padStart(2, "0");
+}
+function buildIcs(rows) {
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//loantracker//splatnosti//CS", "CALSCALE:GREGORIAN"];
+  rows.forEach(d => {
+    const info = maturityInfo(d);
+    if (!info.date) return;
+    const start = addMonthsUTC(info.date, -state.okno);
+    const common = "STATUS:CONFIRMED";
+    const desc = icsEscape(maturityText(d) + ". " + (d.borrower || ""));
+    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-okno@loantracker", "DTSTART;VALUE=DATE:" + icsDate(start), "SUMMARY:" + icsEscape("Začátek refi okna (" + state.okno + " m): " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
+    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-splatnost@loantracker", "DTSTART;VALUE=DATE:" + icsDate(info.date), "SUMMARY:" + icsEscape("Splatnost: " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+async function copyMail(rows) {
+  const headers = ["Dlužník", "Splatnost", "Měsíce", "Role WB", "Objem mil. EUR", "Zdroj"];
+  const body = rows.map(d => {
+    const info = maturityInfo(d);
+    const src = sourcesOf(d)[0];
+    return [d.borrower, maturityText(d), monthsTo(info) == null ? "" : monthsTo(info), roleMeta(effectiveRole(d)).text, displayAmount(d) || "", src ? domainOf(src.url) : ""];
+  });
+  const plain = [headers.join("\t"), ...body.map(r => r.join("\t"))].join("\n");
+  const html = "<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><thead><tr>" + headers.map(h => "<th>" + esc(h) + "</th>").join("") + "</tr></thead><tbody>" +
+    body.map(r => "<tr>" + r.map(c => "<td>" + esc(c) + "</td>").join("") + "</tr>").join("") + "</tbody></table>";
+  try {
+    if (navigator.clipboard && window.ClipboardItem) {
+      await navigator.clipboard.write([new ClipboardItem({
+        "text/html": new Blob([html], { type: "text/html" }),
+        "text/plain": new Blob([plain], { type: "text/plain" }),
+      })]);
+    } else {
+      await navigator.clipboard.writeText(plain);
+    }
+    toast("Tabulka je ve schránce.");
+  } catch (e) {
+    toast("Schránka není dostupná.");
+  }
+}
+function leadsToCsv(rows) {
+  const head = ["id","created_on","status","borrower","amount","when","lenders","purpose","source","note"];
+  return [head.join(","), ...rows.map(l => head.map(k => csvEscape(l[k])).join(","))].join("\n");
+}
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.textContent = ""; }, 2400);
+}
+function renderHistory() {
+  document.getElementById("history").innerHTML = CHANGELOG.map(c =>
+    `<p><strong>${esc(c.build)}</strong> · ${esc(fmtCzDate(c.date))}<br>${esc(c.text)}</p>`
+  ).join("");
 }
 
-// ---- Wire up ----
-render();
+let searchTimer = 0;
+function onClick(e) {
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  if (e.target.closest("a")) return;
+  const act = el.dataset.act;
+  if (act === "okno") setState({ okno: Number(el.dataset.value) });
+  else if (act === "role") setState({ role: el.dataset.value });
+  else if (act === "pohled") {
+    const patch = { pohled: el.dataset.value };
+    if (el.dataset.value !== "akce") patch.ctvrt = "";
+    if (el.dataset.value === "doplnit") patch.razeni = "objem-desc";
+    setState(patch);
+  }
+  else if (act === "toggle") setState({ [el.dataset.key]: !state[el.dataset.key] });
+  else if (act === "clear") clearKey(el.dataset.key);
+  else if (act === "clear-all") {
+    const input = document.getElementById("q");
+    if (input) input.value = "";
+    state = defaults();
+    writeHash();
+    render();
+  } else if (act === "sort") {
+    const key = el.dataset.sort;
+    let next;
+    if (state.razeni === key) next = key + "-desc";
+    else if (state.razeni === key + "-desc") next = key;
+    else next = key === "objem" ? "objem-desc" : key;
+    if (state.pohled === "doplnit" && key === "objem") next = state.razeni === "objem-desc" ? "objem" : "objem-desc";
+    setState({ razeni: next });
+  } else if (act === "open") openDetail(el.dataset.id);
+  else if (act === "close-detail") closeDetail();
+  else if (act === "quarter") setState({ ctvrt: el.dataset.ctvrt, pohled: "akce" });
+  else if (act === "unknown") setState({ pohled: "doplnit", ctvrt: "", potvrzene: false, razeni: "objem-desc" });
+  else if (act === "range-year") setState({ pohled: "doplnit", ctvrt: "", potvrzene: false });
+  else if (act === "kpi") {
+    const k = el.dataset.kpi;
+    if (k === "win") setState({ pohled: "akce", ctvrt: "", role: "vse" });
+    else if (k === "defend") setState({ pohled: "akce", ctvrt: "", role: "obhajoba" });
+    else if (k === "missing") setState({ pohled: "doplnit", ctvrt: "", potvrzene: false, razeni: "objem-desc" });
+    else if (k === "fresh") setState({ pohled: "vse", nove: true, ctvrt: "" });
+  } else if (act === "mark-seen") {
+    const today = todayISO();
+    sessionStorage.setItem(VISIT_SNAP, today);
+    localStorage.setItem(VISIT_KEY, today);
+    lastVisit = today;
+    firstVisit = false;
+    render();
+  } else if (act === "csv") downloadText("uvery-" + todayISO() + ".csv", "text/csv;charset=utf-8", "\uFEFF" + dealsToCsv(tableRows()));
+  else if (act === "ics") downloadText("splatnosti-" + todayISO() + ".ics", "text/calendar;charset=utf-8", buildIcs(tableRows()));
+  else if (act === "mail") copyMail(tableRows());
+  else if (act === "lstav") setState({ lstav: el.dataset.value });
+  else if (act === "leads-json") downloadText("leady.json", "application/json", JSON.stringify(leads, null, 2));
+  else if (act === "leads-csv") downloadText("leady.csv", "text/csv;charset=utf-8", "\uFEFF" + leadsToCsv(leads));
+  else if (act === "lead-del") {
+    leads = leads.filter(l => l.id !== el.dataset.id);
+    saveLeads();
+    render();
+  } else if (act === "lead-issue") {
+    const l = leads.find(x => x.id === el.dataset.id);
+    if (!l) return;
+    navigator.clipboard.writeText(issueMarkdown(l)).then(() => toast("Text issue je ve schránce.")).catch(() => toast("Schránka není dostupná."));
+  } else if (act === "personal-json") downloadText("osobni-vrstva.json", "application/json", JSON.stringify(personal, null, 2));
+  else if (act === "open-github-issue") {
+    const l = leadFromForm();
+    if (!l.borrower) { toast("Vyplňte dlužníka."); return; }
+    window.open(githubIssueUrl(l), "_blank", "noopener");
+  }
+}
+function onChange(e) {
+  const t = e.target;
+  if (t.dataset && t.dataset.filter) {
+    setState({ [t.dataset.filter]: t.value });
+    return;
+  }
+  if (t.classList && t.classList.contains("lead-status")) {
+    const lead = leads.find(l => l.id === t.dataset.lead);
+    if (lead) { lead.status = t.value; saveLeads(); render(); }
+    return;
+  }
+  if (t.id === "personalRole") {
+    const rec = personal[detailId] || {};
+    if (t.value) rec.role = t.value; else delete rec.role;
+    personal[detailId] = rec;
+    savePersonal();
+    render();
+    return;
+  }
+  if (t.id === "personalStar") {
+    const rec = personal[detailId] || {};
+    rec.star = t.checked;
+    personal[detailId] = rec;
+    savePersonal();
+    render();
+    return;
+  }
+  if (t.id === "leadImport") {
+    const file = t.files && t.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result || ""));
+        if (!Array.isArray(data)) throw new Error("not array");
+        leads = data;
+        saveLeads();
+        render();
+        toast("Leady načteny.");
+      } catch (err) { toast("Soubor nejde načíst."); }
+    };
+    reader.readAsText(file);
+  }
+}
+function onInput(e) {
+  if (e.target.id === "q") {
+    state.q = e.target.value;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { writeHash(); render(); }, 160);
+    return;
+  }
+  if (e.target.id === "personalNote") {
+    const rec = personal[detailId] || {};
+    rec.note = e.target.value;
+    personal[detailId] = rec;
+    savePersonal();
+  }
+}
+function onKey(e) {
+  const tag = (e.target.tagName || "").toLowerCase();
+  const typing = tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable;
+  if (e.key === "/" && !typing) {
+    e.preventDefault();
+    document.getElementById("q").focus();
+    return;
+  }
+  if (e.key === "Escape") {
+    if (leadOpen) closeLead();
+    else if (detailId) closeDetail();
+    return;
+  }
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("tr[data-act='open']")) {
+    e.preventDefault();
+    openDetail(e.target.dataset.id);
+  }
+}
+
+function init() {
+  backfillAddedOn();
+  loadStore();
+  state = readState();
+  const err = document.getElementById("errors");
+  if (ROW_FACT_ERRORS.length) {
+    err.hidden = false;
+    err.textContent = "Nesedí propojení řádků: " + ROW_FACT_ERRORS.join("; ");
+  }
+  document.body.addEventListener("click", onClick);
+  document.body.addEventListener("change", onChange);
+  document.body.addEventListener("input", onInput);
+  document.addEventListener("keydown", onKey);
+  window.addEventListener("hashchange", () => { state = readState(); render(); });
+  document.getElementById("leadBtn").addEventListener("click", openLead);
+  document.getElementById("leadForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const lead = leadFromForm();
+    if (!lead.borrower) { toast("Vyplňte dlužníka."); return; }
+    leads.unshift(lead);
+    saveLeads();
+    closeLead();
+    setState({ pohled: "leady", lstav: "open" });
+    toast("Lead je uložený v tomto prohlížeči.");
+  });
+  document.getElementById("leadCancel").addEventListener("click", closeLead);
+  document.getElementById("backdrop").addEventListener("click", () => {
+    if (leadOpen) closeLead();
+    if (detailId) closeDetail();
+  });
+  const q = document.getElementById("q");
+  q.value = state.q;
+  render();
+}
+init();
+
 </script>
 </body>
 </html>
