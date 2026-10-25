@@ -392,6 +392,17 @@ into the first message:
 > research bias, not market reality — go back and walk Lens 2 (UBOs) +
 > bond prospectuses for the 2021-2022 backfill. Output must be defensible
 > to a Czech corporate banker.
+>
+> Write every tracker string in professional English: page title, UI labels,
+> column headers, filters, tooltips, empty states, legends, deal purposes,
+> status notes, category and status labels, and source summaries. Keep proper
+> names (companies, people, Czech places, law firms, registries) and source
+> URLs unchanged. Keep numbers, dates and currencies unchanged. Track EUR
+> corporate bonds only; do not add CZK bond issues. The house bank is always
+> labelled WB. Do not use any other name for that house bank. If a status or
+> category value changes, update every filter, colour map and string match
+> that depends on it. Keep the current English dashboard in `index.html`;
+> do not revert it to Grid.js or to another language.
 
 ---
 

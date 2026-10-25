@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="cs">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>České korporátní úvěry — refinanční přehled</title>
+<title>Czech corporate loans — refinancing tracker</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231a1a1a'/%3E%3C/svg%3E" />
 <style>
 :root { color-scheme: light; --ink:#1a1a1a; --muted:#6b6863; --line:#e8e5df; --paper:#f8f7f4; --defend:#0f766e; --opp:#1d4ed8; --warn:#9a3412; }
@@ -133,65 +133,65 @@ table.deal-table { width: 100%; border-collapse: collapse; background: #fff; bor
 </style>
 </head>
 <body>
-<a class="skip" href="#seznam">Přeskočit na seznam</a>
+<a class="skip" href="#list">Skip to the list</a>
 <div class="wrap">
   <header class="top">
     <div>
-      <h1>České korporátní úvěry — refinanční přehled</h1>
+      <h1>Czech corporate loans — refinancing tracker</h1>
       <p class="asof" id="asofLine"></p>
     </div>
     <div class="search">
-      <input id="q" type="search" placeholder="Hledat dlužníka, skupinu, věřitele…  (/)" aria-label="Hledat dlužníka, skupinu, účel nebo věřitele" autocomplete="off" />
+      <input id="q" type="search" placeholder="Search borrower, group, lender…  (/)" aria-label="Search borrower, group, purpose or lender" autocomplete="off" />
       <button type="button" class="lead-btn" id="leadBtn">+ Lead</button>
     </div>
   </header>
   <div class="sticky">
     <div id="filters"></div>
-    <div class="chips" id="chips" aria-label="Aktivní filtry"></div>
+    <div class="chips" id="chips" aria-label="Active filters"></div>
   </div>
   <div id="errors" class="err" hidden></div>
   <div class="kpis" id="kpis"></div>
   <div class="dash">
-    <section class="panel" id="chart" aria-label="Časová osa splatností"></section>
-    <section class="panel" id="news" aria-label="Nové od poslední návštěvy"></section>
+    <section class="panel" id="chart" aria-label="Maturity timeline"></section>
+    <section class="panel" id="news" aria-label="New since last visit"></section>
   </div>
-  <section id="seznam">
+  <section id="list">
     <div class="list-head" id="listHead"></div>
     <div id="tableWrap"></div>
     <div class="cards" id="cards"></div>
     <div id="leads" hidden></div>
   </section>
   <details class="history">
-    <summary>Co je nového podle buildů</summary>
+    <summary>What changed in each build</summary>
     <div id="history"></div>
   </details>
-  <p class="footer">Sestaveno z veřejných zdrojů (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie a tiskové zprávy emitentů). Pokrytí není úplné: neveřejné klubové obchody v datech nejsou. Štítky role WB jsou pracovní označení na veřejné stránce, ne potvrzení role věřitele. Osobní poznámky, hvězdička Sleduji a leady zůstávají v tomto prohlížeči. Není to investiční doporučení.</p>
+  <p class="footer">Compiled from public sources (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie and issuer press releases). Coverage is incomplete: private club deals are not in the data. WB role tags are working labels on a public page, not confirmation of a lender role. Personal notes, the Watching star and leads stay in this browser. This is not investment advice.</p>
 </div>
 <div id="backdrop" class="backdrop" hidden></div>
 <aside id="detail" class="detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle" hidden></aside>
 <div id="leadDialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="leadTitle" hidden>
-  <button type="button" class="close-x" id="leadCancel" aria-label="Zavřít">×</button>
-  <h2 id="leadTitle">Nový lead</h2>
-  <p class="muted">Šablona tipu z LinkedInu. Uloží se jen v tomto prohlížeči. Vedle toho jde otevřít předvyplněné GitHub issue.</p>
+  <button type="button" class="close-x" id="leadCancel" aria-label="Close">×</button>
+  <h2 id="leadTitle">New lead</h2>
+  <p class="muted">Template for a LinkedIn tip. Saved in this browser only. You can also open a prefilled GitHub issue.</p>
   <form id="leadForm">
-    <label class="field"><span>Dlužník</span><input name="borrower" required placeholder="Firma z příspěvku" /></label>
-    <label class="field"><span>Částka, jak je ve zdroji</span><input name="amount" placeholder="např. 200 mil. EUR, nebo n/d" /></label>
-    <label class="field"><span>Kdy</span><input name="when" placeholder="datum, měsíc nebo jen rok" /></label>
-    <label class="field"><span>Věřitelé</span><input name="lenders" placeholder="kdo prý financuje" /></label>
-    <label class="field"><span>Co tip říká</span><textarea name="purpose" rows="3" placeholder="účel, jestli jde o refinancování, akvizici, reality…"></textarea></label>
-    <label class="field"><span>Odkaz na příspěvek</span><input name="source" placeholder="https://" /></label>
-    <label class="field"><span>Poznámka</span><textarea name="note" rows="2"></textarea></label>
-    <label class="field"><span>Stav</span>
+    <label class="field"><span>Borrower</span><input name="borrower" required placeholder="Company from the post" /></label>
+    <label class="field"><span>Amount, as in the source</span><input name="amount" placeholder="e.g. EUR 200 million, or n/d" /></label>
+    <label class="field"><span>When</span><input name="when" placeholder="date, month, or year only" /></label>
+    <label class="field"><span>Lenders</span><input name="lenders" placeholder="who is said to be financing" /></label>
+    <label class="field"><span>What the tip says</span><textarea name="purpose" rows="3" placeholder="purpose: refinancing, acquisition, real estate…"></textarea></label>
+    <label class="field"><span>Link to the post</span><input name="source" placeholder="https://" /></label>
+    <label class="field"><span>Note</span><textarea name="note" rows="2"></textarea></label>
+    <label class="field"><span>Status</span>
       <select name="status">
-        <option value="new">Nový</option>
-        <option value="checking">Ověřuji</option>
-        <option value="confirmed">Potvrzeno</option>
-        <option value="rejected">Odmítnuto</option>
+        <option value="new">New</option>
+        <option value="checking">Checking</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="rejected">Rejected</option>
       </select>
     </label>
     <div class="actions">
-      <button type="submit" class="primary">Uložit lead</button>
-      <button type="button" class="textbtn" data-act="open-github-issue">Otevřít šablonu issue</button>
+      <button type="submit" class="primary">Save lead</button>
+      <button type="button" class="textbtn" data-act="open-github-issue">Open issue template</button>
     </div>
   </form>
 </div>
@@ -727,7 +727,7 @@ function applyRowFacts() {
 applyRowFacts();
 
 const DATA_AS_OF = "2026-10-24";
-const BUILD = "2026-10-25.1";
+const BUILD = "2026-10-25.2";
 const VISIT_KEY = "cz_loans_last_visit";
 const VISIT_SNAP = "cz_loans_visit_snapshot";
 const PERSONAL_KEY = "cz_loans_personal_v1";
@@ -736,9 +736,10 @@ const FIRST_VISIT_BASELINE = "2026-10-23";
 const LEGACY_FILTER_KEYS = ["cz_loans_lender_v1","cz_loans_filter_v2","cz_loans_year_filter_v1","cz_loans_view_v1","cz_loans_coal_filter_v1","cz_loans_company_v2","cz_loans_group_v1","cz_loans_sort_v1"];
 
 const CHANGELOG = [
-  { build: "2026-10-25.1", date: "2026-10-25", text: "Přehled s ukazateli a osou splatností, jedna akční tabulka, okno 12 až 36 měsíců, filtry v adrese, detail obchodu, seznam Doplnit splatnost, leady a osobní poznámky v prohlížeči." },
-  { build: "2026-10-24.1", date: "2026-10-24", text: "Nové řádky: klub CGNI / GasNet, retail parky Trigea, hotely Hotusa, Magna MedTech." },
-  { build: "2026-10-23.1", date: "2026-10-23", text: "Doplnění obchodů a smluvních splatností, včetně Dr. Max, Eurowag Club a AmRest." },
+  { build: "2026-10-25.2", date: "2026-10-25", text: "Full English interface: labels, filters, maturity wording, exports, empty states and the lead form. Proper names are unchanged." },
+  { build: "2026-10-25.1", date: "2026-10-25", text: "Dashboard with headline figures and a maturity timeline, one action table, a 12 to 36 month window, filters in the URL, a deal detail panel, a Fill in maturity list, and leads plus personal notes stored in the browser." },
+  { build: "2026-10-24.1", date: "2026-10-24", text: "New rows: CGNI / GasNet club, Trigea retail parks, Hotusa hotels, Magna MedTech." },
+  { build: "2026-10-23.1", date: "2026-10-23", text: "Added deals and contractual maturities, including Dr. Max, the Eurowag Club and AmRest." },
 ];
 
 const ADDED_ON = {
@@ -760,19 +761,29 @@ const ADDED_ON = {
   "CIMEX Group (Vyšehrad Garden, Vista House, Garden Eleven — Prague offices)": "2026-10-23",
 };
 
-const TYPE_CS = {
-  "Syndicated": "Syndikát",
-  "Acquisition/LBO": "Akvizice",
-  "Refinancing": "Refinancování",
-  "Real Estate": "Reality",
-  "Export Finance": "Export",
-  "Project/Infra": "Projekt",
-  "Intermediated": "Zprostředkovaný",
+const TYPE_LABEL = {
+  "Syndicated": "Syndicated",
+  "Acquisition/LBO": "Acquisition",
+  "Refinancing": "Refinancing",
+  "Real Estate": "Real estate",
+  "Export Finance": "Export finance",
+  "Project/Infra": "Project / infra",
+  "Intermediated": "Intermediated",
 };
-const STATUS_CS = { outstanding: "Živý", refinanced: "Refinancován", repaid: "Splacen", not_a_bank_loan: "Není úvěr", memo: "Poznámka" };
-const INST_CS = { bank_loan: "Bankovní úvěr", bond: "Dluhopis", equity: "Equity", preferred_equity: "Preferenční equity", ma_ev: "M&A / hodnota podniku", mixed: "Smíšené", mezzanine: "Mezanin" };
-const CONF_CS = { Confirmed: "Potvrzeno", Likely: "Pravděpodobné", Inferred: "Odvozeno" };
-const LEAD_STATUS = { new: "Nový", checking: "Ověřuji", confirmed: "Potvrzeno", rejected: "Odmítnuto" };
+const STATUS_LABEL = { outstanding: "Live", refinanced: "Refinanced", repaid: "Repaid", not_a_bank_loan: "Not a loan", memo: "Memo" };
+const INST_LABEL = { bank_loan: "Bank loan", bond: "Bond", equity: "Equity", preferred_equity: "Preferred equity", ma_ev: "M&A / enterprise value", mixed: "Mixed", mezzanine: "Mezzanine" };
+const CONF_LABEL = { Confirmed: "Confirmed", Likely: "Likely", Inferred: "Inferred" };
+const LEAD_STATUS = { new: "New", checking: "Checking", confirmed: "Confirmed", rejected: "Rejected" };
+const SORT_LABEL = {
+  months: "Months to maturity",
+  "months-desc": "Months to maturity (desc)",
+  amount: "Amount",
+  "amount-desc": "Amount (desc)",
+  borrower: "Borrower",
+  "borrower-desc": "Borrower (desc)",
+  maturity: "Maturity",
+  "maturity-desc": "Maturity (desc)",
+};
 
 const DEAL_GROUPS = {
   "Accolade": ["Accolade"],
@@ -839,18 +850,19 @@ const TODAY = new Date(Date.UTC(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()
 function todayISO() {
   return NOW.getFullYear() + "-" + String(NOW.getMonth() + 1).padStart(2, "0") + "-" + String(NOW.getDate()).padStart(2, "0");
 }
-function fmtCzDate(iso) {
+const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function fmtDate(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
   if (!m) return iso || "";
-  return Number(m[3]) + ". " + Number(m[2]) + ". " + m[1];
+  return Number(m[3]) + " " + MONTHS_EN[Number(m[2]) - 1] + " " + m[1];
 }
 function fmtNum(n) {
-  return Math.round(n).toLocaleString("cs-CZ");
+  return Math.round(n).toLocaleString("en-GB");
 }
-function fmtMld(eurM) {
+function fmtBn(eurM) {
   const v = (eurM || 0) / 1000;
   const digits = Math.abs(v) >= 10 ? 1 : 2;
-  return v.toLocaleString("cs-CZ", { minimumFractionDigits: digits, maximumFractionDigits: digits }) + " mld. EUR";
+  return v.toLocaleString("en-GB", { minimumFractionDigits: digits, maximumFractionDigits: digits }) + " bn EUR";
 }
 function esc(s) {
   return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -889,34 +901,34 @@ function parseDealDate(dateStr) {
   return { year: y ? +y[1] : null, month: null, day: null, precision: "year" };
 }
 function maturityInfo(deal) {
-  if (!deal || deal.no_own_maturity) return { date: null, basis: "neznama", approximate: false };
+  if (!deal || deal.no_own_maturity) return { date: null, basis: "unknown", approximate: false };
   if (deal.maturity_ym && /^\d{4}-\d{2}$/.test(deal.maturity_ym)) {
     const parts = deal.maturity_ym.split("-");
-    return { date: new Date(Date.UTC(+parts[0], +parts[1] - 1, 1)), basis: "smluvni", approximate: false, signingYear: deal.year };
+    return { date: new Date(Date.UTC(+parts[0], +parts[1] - 1, 1)), basis: "contractual", approximate: false, signingYear: deal.year };
   }
   const tenor = deal.tenor_y == null || deal.tenor_y === "" ? null : Number(deal.tenor_y);
   const p = parseDealDate(deal.date);
   if (tenor == null || !p || p.year == null) {
-    return { date: null, basis: "neznama", approximate: false, signingYear: p && p.year };
+    return { date: null, basis: "unknown", approximate: false, signingYear: p && p.year };
   }
   if (p.precision !== "year" && p.month != null) {
     const day = p.precision === "day" && p.day ? p.day : 1;
     return {
       date: new Date(Date.UTC(p.year + tenor, p.month, day)),
-      basis: deal.tenor_inferred ? "odhad5" : "tenor",
+      basis: deal.tenor_inferred ? "est5" : "tenor",
       approximate: false,
       signingYear: p.year,
       tenor,
     };
   }
-  let month = 6, day = 1, kind = "stred-roku";
+  let month = 6, day = 1, kind = "mid-year";
   const qm = String(deal.date || "").match(/\bQ([1-4])\b/i);
   const hm = String(deal.date || "").match(/\bH([12])\b/i);
-  if (qm) { month = (Number(qm[1]) - 1) * 3 + 1; day = 15; kind = "ctvrtleti"; }
-  else if (hm) { month = hm[1] === "1" ? 3 : 9; day = 1; kind = "pololeti"; }
+  if (qm) { month = (Number(qm[1]) - 1) * 3 + 1; day = 15; kind = "quarter"; }
+  else if (hm) { month = hm[1] === "1" ? 3 : 9; day = 1; kind = "half"; }
   return {
     date: new Date(Date.UTC(p.year + tenor, month, day)),
-    basis: deal.tenor_inferred ? "odhad5" : "tenor",
+    basis: deal.tenor_inferred ? "est5" : "tenor",
     approximate: true,
     approxKind: kind,
     signingYear: p.year,
@@ -930,17 +942,17 @@ function maturityText(deal) {
   const info = maturityInfo(deal);
   if (!info.date) {
     const y = info.signingYear || deal.year;
-    return y ? "neznámá, podpis " + y : "neznámá";
+    return y ? "unknown, signed " + y : "unknown";
   }
   const ym = ymOf(info.date);
-  if (info.basis === "smluvni") return ym + " smluvní";
+  if (info.basis === "contractual") return ym + " contractual";
   if (info.approximate) {
-    const how = info.approxKind === "ctvrtleti" ? "střed čtvrtletí" : info.approxKind === "pololeti" ? "střed pololetí" : "střed roku";
-    const tail = info.basis === "odhad5" ? "odhad 5 let" : "z tenoru";
-    return ym + " přibližně, " + how + ", " + tail;
+    const how = info.approxKind === "quarter" ? "mid-quarter" : info.approxKind === "half" ? "mid-half" : "mid-year";
+    const tail = info.basis === "est5" ? "5-year estimate" : "from tenor";
+    return ym + " approximate, " + how + ", " + tail;
   }
-  if (info.basis === "odhad5") return ym + " odhad 5 let";
-  return ym + " z tenoru";
+  if (info.basis === "est5") return ym + " 5-year estimate";
+  return ym + " from tenor";
 }
 function rangeText(deal) {
   const info = maturityInfo(deal);
@@ -974,12 +986,12 @@ function needsDate(d) {
 }
 function confirmedMaturity(d) {
   const info = maturityInfo(d);
-  return !!(info.date && !info.approximate && info.basis !== "odhad5");
+  return !!(info.date && !info.approximate && info.basis !== "est5");
 }
-function inRefiWindow(d, okno) {
+function inRefiWindow(d, months) {
   if (!isHuntLoan(d)) return false;
   const m = monthsTo(maturityInfo(d));
-  return m != null && m >= -3 && m <= okno;
+  return m != null && m >= -3 && m <= months;
 }
 function quarterKey(date) {
   return date.getUTCFullYear() + "Q" + (Math.floor(date.getUTCMonth() / 3) + 1);
@@ -1020,11 +1032,11 @@ function certaintyPct(d) {
 function verifyHints(d) {
   const info = maturityInfo(d);
   const hints = [];
-  if (!info.date) hints.push("Splatnost nejde odvodit. Doplňte datum podpisu a tenor, nebo smluvní datum.");
-  else if (info.approximate) hints.push("Ve zdroji je datum podpisu jen přibližně. Splatnost je střed toho období plus tenor a je označená jako přibližná.");
-  if (d.tenor_inferred) hints.push("Tenor ve zdroji není. Použitý odhad 5 let není smluvní datum.");
-  if (info.date && info.basis !== "smluvni") hints.push("Před hovorem s klientem ověřte smluvní datum splatnosti.");
-  if (certaintyPct(d) < 100) hints.push("Jistota " + certaintyPct(d) + " %. Nejsou potvrzené všechny parametry: zdroj, částka, věřitelé, datum.");
+  if (!info.date) hints.push("Maturity cannot be derived. Add a signing date and tenor, or the contractual date.");
+  else if (info.approximate) hints.push("The source gives only an approximate signing date. Maturity is the midpoint of that period plus tenor, and is marked approximate.");
+  if (d.tenor_inferred) hints.push("Tenor is not in the source. The 5-year estimate is not a contractual date.");
+  if (info.date && info.basis !== "contractual") hints.push("Confirm the contractual maturity date before a client call.");
+  if (certaintyPct(d) < 100) hints.push("Certainty " + certaintyPct(d) + "%. Not every parameter is confirmed: source, amount, lenders, date.");
   return hints;
 }
 function lenderLines(text) {
@@ -1060,8 +1072,7 @@ function predecessors(id) {
   return DEALS.filter(d => (d.successor || "").split("+").map(s => s.trim()).includes(id));
 }
 function loanCount(n) {
-  const word = n === 1 ? "úvěr" : (n >= 2 && n <= 4 ? "úvěry" : "úvěrů");
-  return n + " " + word;
+  return n + " " + (n === 1 ? "loan" : "loans");
 }
 function shortName(borrower) {
   const head = String(borrower || "").split("(")[0].trim();
@@ -1076,50 +1087,50 @@ function shortName(borrower) {
 }
 
 function defaults() {
-  return { okno: 18, role: "vse", typ: "", skupina: "", rok: "", potvrzene: false, nove: false, sleduji: false, uhli: false, pohled: "akce", ctvrt: "", q: "", razeni: "mesice", lstav: "open" };
+  return { window: 18, role: "all", type: "", group: "", year: "", confirmed: false, fresh: false, watch: false, coal: false, view: "action", quarter: "", q: "", sort: "months", lead: "open" };
 }
 function readState() {
   const p = new URLSearchParams(location.hash.replace(/^#/, ""));
   const s = defaults();
-  const okno = Number(p.get("okno"));
-  if ([12, 18, 24, 36].includes(okno)) s.okno = okno;
+  const windowMonths = Number(p.get("window"));
+  if ([12, 18, 24, 36].includes(windowMonths)) s.window = windowMonths;
   const role = p.get("role");
-  if (role === "vse" || role === "obhajoba" || role === "prilezitost") s.role = role;
-  s.typ = p.get("typ") || "";
-  if (s.typ && !TYPE_CS[s.typ]) s.typ = "";
-  s.skupina = p.get("skupina") || "";
-  s.rok = p.get("rok") || "";
-  s.potvrzene = p.get("potvrzene") === "1";
-  s.nove = p.get("nove") === "1";
-  s.sleduji = p.get("sleduji") === "1";
-  s.uhli = p.get("uhli") === "1";
-  const pohled = p.get("pohled");
-  if (pohled === "akce" || pohled === "vse" || pohled === "doplnit" || pohled === "leady") s.pohled = pohled;
-  s.ctvrt = p.get("ctvrt") || "";
+  if (role === "all" || role === "defend" || role === "opportunity") s.role = role;
+  s.type = p.get("type") || "";
+  if (s.type && !TYPE_LABEL[s.type]) s.type = "";
+  s.group = p.get("group") || "";
+  s.year = p.get("year") || "";
+  s.confirmed = p.get("confirmed") === "1";
+  s.fresh = p.get("fresh") === "1";
+  s.watch = p.get("watch") === "1";
+  s.coal = p.get("coal") === "1";
+  const view = p.get("view");
+  if (view === "action" || view === "all" || view === "missing" || view === "leads") s.view = view;
+  s.quarter = p.get("quarter") || "";
   s.q = p.get("q") || "";
-  const razeni = p.get("razeni");
-  if (["mesice","mesice-desc","objem","objem-desc","dluznik","dluznik-desc","splatnost","splatnost-desc"].includes(razeni)) s.razeni = razeni;
-  const lstav = p.get("lstav");
-  if (["open","all","new","checking","confirmed","rejected"].includes(lstav)) s.lstav = lstav;
+  const sort = p.get("sort");
+  if (["months","months-desc","amount","amount-desc","borrower","borrower-desc","maturity","maturity-desc"].includes(sort)) s.sort = sort;
+  const lead = p.get("lead");
+  if (["open","all","new","checking","confirmed","rejected"].includes(lead)) s.lead = lead;
   return s;
 }
 function writeHash() {
   const p = new URLSearchParams();
   const d = defaults();
-  if (state.okno !== d.okno) p.set("okno", String(state.okno));
+  if (state.window !== d.window) p.set("window", String(state.window));
   if (state.role !== d.role) p.set("role", state.role);
-  if (state.typ) p.set("typ", state.typ);
-  if (state.skupina) p.set("skupina", state.skupina);
-  if (state.rok) p.set("rok", state.rok);
-  if (state.potvrzene) p.set("potvrzene", "1");
-  if (state.nove) p.set("nove", "1");
-  if (state.sleduji) p.set("sleduji", "1");
-  if (state.uhli) p.set("uhli", "1");
-  if (state.pohled !== d.pohled) p.set("pohled", state.pohled);
-  if (state.ctvrt) p.set("ctvrt", state.ctvrt);
+  if (state.type) p.set("type", state.type);
+  if (state.group) p.set("group", state.group);
+  if (state.year) p.set("year", state.year);
+  if (state.confirmed) p.set("confirmed", "1");
+  if (state.fresh) p.set("fresh", "1");
+  if (state.watch) p.set("watch", "1");
+  if (state.coal) p.set("coal", "1");
+  if (state.view !== d.view) p.set("view", state.view);
+  if (state.quarter) p.set("quarter", state.quarter);
   if (state.q) p.set("q", state.q);
-  if (state.razeni !== d.razeni) p.set("razeni", state.razeni);
-  if (state.pohled === "leady" && state.lstav !== d.lstav) p.set("lstav", state.lstav);
+  if (state.sort !== d.sort) p.set("sort", state.sort);
+  if (state.view === "leads" && state.lead !== d.lead) p.set("lead", state.lead);
   const next = p.toString();
   const cur = location.hash.replace(/^#/, "");
   if (cur === next) return;
@@ -1171,10 +1182,10 @@ function isDefend(role) { return role === "incumbent" || role === "participant";
 function isNew(d) { return !!d.added_on && d.added_on > lastVisit; }
 function isStar(d) { return !!(personal[d.id] && personal[d.id].star); }
 function roleMeta(role) {
-  if (role === "incumbent") return { cls: "role-defend", text: "Obhajoba" };
-  if (role === "participant") return { cls: "role-part", text: "Účast" };
-  if (role === "opportunity") return { cls: "role-opp", text: "Příležitost" };
-  return { cls: "role-unk", text: "Neověřeno" };
+  if (role === "incumbent") return { cls: "role-defend", text: "Incumbent" };
+  if (role === "participant") return { cls: "role-part", text: "Participant" };
+  if (role === "opportunity") return { cls: "role-opp", text: "Opportunity" };
+  return { cls: "role-unk", text: "Unverified" };
 }
 function textHit(d, q) {
   const n = q.trim().toLowerCase();
@@ -1183,27 +1194,27 @@ function textHit(d, q) {
   return blob.includes(n);
 }
 function passCommon(d) {
-  if (!state.uhli && d.coal_excluded) return false;
-  if (state.typ && d.type !== state.typ) return false;
-  if (state.skupina) {
+  if (!state.coal && d.coal_excluded) return false;
+  if (state.type && d.type !== state.type) return false;
+  if (state.group) {
     const g = dealGroup(d.borrower);
-    if (state.skupina === "__ungrouped__") { if (g) return false; }
-    else if (g !== state.skupina) return false;
+    if (state.group === "__ungrouped__") { if (g) return false; }
+    else if (g !== state.group) return false;
   }
   if (state.q && !textHit(d, state.q)) return false;
-  if (state.sleduji && !isStar(d)) return false;
-  if (state.nove && !isNew(d)) return false;
-  if (state.potvrzene && !confirmedMaturity(d)) return false;
-  if (state.rok) {
+  if (state.watch && !isStar(d)) return false;
+  if (state.fresh && !isNew(d)) return false;
+  if (state.confirmed && !confirmedMaturity(d)) return false;
+  if (state.year) {
     const info = maturityInfo(d);
-    if (!info.date || String(info.date.getUTCFullYear()) !== String(state.rok)) return false;
+    if (!info.date || String(info.date.getUTCFullYear()) !== String(state.year)) return false;
   }
   return true;
 }
 function population() { return DEALS.filter(passCommon); }
 function effectiveSort() {
-  if (state.pohled === "doplnit" && state.razeni === "mesice") return "objem-desc";
-  return state.razeni;
+  if (state.view === "missing" && state.sort === "months") return "amount-desc";
+  return state.sort;
 }
 function sortRows(rows) {
   const mode = effectiveSort();
@@ -1211,9 +1222,9 @@ function sortRows(rows) {
   const key = desc ? mode.slice(0, -5) : mode;
   const dir = desc ? -1 : 1;
   return rows.slice().sort((a, b) => {
-    if (key === "dluznik") return dir * a.borrower.localeCompare(b.borrower, "cs", { sensitivity: "base" });
-    if (key === "objem") return dir * (displayAmount(a) - displayAmount(b)) || a.borrower.localeCompare(b.borrower, "cs");
-    if (key === "splatnost") {
+    if (key === "borrower") return dir * a.borrower.localeCompare(b.borrower, "en", { sensitivity: "base" });
+    if (key === "amount") return dir * (displayAmount(a) - displayAmount(b)) || a.borrower.localeCompare(b.borrower, "en");
+    if (key === "maturity") {
       const ia = maturityInfo(a), ib = maturityInfo(b);
       if (!ia.date && !ib.date) return 0;
       if (!ia.date) return 1;
@@ -1229,42 +1240,42 @@ function sortRows(rows) {
 }
 function beforeRole() {
   const rows = population();
-  if (state.pohled === "doplnit") return rows.filter(d => isHuntLoan(d) && needsDate(d));
-  if (state.pohled === "vse" || (state.pohled === "akce" && state.q && !state.ctvrt)) return rows;
-  if (state.pohled === "leady") return [];
+  if (state.view === "missing") return rows.filter(d => isHuntLoan(d) && needsDate(d));
+  if (state.view === "all" || (state.view === "action" && state.q && !state.quarter)) return rows;
+  if (state.view === "leads") return [];
   let hunt = rows.filter(isHuntLoan);
-  if (state.ctvrt) {
+  if (state.quarter) {
     hunt = hunt.filter(d => {
       const info = maturityInfo(d);
-      return info.date && !info.approximate && quarterKey(info.date) === state.ctvrt;
+      return info.date && !info.approximate && quarterKey(info.date) === state.quarter;
     });
   } else {
-    hunt = hunt.filter(d => inRefiWindow(d, state.okno));
+    hunt = hunt.filter(d => inRefiWindow(d, state.window));
   }
   return hunt;
 }
 function applyRole(rows) {
-  if (state.role === "obhajoba") return rows.filter(d => isDefend(effectiveRole(d)));
-  if (state.role === "prilezitost") return rows.filter(d => effectiveRole(d) === "opportunity");
+  if (state.role === "defend") return rows.filter(d => isDefend(effectiveRole(d)));
+  if (state.role === "opportunity") return rows.filter(d => effectiveRole(d) === "opportunity");
   return rows;
 }
 function tableRows() { return sortRows(applyRole(beforeRole())); }
 
 function kpiRows() {
   return DEALS.filter(d => {
-    if (!state.uhli && d.coal_excluded) return false;
-    if (state.typ && d.type !== state.typ) return false;
-    if (state.skupina) {
+    if (!state.coal && d.coal_excluded) return false;
+    if (state.type && d.type !== state.type) return false;
+    if (state.group) {
       const g = dealGroup(d.borrower);
-      if (state.skupina === "__ungrouped__") { if (g) return false; }
-      else if (g !== state.skupina) return false;
+      if (state.group === "__ungrouped__") { if (g) return false; }
+      else if (g !== state.group) return false;
     }
     if (state.q && !textHit(d, state.q)) return false;
-    if (state.sleduji && !isStar(d)) return false;
-    if (state.nove && !isNew(d)) return false;
-    if (state.rok) {
+    if (state.watch && !isStar(d)) return false;
+    if (state.fresh && !isNew(d)) return false;
+    if (state.year) {
       const info = maturityInfo(d);
-      if (!info.date || String(info.date.getUTCFullYear()) !== String(state.rok)) return false;
+      if (!info.date || String(info.date.getUTCFullYear()) !== String(state.year)) return false;
     }
     return isHuntLoan(d);
   });
@@ -1286,8 +1297,8 @@ function render() {
 function renderAsOf() {
   const fresh = DEALS.filter(isNew);
   const el = document.getElementById("asofLine");
-  const when = firstVisit ? "první otevření, počítáno od " + fmtCzDate(FIRST_VISIT_BASELINE) : "od " + fmtCzDate(lastVisit);
-  el.textContent = "Data k " + fmtCzDate(DATA_AS_OF) + " · build " + BUILD + " · " + DEALS.length + " obchodů · " + fresh.length + " nové od minula (" + when + ")";
+  const when = firstVisit ? "first open, counted from " + fmtDate(FIRST_VISIT_BASELINE) : "since " + fmtDate(lastVisit);
+  el.textContent = "Data as of " + fmtDate(DATA_AS_OF) + " · build " + BUILD + " · " + DEALS.length + " deals · " + fresh.length + " new since last visit (" + when + ")";
 }
 
 function renderFilters() {
@@ -1296,59 +1307,59 @@ function renderFilters() {
   const nDef = pre.filter(d => isDefend(effectiveRole(d))).length;
   const nOpp = pre.filter(d => effectiveRole(d) === "opportunity").length;
   const years = Array.from(new Set(DEALS.map(d => { const i = maturityInfo(d); return i.date ? i.date.getUTCFullYear() : null; }).filter(Boolean))).sort((a, b) => a - b);
-  const groups = Object.keys(DEAL_GROUPS).sort((a, b) => a.localeCompare(b, "cs"));
-  const oknoBtns = [12, 18, 24, 36].map(n =>
-    `<button type="button" data-act="okno" data-value="${n}" aria-pressed="${state.okno === n}">${n} m</button>`
+  const groups = Object.keys(DEAL_GROUPS).sort((a, b) => a.localeCompare(b, "en"));
+  const windowBtns = [12, 18, 24, 36].map(n =>
+    `<button type="button" data-act="window" data-value="${n}" aria-pressed="${state.window === n}">${n} m</button>`
   ).join("");
   const roleBtns = [
-    ["vse", "Vše (" + nAll + ")"],
-    ["obhajoba", "Obhajoba (" + nDef + ")"],
-    ["prilezitost", "Příležitost (" + nOpp + ")"],
+    ["all", "All (" + nAll + ")"],
+    ["defend", "Defend (" + nDef + ")"],
+    ["opportunity", "Opportunity (" + nOpp + ")"],
   ].map(([v, lab]) => `<button type="button" data-act="role" data-value="${v}" aria-pressed="${state.role === v}">${lab}</button>`).join("");
-  const types = Object.keys(TYPE_CS).map(t => `<option value="${esc(t)}" ${state.typ === t ? "selected" : ""}>${esc(TYPE_CS[t])}</option>`).join("");
-  const groupOpts = groups.map(g => `<option value="${esc(g)}" ${state.skupina === g ? "selected" : ""}>${esc(g)}</option>`).join("");
-  const yearOpts = years.map(y => `<option value="${y}" ${String(state.rok) === String(y) ? "selected" : ""}>${y}</option>`).join("");
-  const doplnitN = population().filter(d => isHuntLoan(d) && needsDate(d)).length;
+  const types = Object.keys(TYPE_LABEL).map(t => `<option value="${esc(t)}" ${state.type === t ? "selected" : ""}>${esc(TYPE_LABEL[t])}</option>`).join("");
+  const groupOpts = groups.map(g => `<option value="${esc(g)}" ${state.group === g ? "selected" : ""}>${esc(g)}</option>`).join("");
+  const yearOpts = years.map(y => `<option value="${y}" ${String(state.year) === String(y) ? "selected" : ""}>${y}</option>`).join("");
+  const missingN = population().filter(d => isHuntLoan(d) && needsDate(d)).length;
   const tabs = [
-    ["akce", "Akční seznam"],
-    ["vse", "Všechny řádky"],
-    ["doplnit", "Doplnit splatnost (" + doplnitN + ")"],
-    ["leady", "Leady (" + leads.filter(l => l.status !== "rejected").length + ")"],
-  ].map(([v, lab]) => `<button type="button" class="tab" role="tab" data-act="pohled" data-value="${v}" aria-selected="${state.pohled === v}">${lab}</button>`).join("");
+    ["action", "Action list"],
+    ["all", "All rows"],
+    ["missing", "Fill in maturity (" + missingN + ")"],
+    ["leads", "Leads (" + leads.filter(l => l.status !== "rejected").length + ")"],
+  ].map(([v, lab]) => `<button type="button" class="tab" role="tab" data-act="view" data-value="${v}" aria-selected="${state.view === v}">${lab}</button>`).join("");
   document.getElementById("filters").innerHTML = `
     <div class="toolbar">
-      <div class="seg" role="group" aria-label="Refinanční okno">${oknoBtns}</div>
-      <div class="seg" role="group" aria-label="Role WB">${roleBtns}</div>
-      <label class="sel">Typ <select data-filter="typ" aria-label="Typ obchodu"><option value="">vše</option>${types}</select></label>
-      <label class="sel">Skupina <select data-filter="skupina" aria-label="Skupina"><option value="">vše</option><option value="__ungrouped__" ${state.skupina === "__ungrouped__" ? "selected" : ""}>bez skupiny</option>${groupOpts}</select></label>
-      <label class="sel">Rok splatnosti <select data-filter="rok" aria-label="Rok splatnosti"><option value="">vše</option>${yearOpts}</select></label>
-      <button type="button" class="toggle" data-act="toggle" data-key="potvrzene" aria-pressed="${state.potvrzene}">Jen potvrzené</button>
-      <button type="button" class="toggle" data-act="toggle" data-key="nove" aria-pressed="${state.nove}">Nové od minula</button>
-      <button type="button" class="toggle" data-act="toggle" data-key="sleduji" aria-pressed="${state.sleduji}">Sleduji</button>
-      <button type="button" class="toggle" data-act="toggle" data-key="uhli" aria-pressed="${state.uhli}">Včetně uhlí</button>
+      <div class="seg" role="group" aria-label="Refinancing window">${windowBtns}</div>
+      <div class="seg" role="group" aria-label="WB role">${roleBtns}</div>
+      <label class="sel">Type <select data-filter="type" aria-label="Deal type"><option value="">all</option>${types}</select></label>
+      <label class="sel">Group <select data-filter="group" aria-label="Group"><option value="">all</option><option value="__ungrouped__" ${state.group === "__ungrouped__" ? "selected" : ""}>ungrouped</option>${groupOpts}</select></label>
+      <label class="sel">Maturity year <select data-filter="year" aria-label="Maturity year"><option value="">all</option>${yearOpts}</select></label>
+      <button type="button" class="toggle" data-act="toggle" data-key="confirmed" aria-pressed="${state.confirmed}">Confirmed dates only</button>
+      <button type="button" class="toggle" data-act="toggle" data-key="fresh" aria-pressed="${state.fresh}">New since last visit</button>
+      <button type="button" class="toggle" data-act="toggle" data-key="watch" aria-pressed="${state.watch}">Watching</button>
+      <button type="button" class="toggle" data-act="toggle" data-key="coal" aria-pressed="${state.coal}">Include coal</button>
     </div>
-    <div class="views" role="tablist" aria-label="Pohled na seznam">${tabs}</div>`;
+    <div class="views" role="tablist" aria-label="List view">${tabs}</div>`;
   renderChips();
 }
 function renderChips() {
   const chips = [];
-  const add = (key, label) => chips.push(`<span class="chip">${esc(label)} <button type="button" data-act="clear" data-key="${key}" aria-label="Zrušit filtr ${esc(label)}">×</button></span>`);
-  if (state.okno !== 18) add("okno", "Okno " + state.okno + " m");
-  if (state.role === "obhajoba") add("role", "Role: obhajoba");
-  if (state.role === "prilezitost") add("role", "Role: příležitost");
-  if (state.typ) add("typ", "Typ: " + (TYPE_CS[state.typ] || state.typ));
-  if (state.skupina) add("skupina", "Skupina: " + (state.skupina === "__ungrouped__" ? "bez skupiny" : state.skupina));
-  if (state.rok) add("rok", "Splatnost " + state.rok);
-  if (state.potvrzene) add("potvrzene", "Jen potvrzené");
-  if (state.nove) add("nove", "Nové od minula");
-  if (state.sleduji) add("sleduji", "Sleduji");
-  if (state.uhli) add("uhli", "Včetně uhlí");
-  if (state.pohled !== "akce") add("pohled", state.pohled === "vse" ? "Všechny řádky" : state.pohled === "doplnit" ? "Doplnit splatnost" : "Leady");
-  if (state.ctvrt) add("ctvrt", "Čtvrtletí " + quarterLabel(state.ctvrt));
-  if (state.q) add("q", "Hledání: " + state.q);
-  if (state.razeni !== "mesice") add("razeni", "Řazení: " + state.razeni);
-  if (state.pohled === "leady" && state.lstav !== "open") add("lstav", "Stav leadu: " + (LEAD_STATUS[state.lstav] || state.lstav));
-  const clear = `<button type="button" class="textbtn" data-act="clear-all" ${isDirty() ? "" : "disabled"}>Zrušit vše</button>`;
+  const add = (key, label) => chips.push(`<span class="chip">${esc(label)} <button type="button" data-act="clear" data-key="${key}" aria-label="Remove filter ${esc(label)}">×</button></span>`);
+  if (state.window !== 18) add("window", "Window " + state.window + " m");
+  if (state.role === "defend") add("role", "Role: Defend");
+  if (state.role === "opportunity") add("role", "Role: Opportunity");
+  if (state.type) add("type", "Type: " + (TYPE_LABEL[state.type] || state.type));
+  if (state.group) add("group", "Group: " + (state.group === "__ungrouped__" ? "ungrouped" : state.group));
+  if (state.year) add("year", "Maturity " + state.year);
+  if (state.confirmed) add("confirmed", "Confirmed dates only");
+  if (state.fresh) add("fresh", "New since last visit");
+  if (state.watch) add("watch", "Watching");
+  if (state.coal) add("coal", "Include coal");
+  if (state.view !== "action") add("view", state.view === "all" ? "All rows" : state.view === "missing" ? "Fill in maturity" : "Leads");
+  if (state.quarter) add("quarter", "Quarter " + quarterLabel(state.quarter));
+  if (state.q) add("q", "Search: " + state.q);
+  if (state.sort !== "months") add("sort", "Sort: " + (SORT_LABEL[state.sort] || state.sort));
+  if (state.view === "leads" && state.lead !== "open") add("lead", "Lead status: " + (LEAD_STATUS[state.lead] || state.lead));
+  const clear = `<button type="button" class="textbtn" data-act="clear-all" ${isDirty() ? "" : "disabled"}>Clear all</button>`;
   document.getElementById("chips").innerHTML = chips.join("") + clear;
 }
 function clearKey(key) {
@@ -1363,8 +1374,8 @@ function clearKey(key) {
 }
 
 function renderKpis() {
-  const rows = kpiRows().filter(d => !state.potvrzene || confirmedMaturity(d));
-  const inWin = rows.filter(d => inRefiWindow(d, state.okno));
+  const rows = kpiRows().filter(d => !state.confirmed || confirmedMaturity(d));
+  const inWin = rows.filter(d => inRefiWindow(d, state.window));
   const approx = inWin.filter(d => maturityInfo(d).approximate);
   const solid = inWin.filter(d => !maturityInfo(d).approximate);
   const defend = inWin.filter(d => isDefend(effectiveRole(d)));
@@ -1373,14 +1384,14 @@ function renderKpis() {
   const missingEur = missing.reduce((s, d) => s + bankCommitmentEur(d), 0);
   const fresh = DEALS.filter(isNew);
   const biggest = defend.slice().sort((a, b) => bankCommitmentEur(b) - bankCommitmentEur(a))[0];
-  const defendSub = biggest ? shortName(biggest.borrower) + " " + fmtMld(bankCommitmentEur(biggest)) : "v okně nikdo";
-  const freshSub = fresh.slice(0, 4).map(d => shortName(d.borrower)).join(", ") || "žádné";
+  const defendSub = biggest ? shortName(biggest.borrower) + " " + fmtBn(bankCommitmentEur(biggest)) : "none in the window";
+  const freshSub = fresh.slice(0, 4).map(d => shortName(d.borrower)).join(", ") || "none";
   const winEur = inWin.reduce((s, d) => s + bankCommitmentEur(d), 0);
   const cards = [
-    ["win", "V refi okně (" + state.okno + " m)", loanCount(inWin.length), fmtMld(winEur) + " · " + solid.length + " s měsícem, " + approx.length + " přibližně"],
-    ["defend", "Obhajoba WB (" + state.okno + " m)", loanCount(defend.length), defendSub + (defend.length > 1 ? " · celkem " + fmtMld(defendEur) : "")],
-    ["missing", "Bez známé splatnosti", loanCount(missing.length), fmtMld(missingEur) + ", doplnit"],
-    ["fresh", "Nové od poslední návštěvy", String(fresh.length), freshSub],
+    ["win", "In the refi window (" + state.window + " m)", loanCount(inWin.length), fmtBn(winEur) + " · " + solid.length + " with a month, " + approx.length + " approximate"],
+    ["defend", "WB defend book (" + state.window + " m)", loanCount(defend.length), defendSub + (defend.length > 1 ? " · total " + fmtBn(defendEur) : "")],
+    ["missing", "No known maturity", loanCount(missing.length), fmtBn(missingEur) + ", to fill in"],
+    ["fresh", "New since last visit", String(fresh.length), freshSub],
   ];
   document.getElementById("kpis").innerHTML = cards.map(([id, label, value, sub]) =>
     `<button type="button" class="kpi" data-act="kpi" data-kpi="${id}"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div><p class="sub">${esc(sub)}</p></button>`
@@ -1389,7 +1400,7 @@ function renderKpis() {
 
 function renderChart() {
   const base = kpiRows();
-  const rows = state.potvrzene ? base.filter(d => confirmedMaturity(d)) : base;
+  const rows = state.confirmed ? base.filter(d => confirmedMaturity(d)) : base;
   const quarters = enumerateQuarters();
   const map = {};
   quarters.forEach(q => { map[q.key] = { defend: 0, opp: 0, n: 0 }; });
@@ -1410,7 +1421,7 @@ function renderChart() {
   let shadeFrom = -1, shadeTo = -1;
   quarters.forEach((q, i) => {
     const m = (q.start.getUTCFullYear() - TODAY.getUTCFullYear()) * 12 + (q.start.getUTCMonth() - TODAY.getUTCMonth());
-    if (m + 2 >= -3 && m <= state.okno) {
+    if (m + 2 >= -3 && m <= state.window) {
       if (shadeFrom < 0) shadeFrom = i;
       shadeTo = i;
     }
@@ -1419,30 +1430,30 @@ function renderChart() {
     const b = map[q.key];
     const hd = Math.round((b.defend / max) * plotPx);
     const ho = Math.round((b.opp / max) * plotPx);
-    const label = quarterLabel(q.key) + ": obhajoba " + fmtNum(b.defend) + " mil. EUR, příležitost " + fmtNum(b.opp) + " mil. EUR, " + b.n + " úvěrů";
-    return `<button type="button" class="bar" data-act="quarter" data-ctvrt="${q.key}" aria-label="${esc(label)}" aria-pressed="${state.ctvrt === q.key}"><span class="stack"><span class="sego" style="height:${ho}px"></span><span class="segd" style="height:${hd}px"></span></span></button>`;
+    const label = quarterLabel(q.key) + ": defend " + fmtNum(b.defend) + " m EUR, opportunity " + fmtNum(b.opp) + " m EUR, " + loanCount(b.n);
+    return `<button type="button" class="bar" data-act="quarter" data-quarter="${q.key}" aria-label="${esc(label)}" aria-pressed="${state.quarter === q.key}"><span class="stack"><span class="sego" style="height:${ho}px"></span><span class="segd" style="height:${hd}px"></span></span></button>`;
   }).join("");
   const labels = quarters.map(q => `<span>${q.q === 1 ? q.year : ""}</span>`).join("");
   const shade = shadeFrom >= 0
-    ? `<div class="shade" style="left:${(shadeFrom / quarters.length) * 100}%;width:${((shadeTo - shadeFrom + 1) / quarters.length) * 100}%"><span class="shade-label">refi okno ${state.okno} m</span></div>`
+    ? `<div class="shade" style="left:${(shadeFrom / quarters.length) * 100}%;width:${((shadeTo - shadeFrom + 1) / quarters.length) * 100}%"><span class="shade-label">refi window ${state.window} m</span></div>`
     : "";
-  const summary = "Splatnosti po čtvrtletích. Neznámá splatnost: " + unknownN + " úvěrů, " + fmtMld(unknownEur) + ".";
+  const summary = "Maturities by quarter. Unknown maturity: " + loanCount(unknownN) + ", " + fmtBn(unknownEur) + ".";
   const range = rangeStrip(base.filter(needsDate));
   document.getElementById("chart").innerHTML = `
-    <h2>Splatnosti po čtvrtletích (mil. EUR)</h2>
-    <div class="legend"><span><i class="sw segd"></i>obhajoba WB</span><span><i class="sw sego"></i>příležitost</span></div>
+    <h2>Maturities by quarter (EUR m)</h2>
+    <div class="legend"><span><i class="sw segd"></i>WB defend book</span><span><i class="sw sego"></i>opportunity</span></div>
     <div class="chart-row">
       <div class="chart-scroll">
         <div class="plot" role="group" aria-label="${esc(summary)}">${shade}<div class="bars">${bars}</div><div class="qlabels">${labels}</div></div>
         ${range}
       </div>
-      <button type="button" class="unknown-col" data-act="unknown" aria-label="Neznámá splatnost, ${unknownN} úvěrů, otevřít seznam Doplnit splatnost">
-        <span>Neznámá</span>
+      <button type="button" class="unknown-col" data-act="unknown" aria-label="Unknown maturity, ${unknownN} loans, open the Fill in maturity list">
+        <span>Unknown</span>
         <strong>${unknownN}</strong>
-        <span>${esc(fmtMld(unknownEur))}</span>
+        <span>${esc(fmtBn(unknownEur))}</span>
       </button>
     </div>
-    <p class="range-note">Sloupce počítají jen splatnost s měsícem ve zdroji. Úvěry jen s rokem podpisu jsou v samostatném sloupci Neznámá a v radaru se středem období, označené jako přibližné.${later ? " Po konci osy zbývá " + esc(fmtMld(later)) + "." : ""}</p>`;
+    <p class="range-note">Bars count only maturities with a month in the source. Loans with only a signing year sit in the Unknown column and on the radar at the period midpoint, marked approximate.${later ? " Beyond the axis: " + esc(fmtBn(later)) + "." : ""}</p>`;
 }
 function rangeStrip(rows) {
   if (!rows.length) return "";
@@ -1457,25 +1468,25 @@ function rangeStrip(rows) {
   const years = Object.keys(counts).map(Number).sort((a, b) => a - b);
   if (!years.length) return "";
   const max = Math.max(...years.map(y => counts[y]));
-  const bars = years.map(y => `<button type="button" data-act="range-year" data-year="${y}" style="height:${Math.max(4, Math.round((counts[y] / max) * 46))}px" aria-label="Rozpětí ${y}: ${counts[y]} úvěrů"></button>`).join("");
+  const bars = years.map(y => `<button type="button" data-act="range-year" data-year="${y}" style="height:${Math.max(4, Math.round((counts[y] / max) * 46))}px" aria-label="Span ${y}: ${loanCount(counts[y])}"></button>`).join("");
   const labs = years.map(y => `<span>${String(y).slice(2)}</span>`).join("");
-  return `<div class="range"><div class="range-note">Rozpětí let (podpis + tenor), počet úvěrů k doplnění</div><div class="range-bars">${bars}</div><div class="range-years">${labs}</div></div>`;
+  return `<div class="range"><div class="range-note">Year span (signing date plus tenor), loans still to date</div><div class="range-bars">${bars}</div><div class="range-years">${labs}</div></div>`;
 }
 
 function renderNews() {
   const fresh = DEALS.filter(isNew).sort((a, b) => (b.added_on || "").localeCompare(a.added_on || ""));
   const items = fresh.slice(0, 8).map(d => {
-    const amt = displayAmount(d) ? fmtNum(displayAmount(d)) + " mil. EUR" : "částka neuvedena";
+    const amt = displayAmount(d) ? fmtNum(displayAmount(d)) + " m EUR" : "amount not disclosed";
     const sentence = String(d.purpose || "").split(/(?<=\.)\s/)[0].slice(0, 140);
-    return `<button type="button" class="news-item" data-act="open" data-id="${esc(d.id)}"><div class="when">${esc(d.date || fmtCzDate(d.added_on))}</div><div class="what">${esc(shortName(d.borrower))} · ${esc(amt)}</div><div class="muted">${esc(sentence)}</div></button>`;
+    return `<button type="button" class="news-item" data-act="open" data-id="${esc(d.id)}"><div class="when">${esc(d.date || fmtDate(d.added_on))}</div><div class="what">${esc(shortName(d.borrower))} · ${esc(amt)}</div><div class="muted">${esc(sentence)}</div></button>`;
   }).join("");
   const empty = firstVisit
-    ? "První otevření v tomto prohlížeči. Přírůstky se počítají od buildu " + fmtCzDate(FIRST_VISIT_BASELINE) + "."
-    : "Od poslední návštěvy " + fmtCzDate(lastVisit) + " nic nového.";
+    ? "First open in this browser. Additions are counted from the build of " + fmtDate(FIRST_VISIT_BASELINE) + "."
+    : "Nothing new since the last visit on " + fmtDate(lastVisit) + ".";
   document.getElementById("news").innerHTML = `
-    <h2>Nové od poslední návštěvy</h2>
+    <h2>New since last visit</h2>
     ${items || `<p class="muted">${esc(empty)}</p>`}
-    <button type="button" class="textbtn" data-act="mark-seen">Označit jako přečtené</button>`;
+    <button type="button" class="textbtn" data-act="mark-seen">Mark as read</button>`;
 }
 
 function ariaSort(key) {
@@ -1494,15 +1505,15 @@ function rowHtml(d) {
   const m = monthsTo(info);
   const mCls = m == null ? "" : m < 0 ? "past" : m <= 12 ? "soon" : "";
   const mTxt = m == null ? "—" : (m < 0 ? "−" + Math.abs(m) : String(m));
-  const mNote = m == null ? "" : m < 0 ? "po splatnosti" : m === 0 ? "tento měsíc" : "";
+  const mNote = m == null ? "" : m < 0 ? "past maturity" : m === 0 ? "this month" : "";
   const amt = displayAmount(d);
   const src = sourcesOf(d)[0];
   const href = src ? safeUrl(src.url) : "";
-  const badges = (isNew(d) ? `<span class="badge badge-new">NOVÉ</span>` : "") + (isStar(d) ? `<span class="badge badge-watch">Sleduji</span>` : "");
+  const badges = (isNew(d) ? `<span class="badge badge-new">NEW</span>` : "") + (isStar(d) ? `<span class="badge badge-watch">Watching</span>` : "");
   const status = d.separate_facility === false ? "memo" : (d.status || "outstanding");
-  const statusBit = status === "outstanding" ? "" : `<div class="muted">${esc(STATUS_CS[status] || status)}</div>`;
+  const statusBit = status === "outstanding" ? "" : `<div class="muted">${esc(STATUS_LABEL[status] || status)}</div>`;
   const approxCls = info.approximate || !info.date ? "approx" : "";
-  const range = (state.pohled === "doplnit" || info.approximate) && rangeText(d) ? `<div class="muted">rozpětí ${esc(rangeText(d))}</div>` : "";
+  const range = (state.view === "missing" || info.approximate) && rangeText(d) ? `<div class="muted">span ${esc(rangeText(d))}</div>` : "";
   const srcCell = href
     ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(domainOf(href))}</a>`
     : "—";
@@ -1510,7 +1521,7 @@ function rowHtml(d) {
     <td><div class="name">${esc(d.borrower)}</div>${badges}${statusBit}</td>
     <td class="${approxCls}">${esc(maturityText(d))}${range}</td>
     <td class="num"><span class="m2m ${mCls}">${mTxt}</span>${mNote ? `<div class="muted">${mNote}</div>` : ""}</td>
-    <td><span class="badge ${role.cls}" ${local ? `title="Místní úprava v tomto prohlížeči"` : ""}>${esc(role.text)}</span></td>
+    <td><span class="badge ${role.cls}" ${local ? `title="Local override in this browser"` : ""}>${esc(role.text)}</span></td>
     <td class="num">${amt ? esc(fmtNum(amt)) : "n/d"}</td>
     <td class="src">${srcCell}</td>
   </tr>`;
@@ -1519,9 +1530,9 @@ function cardHtml(d) {
   const role = roleMeta(effectiveRole(d));
   const amt = displayAmount(d);
   return `<button type="button" class="card" data-act="open" data-id="${esc(d.id)}">
-    <div class="card-top"><span class="name">${esc(d.borrower)}</span><span>${amt ? esc(fmtNum(amt)) + " mil. EUR" : "n/d"}</span></div>
+    <div class="card-top"><span class="name">${esc(d.borrower)}</span><span>${amt ? esc(fmtNum(amt)) + " m EUR" : "n/d"}</span></div>
     <div class="${maturityInfo(d).approximate ? "approx" : ""}">${esc(maturityText(d))}</div>
-    <div style="margin-top:6px"><span class="badge ${role.cls}">${esc(role.text)}</span>${isNew(d) ? `<span class="badge badge-new">NOVÉ</span>` : ""}</div>
+    <div style="margin-top:6px"><span class="badge ${role.cls}">${esc(role.text)}</span>${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}</div>
   </button>`;
 }
 function renderList() {
@@ -1529,8 +1540,8 @@ function renderList() {
   const table = document.getElementById("tableWrap");
   const cards = document.getElementById("cards");
   const leadsEl = document.getElementById("leads");
-  if (state.pohled === "leady") {
-    head.innerHTML = `<h2>Leady</h2>`;
+  if (state.view === "leads") {
+    head.innerHTML = `<h2>Leads</h2>`;
     table.innerHTML = "";
     cards.innerHTML = "";
     leadsEl.hidden = false;
@@ -1540,57 +1551,57 @@ function renderList() {
   leadsEl.hidden = true;
   leadsEl.innerHTML = "";
   const rows = tableRows();
-  const titles = { akce: state.ctvrt ? "Čtvrtletí " + quarterLabel(state.ctvrt) : "Akční seznam", vse: "Všechny řádky", doplnit: "Doplnit splatnost" };
-  const sub = state.pohled === "akce" && state.q && !state.ctvrt
-    ? "Hledání prochází celý seznam, ne jen refinanční okno."
-    : state.pohled === "akce" && !state.ctvrt
-    ? "Živé bankovní úvěry v okně " + state.okno + " měsíců, včetně 3 měsíců po splatnosti. Přibližné datum je označené."
-    : state.pohled === "doplnit"
-      ? "Živé úvěry bez měsíce splatnosti ve zdroji, seřazené podle objemu. Rozpětí je podpis plus tenor."
-      : "Všechny sledované řádky, včetně splacených a neúvěrových.";
-  head.innerHTML = `<div><h2 id="listTitle">${esc(titles[state.pohled] || "Seznam")} <span class="muted">(${rows.length})</span></h2><p class="muted" style="margin:2px 0 0">${esc(sub)}</p></div>
+  const titles = { action: state.quarter ? "Quarter " + quarterLabel(state.quarter) : "Action list", all: "All rows", missing: "Fill in maturity" };
+  const sub = state.view === "action" && state.q && !state.quarter
+    ? "Search covers the full list, not only the refinancing window."
+    : state.view === "action" && !state.quarter
+    ? "Live bank loans inside a " + state.window + "-month window, including 3 months past maturity. Approximate dates are marked."
+    : state.view === "missing"
+      ? "Live loans with no maturity month in the source, sorted by amount. The span is the signing date plus tenor."
+      : "Every tracked row, including repaid facilities and non-loan items.";
+  head.innerHTML = `<div><h2 id="listTitle">${esc(titles[state.view] || "List")} <span class="muted">(${rows.length})</span></h2><p class="muted" style="margin:2px 0 0">${esc(sub)}</p></div>
     <div class="actions">
       <button type="button" data-act="csv">CSV</button>
-      <button type="button" data-act="ics">Kalendář (.ics, okno ${state.okno} m)</button>
-      <button type="button" data-act="mail">Kopírovat do e-mailu</button>
+      <button type="button" data-act="ics">Calendar (.ics, ${state.window} m window)</button>
+      <button type="button" data-act="mail">Copy for email</button>
     </div>`;
   if (!rows.length) {
-    table.innerHTML = `<p class="muted">Pod těmito filtry tu nic není.</p>`;
+    table.innerHTML = `<p class="muted">Nothing matches these filters.</p>`;
     cards.innerHTML = "";
     return;
   }
   table.innerHTML = `<table class="deal-table"><thead><tr>
-    ${th("dluznik", "Dlužník")}
-    ${th("splatnost", "Splatnost a základ")}
-    ${th("mesice", "Měsíců", "num")}
-    <th scope="col">Role WB</th>
-    ${th("objem", "Objem mil. EUR", "num")}
-    <th scope="col">Zdroj</th>
+    ${th("borrower", "Borrower")}
+    ${th("maturity", "Maturity and basis")}
+    ${th("months", "Months", "num")}
+    <th scope="col">WB role</th>
+    ${th("amount", "Amount EUR m", "num")}
+    <th scope="col">Source</th>
   </tr></thead><tbody>${rows.map(rowHtml).join("")}</tbody></table>`;
   cards.innerHTML = rows.map(cardHtml).join("");
 }
 
 function renderLeads() {
   const visible = leads.filter(l => {
-    if (state.lstav === "all" || state.lstav === "open") return state.lstav === "all" ? true : l.status !== "rejected";
-    return l.status === state.lstav;
+    if (state.lead === "all" || state.lead === "open") return state.lead === "all" ? true : l.status !== "rejected";
+    return l.status === state.lead;
   });
-  const filters = [["open", "Neověřené"], ["all", "Vše"], ["new", "Nový"], ["checking", "Ověřuji"], ["confirmed", "Potvrzeno"], ["rejected", "Odmítnuto"]];
-  const bar = filters.map(([v, lab]) => `<button type="button" class="toggle" data-act="lstav" data-value="${v}" aria-pressed="${state.lstav === v}">${lab}</button>`).join("");
+  const filters = [["open", "Open"], ["all", "All"], ["new", "New"], ["checking", "Checking"], ["confirmed", "Confirmed"], ["rejected", "Rejected"]];
+  const bar = filters.map(([v, lab]) => `<button type="button" class="toggle" data-act="lead" data-value="${v}" aria-pressed="${state.lead === v}">${lab}</button>`).join("");
   const cards = visible.map(l => {
     const href = safeUrl(l.source || "");
     const opts = Object.keys(LEAD_STATUS).map(k => `<option value="${k}" ${l.status === k ? "selected" : ""}>${LEAD_STATUS[k]}</option>`).join("");
     return `<article class="panel" style="margin-bottom:8px">
-      <div class="card-top"><strong>${esc(l.borrower || "Bez jména")}</strong><span class="muted">${esc(fmtCzDate(l.created_on))}</span></div>
-      <p>${esc(l.amount || "částka neuvedena")} · ${esc(l.when || "datum neuvedeno")}</p>
+      <div class="card-top"><strong>${esc(l.borrower || "Unnamed")}</strong><span class="muted">${esc(fmtDate(l.created_on))}</span></div>
+      <p>${esc(l.amount || "amount not disclosed")} · ${esc(l.when || "date not stated")}</p>
       <p>${esc(l.purpose || "")}</p>
       <p class="muted">${esc(l.lenders || "")}</p>
       ${href ? `<p class="src"><a href="${esc(href)}" target="_blank" rel="noopener">${esc(domainOf(href))}</a></p>` : ""}
       ${l.note ? `<p>${esc(l.note)}</p>` : ""}
       <div class="actions">
-        <label class="sel">Stav <select data-lead="${esc(l.id)}" class="lead-status">${opts}</select></label>
-        <button type="button" data-act="lead-issue" data-id="${esc(l.id)}">Kopírovat issue</button>
-        <button type="button" data-act="lead-del" data-id="${esc(l.id)}">Smazat</button>
+        <label class="sel">Status <select data-lead="${esc(l.id)}" class="lead-status">${opts}</select></label>
+        <button type="button" data-act="lead-issue" data-id="${esc(l.id)}">Copy issue</button>
+        <button type="button" data-act="lead-del" data-id="${esc(l.id)}">Delete</button>
       </div>
     </article>`;
   }).join("");
@@ -1598,9 +1609,9 @@ function renderLeads() {
     <div class="toolbar" style="margin-bottom:8px">${bar}
       <button type="button" class="textbtn" data-act="leads-json">Export JSON</button>
       <button type="button" class="textbtn" data-act="leads-csv">Export CSV</button>
-      <label class="textbtn">Načíst JSON<input type="file" id="leadImport" accept="application/json" hidden></label>
+      <label class="textbtn">Load JSON<input type="file" id="leadImport" accept="application/json" hidden></label>
     </div>
-    ${cards || `<p class="muted">Zatím žádný lead. Tlačítko + Lead uloží tip z LinkedInu jen do tohoto prohlížeče.</p>`}`;
+    ${cards || `<p class="muted">No leads yet. + Lead saves a LinkedIn tip in this browser only.</p>`}`;
 }
 
 function openDetail(id) {
@@ -1638,47 +1649,47 @@ function fillDetail() {
   const status = d.separate_facility === false ? "memo" : (d.status || "outstanding");
   const amt = displayAmount(d);
   const chainHtml = chain.map(p => p.ext || p.missing
-    ? `<li>${esc(p.label)}${p.missing ? " (není v datech)" : ""}</li>`
+    ? `<li>${esc(p.label)}${p.missing ? " (not in the data)" : ""}</li>`
     : `<li><button type="button" data-act="open" data-id="${esc(p.id)}">${esc(p.label)}</button></li>`
   ).join("");
   const prevHtml = prev.map(p => `<li><button type="button" data-act="open" data-id="${esc(p.id)}">${esc(p.borrower)}</button></li>`).join("");
   const srcHtml = sources.map(s => {
     const href = safeUrl(s.url);
-    const label = href ? domainOf(href) : (s.label || s.url || "zdroj");
+    const label = href ? domainOf(href) : (s.label || s.url || "source");
     return `<li>${href ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>` : esc(label)} <span class="muted">${esc(s.date || "")}</span></li>`;
   }).join("");
-  const roleOpts = [["", "podle zveřejněných dat (" + roleMeta(d.wb_status || "unknown").text + ")"], ["incumbent", "Obhajoba"], ["participant", "Účast"], ["opportunity", "Příležitost"], ["unknown", "Neověřeno"]];
+  const roleOpts = [["", "as in the published data (" + roleMeta(d.wb_status || "unknown").text + ")"], ["incumbent", "Incumbent"], ["participant", "Participant"], ["opportunity", "Opportunity"], ["unknown", "Unverified"]];
   panel.innerHTML = `
-    <button type="button" class="close-x" data-act="close-detail" aria-label="Zavřít detail">×</button>
+    <button type="button" class="close-x" data-act="close-detail" aria-label="Close detail">×</button>
     <h2 id="detailTitle">${esc(d.borrower)}</h2>
-    <div>${isNew(d) ? `<span class="badge badge-new">NOVÉ</span>` : ""}<span class="badge">${esc(TYPE_CS[d.type] || d.type)}</span><span class="badge">${esc(STATUS_CS[status] || status)}</span><span class="badge ${meta.cls}">${esc(meta.text)}</span>${isStar(d) ? `<span class="badge badge-watch">Sleduji</span>` : ""}</div>
+    <div>${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}<span class="badge">${esc(TYPE_LABEL[d.type] || d.type)}</span><span class="badge">${esc(STATUS_LABEL[status] || status)}</span><span class="badge ${meta.cls}">${esc(meta.text)}</span>${isStar(d) ? `<span class="badge badge-watch">Watching</span>` : ""}</div>
     <dl class="kv">
-      <dt>Objem</dt><dd>${amt ? esc(fmtNum(amt)) + " mil. EUR" : "n/d"}</dd>
-      <dt>Částka ve zdroji</dt><dd>${esc(d.amount || "—")}</dd>
-      <dt>Splatnost</dt><dd class="${info.approximate || !info.date ? "approx" : ""}">${esc(maturityText(d))}</dd>
-      <dt>Měsíce</dt><dd>${monthsTo(info) == null ? "—" : (monthsTo(info) < 0 ? "−" + Math.abs(monthsTo(info)) : String(monthsTo(info)))}</dd>
-      <dt>Rozpětí</dt><dd>${esc(rangeText(d) || "—")}</dd>
-      <dt>Skupina</dt><dd>${esc(dealGroup(d.borrower) || "bez skupiny")}</dd>
-      <dt>Nástroj</dt><dd>${esc(INST_CS[d.instrument] || d.instrument || "—")}</dd>
-      <dt>Jistota</dt><dd>${certaintyPct(d)} % · ${esc(CONF_CS[d.confidence] || d.confidence || "")}</dd>
-      <dt>Přidáno</dt><dd>${esc(fmtCzDate(d.added_on))}</dd>
+      <dt>Amount</dt><dd>${amt ? esc(fmtNum(amt)) + " m EUR" : "n/d"}</dd>
+      <dt>Amount in source</dt><dd>${esc(d.amount || "—")}</dd>
+      <dt>Maturity</dt><dd class="${info.approximate || !info.date ? "approx" : ""}">${esc(maturityText(d))}</dd>
+      <dt>Months</dt><dd>${monthsTo(info) == null ? "—" : (monthsTo(info) < 0 ? "−" + Math.abs(monthsTo(info)) : String(monthsTo(info)))}</dd>
+      <dt>Span</dt><dd>${esc(rangeText(d) || "—")}</dd>
+      <dt>Group</dt><dd>${esc(dealGroup(d.borrower) || "ungrouped")}</dd>
+      <dt>Instrument</dt><dd>${esc(INST_LABEL[d.instrument] || d.instrument || "—")}</dd>
+      <dt>Certainty</dt><dd>${certaintyPct(d)}% · ${esc(CONF_LABEL[d.confidence] || d.confidence || "")}</dd>
+      <dt>Added</dt><dd>${esc(fmtDate(d.added_on))}</dd>
     </dl>
-    ${hints.length ? `<div class="callout"><strong>Co ověřit</strong><ul>${hints.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>` : ""}
-    ${d.status_note ? `<h3>Poznámka ke stavu</h3><p>${esc(d.status_note)}</p>` : ""}
-    <h3>Účel</h3><p>${esc(d.purpose || "—")}</p>
-    <h3>Věřitelé</h3><ul class="lenders">${lenders.map(x => `<li>${esc(x)}</li>`).join("") || "<li>—</li>"}</ul>
-    <h3>Nástupci</h3>${chainHtml ? `<ul class="chain">${chainHtml}</ul>` : `<p class="muted">Žádný nástupce v datech.</p>`}
-    <h3>Předchůdci</h3>${prevHtml ? `<ul class="chain">${prevHtml}</ul>` : `<p class="muted">Žádný předchůdce v datech.</p>`}
-    <h3>Zdroje</h3><ul class="src">${srcHtml || "<li>—</li>"}</ul>
+    ${hints.length ? `<div class="callout"><strong>What to verify</strong><ul>${hints.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>` : ""}
+    ${d.status_note ? `<h3>Status note</h3><p>${esc(d.status_note)}</p>` : ""}
+    <h3>Purpose</h3><p>${esc(d.purpose || "—")}</p>
+    <h3>Lenders</h3><ul class="lenders">${lenders.map(x => `<li>${esc(x)}</li>`).join("") || "<li>—</li>"}</ul>
+    <h3>Successors</h3>${chainHtml ? `<ul class="chain">${chainHtml}</ul>` : `<p class="muted">No successor in the data.</p>`}
+    <h3>Predecessors</h3>${prevHtml ? `<ul class="chain">${prevHtml}</ul>` : `<p class="muted">No predecessor in the data.</p>`}
+    <h3>Sources</h3><ul class="src">${srcHtml || "<li>—</li>"}</ul>
     <div class="personal">
-      <h3>Osobní vrstva</h3>
-      <p class="muted">Role, poznámka a Sleduji zůstávají v tomto prohlížeči. Na veřejné stránce se neukládají.</p>
-      <div class="field"><span>Místní role WB</span>
+      <h3>Personal layer</h3>
+      <p class="muted">Role, note and Watching stay in this browser. They are not saved on the public page.</p>
+      <div class="field"><span>Local WB role</span>
         <select id="personalRole">${roleOpts.map(([v, lab]) => `<option value="${v}" ${ (pers.role || "") === v ? "selected" : ""}>${esc(lab)}</option>`).join("")}</select>
       </div>
-      <label class="field"><input type="checkbox" id="personalStar" ${pers.star ? "checked" : ""}/> Sleduji</label>
-      <div class="field"><span>Poznámka</span><textarea id="personalNote" rows="3">${esc(pers.note || "")}</textarea></div>
-      <button type="button" class="textbtn" data-act="personal-json">Exportovat osobní vrstvu (JSON)</button>
+      <label class="field"><input type="checkbox" id="personalStar" ${pers.star ? "checked" : ""}/> Watching</label>
+      <div class="field"><span>Note</span><textarea id="personalNote" rows="3">${esc(pers.note || "")}</textarea></div>
+      <button type="button" class="textbtn" data-act="personal-json">Export personal layer (JSON)</button>
     </div>`;
 }
 
@@ -1719,18 +1730,18 @@ function issueMarkdown(l) {
   return [
     "### LinkedIn tip",
     "",
-    "- Dlužník: " + (l.borrower || ""),
-    "- Částka: " + (l.amount || ""),
-    "- Kdy: " + (l.when || ""),
-    "- Věřitelé: " + (l.lenders || ""),
-    "- Co tip říká: " + (l.purpose || ""),
-    "- Odkaz: " + (l.source || ""),
-    "- Stav: " + (LEAD_STATUS[l.status] || l.status || ""),
-    "- Poznámka: " + (l.note || ""),
+    "- Borrower: " + (l.borrower || ""),
+    "- Amount: " + (l.amount || ""),
+    "- When: " + (l.when || ""),
+    "- Lenders: " + (l.lenders || ""),
+    "- What the tip says: " + (l.purpose || ""),
+    "- Link: " + (l.source || ""),
+    "- Status: " + (LEAD_STATUS[l.status] || l.status || ""),
+    "- Note: " + (l.note || ""),
   ].join("\n");
 }
 function githubIssueUrl(l) {
-  const title = "LinkedIn tip: " + (l.borrower || "nový lead");
+  const title = "LinkedIn tip: " + (l.borrower || "new lead");
   return "https://github.com/zabranda/loantracker/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(issueMarkdown(l));
 }
 
@@ -1740,14 +1751,14 @@ function csvEscape(value) {
   return s;
 }
 function dealsToCsv(rows) {
-  const head = ["Dlužník","Typ","Stav","Nástroj","Nástupce","Základ splatnosti","Splatnost","Přibližně","Měsíce","Role WB","Objem mil. EUR","Částka","Věřitelé","Účel","Zdroj","Přidáno","Jistota %"];
+  const head = ["Borrower","Type","Status","Instrument","Successor","Maturity basis","Maturity","Approximate","Months","WB role","Amount EUR m","Amount in source","Lenders","Purpose","Source","Added","Certainty %"];
   const lines = [head.join(",")];
   rows.forEach(d => {
     const info = maturityInfo(d);
     const status = d.separate_facility === false ? "memo" : (d.status || "");
     lines.push([
       d.borrower, d.type, status, d.instrument || "", d.successor || "",
-      info.basis, info.date ? ymOf(info.date) : "", info.approximate ? "ano" : "ne",
+      info.basis, info.date ? ymOf(info.date) : "", info.approximate ? "yes" : "no",
       monthsTo(info) == null ? "" : monthsTo(info), effectiveRole(d), displayAmount(d) || "",
       d.amount, d.lenders, d.purpose, d.source || "", d.added_on || "", certaintyPct(d),
     ].map(csvEscape).join(","));
@@ -1769,21 +1780,21 @@ function icsDate(date) {
   return date.getUTCFullYear() + String(date.getUTCMonth() + 1).padStart(2, "0") + String(date.getUTCDate()).padStart(2, "0");
 }
 function buildIcs(rows) {
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//loantracker//splatnosti//CS", "CALSCALE:GREGORIAN"];
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//loantracker//maturities//EN", "CALSCALE:GREGORIAN"];
   rows.forEach(d => {
     const info = maturityInfo(d);
     if (!info.date) return;
-    const start = addMonthsUTC(info.date, -state.okno);
+    const start = addMonthsUTC(info.date, -state.window);
     const common = "STATUS:CONFIRMED";
     const desc = icsEscape(maturityText(d) + ". " + (d.borrower || ""));
-    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-okno@loantracker", "DTSTART;VALUE=DATE:" + icsDate(start), "SUMMARY:" + icsEscape("Začátek refi okna (" + state.okno + " m): " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
-    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-splatnost@loantracker", "DTSTART;VALUE=DATE:" + icsDate(info.date), "SUMMARY:" + icsEscape("Splatnost: " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
+    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-window@loantracker", "DTSTART;VALUE=DATE:" + icsDate(start), "SUMMARY:" + icsEscape("Refi window opens (" + state.window + " m): " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
+    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-maturity@loantracker", "DTSTART;VALUE=DATE:" + icsDate(info.date), "SUMMARY:" + icsEscape("Maturity: " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
   });
   lines.push("END:VCALENDAR");
   return lines.join("\r\n");
 }
 async function copyMail(rows) {
-  const headers = ["Dlužník", "Splatnost", "Měsíce", "Role WB", "Objem mil. EUR", "Zdroj"];
+  const headers = ["Borrower", "Maturity", "Months", "WB role", "Amount EUR m", "Source"];
   const body = rows.map(d => {
     const info = maturityInfo(d);
     const src = sourcesOf(d)[0];
@@ -1801,9 +1812,9 @@ async function copyMail(rows) {
     } else {
       await navigator.clipboard.writeText(plain);
     }
-    toast("Tabulka je ve schránce.");
+    toast("Table copied to the clipboard.");
   } catch (e) {
-    toast("Schránka není dostupná.");
+    toast("Clipboard is not available.");
   }
 }
 function leadsToCsv(rows) {
@@ -1819,7 +1830,7 @@ function toast(msg) {
 }
 function renderHistory() {
   document.getElementById("history").innerHTML = CHANGELOG.map(c =>
-    `<p><strong>${esc(c.build)}</strong> · ${esc(fmtCzDate(c.date))}<br>${esc(c.text)}</p>`
+    `<p><strong>${esc(c.build)}</strong> · ${esc(fmtDate(c.date))}<br>${esc(c.text)}</p>`
   ).join("");
 }
 
@@ -1829,12 +1840,12 @@ function onClick(e) {
   if (!el) return;
   if (e.target.closest("a")) return;
   const act = el.dataset.act;
-  if (act === "okno") setState({ okno: Number(el.dataset.value) });
+  if (act === "window") setState({ window: Number(el.dataset.value) });
   else if (act === "role") setState({ role: el.dataset.value });
-  else if (act === "pohled") {
-    const patch = { pohled: el.dataset.value };
-    if (el.dataset.value !== "akce") patch.ctvrt = "";
-    if (el.dataset.value === "doplnit") patch.razeni = "objem-desc";
+  else if (act === "view") {
+    const patch = { view: el.dataset.value };
+    if (el.dataset.value !== "action") patch.quarter = "";
+    if (el.dataset.value === "missing") patch.sort = "amount-desc";
     setState(patch);
   }
   else if (act === "toggle") setState({ [el.dataset.key]: !state[el.dataset.key] });
@@ -1848,22 +1859,22 @@ function onClick(e) {
   } else if (act === "sort") {
     const key = el.dataset.sort;
     let next;
-    if (state.razeni === key) next = key + "-desc";
-    else if (state.razeni === key + "-desc") next = key;
-    else next = key === "objem" ? "objem-desc" : key;
-    if (state.pohled === "doplnit" && key === "objem") next = state.razeni === "objem-desc" ? "objem" : "objem-desc";
-    setState({ razeni: next });
+    if (state.sort === key) next = key + "-desc";
+    else if (state.sort === key + "-desc") next = key;
+    else next = key === "amount" ? "amount-desc" : key;
+    if (state.view === "missing" && key === "amount") next = state.sort === "amount-desc" ? "amount" : "amount-desc";
+    setState({ sort: next });
   } else if (act === "open") openDetail(el.dataset.id);
   else if (act === "close-detail") closeDetail();
-  else if (act === "quarter") setState({ ctvrt: el.dataset.ctvrt, pohled: "akce" });
-  else if (act === "unknown") setState({ pohled: "doplnit", ctvrt: "", potvrzene: false, razeni: "objem-desc" });
-  else if (act === "range-year") setState({ pohled: "doplnit", ctvrt: "", potvrzene: false });
+  else if (act === "quarter") setState({ quarter: el.dataset.quarter, view: "action" });
+  else if (act === "unknown") setState({ view: "missing", quarter: "", confirmed: false, sort: "amount-desc" });
+  else if (act === "range-year") setState({ view: "missing", quarter: "", confirmed: false });
   else if (act === "kpi") {
     const k = el.dataset.kpi;
-    if (k === "win") setState({ pohled: "akce", ctvrt: "", role: "vse" });
-    else if (k === "defend") setState({ pohled: "akce", ctvrt: "", role: "obhajoba" });
-    else if (k === "missing") setState({ pohled: "doplnit", ctvrt: "", potvrzene: false, razeni: "objem-desc" });
-    else if (k === "fresh") setState({ pohled: "vse", nove: true, ctvrt: "" });
+    if (k === "win") setState({ view: "action", quarter: "", role: "all" });
+    else if (k === "defend") setState({ view: "action", quarter: "", role: "defend" });
+    else if (k === "missing") setState({ view: "missing", quarter: "", confirmed: false, sort: "amount-desc" });
+    else if (k === "fresh") setState({ view: "all", fresh: true, quarter: "" });
   } else if (act === "mark-seen") {
     const today = todayISO();
     sessionStorage.setItem(VISIT_SNAP, today);
@@ -1871,12 +1882,12 @@ function onClick(e) {
     lastVisit = today;
     firstVisit = false;
     render();
-  } else if (act === "csv") downloadText("uvery-" + todayISO() + ".csv", "text/csv;charset=utf-8", "\uFEFF" + dealsToCsv(tableRows()));
-  else if (act === "ics") downloadText("splatnosti-" + todayISO() + ".ics", "text/calendar;charset=utf-8", buildIcs(tableRows()));
+  } else if (act === "csv") downloadText("loans-" + todayISO() + ".csv", "text/csv;charset=utf-8", "\uFEFF" + dealsToCsv(tableRows()));
+  else if (act === "ics") downloadText("maturities-" + todayISO() + ".ics", "text/calendar;charset=utf-8", buildIcs(tableRows()));
   else if (act === "mail") copyMail(tableRows());
-  else if (act === "lstav") setState({ lstav: el.dataset.value });
-  else if (act === "leads-json") downloadText("leady.json", "application/json", JSON.stringify(leads, null, 2));
-  else if (act === "leads-csv") downloadText("leady.csv", "text/csv;charset=utf-8", "\uFEFF" + leadsToCsv(leads));
+  else if (act === "lead") setState({ lead: el.dataset.value });
+  else if (act === "leads-json") downloadText("leads.json", "application/json", JSON.stringify(leads, null, 2));
+  else if (act === "leads-csv") downloadText("leads.csv", "text/csv;charset=utf-8", "\uFEFF" + leadsToCsv(leads));
   else if (act === "lead-del") {
     leads = leads.filter(l => l.id !== el.dataset.id);
     saveLeads();
@@ -1884,11 +1895,11 @@ function onClick(e) {
   } else if (act === "lead-issue") {
     const l = leads.find(x => x.id === el.dataset.id);
     if (!l) return;
-    navigator.clipboard.writeText(issueMarkdown(l)).then(() => toast("Text issue je ve schránce.")).catch(() => toast("Schránka není dostupná."));
-  } else if (act === "personal-json") downloadText("osobni-vrstva.json", "application/json", JSON.stringify(personal, null, 2));
+    navigator.clipboard.writeText(issueMarkdown(l)).then(() => toast("Issue text copied to the clipboard.")).catch(() => toast("Clipboard is not available."));
+  } else if (act === "personal-json") downloadText("personal-layer.json", "application/json", JSON.stringify(personal, null, 2));
   else if (act === "open-github-issue") {
     const l = leadFromForm();
-    if (!l.borrower) { toast("Vyplňte dlužníka."); return; }
+    if (!l.borrower) { toast("Enter a borrower."); return; }
     window.open(githubIssueUrl(l), "_blank", "noopener");
   }
 }
@@ -1930,8 +1941,8 @@ function onChange(e) {
         leads = data;
         saveLeads();
         render();
-        toast("Leady načteny.");
-      } catch (err) { toast("Soubor nejde načíst."); }
+        toast("Leads loaded.");
+      } catch (err) { toast("Could not read the file."); }
     };
     reader.readAsText(file);
   }
@@ -1976,7 +1987,7 @@ function init() {
   const err = document.getElementById("errors");
   if (ROW_FACT_ERRORS.length) {
     err.hidden = false;
-    err.textContent = "Nesedí propojení řádků: " + ROW_FACT_ERRORS.join("; ");
+    err.textContent = "Row links do not match: " + ROW_FACT_ERRORS.join("; ");
   }
   document.body.addEventListener("click", onClick);
   document.body.addEventListener("change", onChange);
@@ -1987,12 +1998,12 @@ function init() {
   document.getElementById("leadForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const lead = leadFromForm();
-    if (!lead.borrower) { toast("Vyplňte dlužníka."); return; }
+    if (!lead.borrower) { toast("Enter a borrower."); return; }
     leads.unshift(lead);
     saveLeads();
     closeLead();
-    setState({ pohled: "leady", lstav: "open" });
-    toast("Lead je uložený v tomto prohlížeči.");
+    setState({ view: "leads", lead: "open" });
+    toast("Lead saved in this browser.");
   });
   document.getElementById("leadCancel").addEventListener("click", closeLead);
   document.getElementById("backdrop").addEventListener("click", () => {
