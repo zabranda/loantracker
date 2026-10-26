@@ -15,17 +15,21 @@ confidence label (Confirmed / Likely / Inferred), a source link, a status
 instrument (bank loan, bond, equity, preferred equity, M&A / EV, mixed, mezzanine).
 Corporate bonds in the tracker are EUR-denominated only. CZK loans stay; CZK bond issues do not.
 
-The action list counts **outstanding bank loans** inside a refi window of
-12, 18, 24, or 36 months (default 18). Refinanced facilities point at a
-successor id when one is in the tracker. A signing date known only to the
-year (or a quarter / half-year) gets a flagged mid-period maturity so the
-loan can enter the radar; it stays on the Fill in maturity list until a
-real month is known.
+On a fresh load the full list is shown. Rows maturing within the next 18
+months, and not yet matured, are always first, nearest maturity first.
+Later maturities follow, then facilities that have already matured, then
+rows with no maturity date. That order is computed from each row's maturity
+(`default-order.js`), so a monthly data update does not have to be sorted
+by hand. Choosing Borrower or Amount changes the order until Maturity is
+selected again.
 
-Filters (window, WB role, type, group, maturity year, confirmed-only, search)
-live in the URL hash, so a view can be shared. They are not stored silently.
-Last visit, personal WB-role overrides, notes, stars, and leads stay in
-`localStorage` on this browser only.
+Refinanced facilities point at a successor id when one is in the tracker.
+A signing date known only to the year (or a quarter / half-year) gets a
+flagged mid-period maturity.
+
+Type, group, company, lender, signing year and the coal switch narrow the
+list. They live in the URL hash and are not stored silently. The 18-month
+order still applies to whatever is left on screen.
 
 ## House tags on the public page
 
@@ -36,11 +40,13 @@ visible to anyone who opens the page.
 
 ## How it's built
 
-Single `index.html` file. No build step and no runtime dependencies. The
-action list is a native table so column sorting and keyboard access stay
-in the page. Build tag `2026-10-25.2`. The interface, filters and deal
-notes are in English. Proper names of borrowers, places, banks and
-registries stay in their original form. The house bank is labelled WB.
+Single `index.html` plus `default-order.js`. No build step and no runtime
+dependencies. The list is a compact native table (borrower, type, status,
+urgency, WB role, amount, maturity, months, lenders, certainty, source),
+the same shape as the pipeline page before the 25 Oct 2026 dashboard.
+Build tag `2026-10-26.1`. The interface, filters and deal notes are in
+English. Proper names of borrowers, places, banks and registries stay in
+their original form. The house bank is labelled WB.
 
 ## Sources
 

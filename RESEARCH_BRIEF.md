@@ -221,14 +221,12 @@ When direct disclosure is missing, reconstruct via ≥2 of:
 The tracker is a **single self-contained HTML file** (`index.html`) deployable
 to GitHub Pages. Key UX requirements:
 
-- Header: title + sub-line stating scope ("Syndicated, LBO, refinancing, CRE, export finance, project & infrastructure financings — 2021-Q1 2026").
-- **Stats panel** — count of filtered deals, EUR-equivalent aggregate, breakdown by deal type.
-- **Filter chips** by deal type (All, Syndicated, Acquisition/LBO, Refinancing, Real Estate, Export Finance, Project/Infra, Intermediated).
-- **Year filter chips** (All, 2026, 2025, 2024, 2023, 2022, 2021) — the year distribution should be roughly balanced across years; heavy 2024 skew is a research-bias signal.
-- **Sortable Grid.js table** with columns: Borrower / Type / Conf. (badge: Confirmed = green, Likely = yellow, Inferred = grey) / Amount / Date / Lenders / Purpose / Source link.
-- Filter selections **persist in `localStorage`** so the user's last filter is remembered.
-- **Light mode**, color-scheme: light, system fonts, no JS dependencies beyond Grid.js (CDN: jsdelivr v5.0.2 with integrity hash).
-- Single file — no build step, no module loader.
+- Header: title + sub-line stating scope, the data date and the build tag.
+- **Stats row** — rows maturing within 18 months, WB defend, WB opportunity, and the disclosed / estimated / non-loan euro buckets.
+- **Filter chips** by deal type (All, Syndicated, Acquisition/LBO, Refinancing, Real Estate, Export Finance, Project/Infra, Intermediated), plus signing year, group, company and lender.
+- **One compact table**. Default order is fixed in `default-order.js`: rows maturing within 18 months and not yet matured come first, nearest maturity first; every other row follows. Do not replace that with a window-only view, a chart, a calendar export, or an email-copy button. Do not persist the sort in `localStorage`.
+- **Light mode**, color-scheme: light, system fonts, no CDN and no framework.
+- `index.html` plus `default-order.js`. No build step.
 
 Companion file: `research-methodology.docx` documenting source taxonomy,
 triangulation methods, and per-deal sourcing notes for the inferred / likely
@@ -239,6 +237,8 @@ Repo structure:
 ```
 cz-loans-tracker/
 ├── index.html               # the tracker
+├── default-order.js         # 18-month-first sort
+├── test/default-order.test.mjs
 ├── research-methodology.docx# methodology document
 ├── README.md                # one-pager
 ├── RESEARCH_BRIEF.md        # this file
@@ -401,8 +401,10 @@ into the first message:
 > corporate bonds only; do not add CZK bond issues. The house bank is always
 > labelled WB. Do not use any other name for that house bank. If a status or
 > category value changes, update every filter, colour map and string match
-> that depends on it. Keep the current English dashboard in `index.html`;
-> do not revert it to Grid.js or to another language.
+> that depends on it. Keep the compact English table. On a fresh load, rows
+> maturing within 18 months and not yet matured stay first, nearest maturity
+> first, using `default-order.js`. Do not add a chart, a calendar export, or
+> an email-copy button, and do not persist sort order in the browser.
 
 ---
 
