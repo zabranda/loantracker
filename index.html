@@ -974,9 +974,16 @@ function monthsOf(d) { return monthsTo(maturityInfo(d)); }
 function nearTermMonths() {
   return NEAR_TERM_MONTHS;
 }
+function isLiveDeal(d) {
+  if (!d || d.separate_facility === false) return false;
+  return (d.status || "outstanding") === "outstanding";
+}
 function isNearTerm(d) {
   const m = monthsOf(d);
-  return m != null && m >= 0 && m <= nearTermMonths();
+  return isLiveDeal(d) && m != null && m >= 0 && m <= nearTermMonths();
+}
+function orderKey(d) {
+  return { name: d.borrower, months: monthsOf(d), year: d.year, live: isLiveDeal(d) };
 }
 function urgencyOf(d) {
   const m = monthsOf(d);
@@ -1097,10 +1104,7 @@ function sortRows(rows) {
     arr.sort((a, b) => (displayAmount(b) - displayAmount(a)) || a.borrower.localeCompare(b.borrower, "en", { sensitivity: "base" }));
     return arr;
   }
-  arr.sort((a, b) => compareDefault(
-    { name: a.borrower, months: monthsOf(a), year: a.year },
-    { name: b.borrower, months: monthsOf(b), year: b.year }
-  ));
+  arr.sort((a, b) => compareDefault(orderKey(a), orderKey(b)));
   return arr;
 }
 function visibleRows() { return sortRows(DEALS.filter(passFilters)); }

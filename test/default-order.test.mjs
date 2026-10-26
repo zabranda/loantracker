@@ -25,10 +25,20 @@ test("near-term maturities stay first, nearest first, and the rest follow", () =
     "Old past",
     "Unknown",
   ]);
-  assert.equal(tier(0), 0);
-  assert.equal(tier(NEAR_TERM_MONTHS), 0);
-  assert.equal(tier(-1), 2);
-  assert.equal(tier(null), 3);
+  assert.equal(tier({ months: 0, live: true }), 0);
+  assert.equal(tier({ months: NEAR_TERM_MONTHS, live: true }), 0);
+  assert.equal(tier({ months: 0, live: false }), 1);
+  assert.equal(tier({ months: -1 }), 2);
+  assert.equal(tier({ months: null }), 3);
+});
+
+test("a closed facility does not jump ahead of outstanding near-term loans", () => {
+  const names = [
+    { name: "Closed this month", months: 0, live: false, year: 2024 },
+    { name: "Live soon", months: 6, live: true, year: 2024 },
+    { name: "Live later", months: 30, live: true, year: 2024 },
+  ].sort(compareDefault).map(r => r.name);
+  assert.deepEqual(names, ["Live soon", "Closed this month", "Live later"]);
 });
 
 test("equal months break ties by borrower name", () => {
