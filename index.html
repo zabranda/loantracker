@@ -3,201 +3,199 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Czech corporate loans — refinancing tracker</title>
+<title>Czech corporate loans — refi pipeline</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231a1a1a'/%3E%3C/svg%3E" />
+<!-- Layout reference: f24e8e9, the compact refi pipeline before the 25 Oct 2026 dashboard. Chart, calendar export and email copy are not part of this page. -->
 <style>
-:root { color-scheme: light; --ink:#1a1a1a; --muted:#6b6863; --line:#e8e5df; --paper:#f8f7f4; --defend:#0f766e; --opp:#1d4ed8; --warn:#9a3412; }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.45; font-size: 14px; }
-button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
-:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
-.skip { position: absolute; left: 12px; top: -40px; background: #fff; padding: 8px 12px; z-index: 50; }
-.skip:focus { top: 8px; }
-.wrap { max-width: 1240px; margin: 0 auto; padding: 16px 20px 64px; }
-.top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
-h1 { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; margin: 0; }
-.asof { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-.search { flex: 1 1 320px; display: flex; gap: 10px; align-items: center; }
-.search input { width: 100%; padding: 10px 12px; border: 1px solid #d6d2cb; border-radius: 10px; background: #fff; }
-.lead-btn, .primary { background: var(--ink); color: #fff; border: 1px solid var(--ink); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-weight: 600; white-space: nowrap; }
-.lead-btn:hover, .primary:hover { background: #333; }
-.sticky { position: sticky; top: 0; z-index: 6; background: var(--paper); padding: 8px 0; }
-.toolbar, .views, .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.views { margin-top: 8px; }
-.seg { display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
-.seg span { font-size: 12px; color: var(--muted); padding: 0 6px; }
-.seg button, .tab, .toggle, .textbtn { border: 0; background: transparent; border-radius: 999px; padding: 6px 10px; cursor: pointer; }
-.seg button[aria-pressed="true"], .tab[aria-selected="true"], .toggle[aria-pressed="true"] { background: var(--ink); color: #fff; }
-label.sel { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
-label.sel select { padding: 6px 8px; border: 1px solid #d6d2cb; border-radius: 8px; background: #fff; }
-.chips { min-height: 32px; margin-top: 8px; }
-.chip { display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid #d6d2cb; border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 12px; }
-.chip button { border: 0; background: transparent; cursor: pointer; padding: 2px 6px; border-radius: 999px; }
-.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 12px 0; }
-.kpi { text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; min-height: 104px; }
-.kpi:hover { border-color: #b8b3aa; }
-.kpi .label { color: var(--muted); font-size: 12px; }
-.kpi .value { font-size: 26px; font-weight: 650; margin: 4px 0; letter-spacing: -0.02em; }
-.kpi .sub { color: #8a857d; font-size: 12px; margin: 0; }
-.dash { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(260px, 0.85fr); gap: 12px; }
-.panel { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 14px 16px; }
-.panel h2 { margin: 0 0 8px; font-size: 15px; }
-.chart-row { display: flex; gap: 10px; align-items: stretch; }
-.chart-scroll { overflow-x: auto; flex: 1; }
-.plot { position: relative; height: 230px; min-width: 680px; }
-.shade { position: absolute; top: 0; bottom: 28px; background: rgba(15, 118, 110, 0.1); border-radius: 6px; pointer-events: none; }
-.shade-label { position: absolute; top: 4px; left: 6px; font-size: 11px; color: var(--muted); }
-.bars { position: relative; z-index: 1; display: flex; align-items: flex-end; height: calc(100% - 28px); gap: 2px; }
-.bar { flex: 1 1 0; height: 100%; border: 0; background: transparent; padding: 0 1px; cursor: pointer; display: flex; align-items: flex-end; box-shadow: inset 0 -1px 0 #e7e2da; }
-.stack { width: 72%; margin: 0 auto; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
-.segd, .sego { display: block; width: 100%; }
-.segd { background: var(--defend); }
-.sego { background: var(--opp); }
-.qlabels { display: flex; min-width: 680px; }
-.qlabels span { flex: 1 1 0; text-align: center; font-size: 11px; color: #8a857d; height: 16px; }
-.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin: 6px 0; }
-.sw { width: 12px; height: 12px; display: inline-block; vertical-align: -2px; margin-right: 4px; }
-.unknown-col { width: 118px; flex: none; border: 1px dashed #c4bfb6; background: #f3f1ec; border-radius: 10px; cursor: pointer; padding: 10px; text-align: left; }
-.unknown-col strong { display: block; font-size: 22px; margin: 6px 0; }
-.unknown-col span, .range-note { color: var(--muted); font-size: 12px; }
-.range { margin-top: 8px; }
-.range-bars { display: flex; align-items: flex-end; gap: 3px; height: 46px; min-width: 680px; }
-.range-bars button { flex: 1; border: 0; background: #d6d2cb; padding: 0; cursor: pointer; border-radius: 2px 2px 0 0; }
-.range-years { display: flex; min-width: 680px; }
-.range-years span { flex: 1; text-align: center; font-size: 10px; color: #8a857d; }
-.news-item { display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid #f0ede7; background: transparent; padding: 8px 0; cursor: pointer; }
-.news-item .when { color: #8a857d; font-size: 12px; }
-.news-item .what { font-weight: 600; }
-.list-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; margin: 14px 0 8px; }
-.list-head h2 { margin: 0; font-size: 16px; }
-.actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.actions button, .textbtn { background: #fff; border: 1px solid #d6d2cb; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
-table.deal-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.deal-table th, .deal-table td { padding: 8px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid #f0ede7; }
-.deal-table th { background: #f3f1ec; font-size: 12px; font-weight: 600; color: #4b4844; }
-.deal-table th button { background: transparent; border: 0; padding: 0; cursor: pointer; font-weight: 600; color: inherit; }
-.deal-table tr { cursor: pointer; }
-.deal-table tr:hover td { background: #faf9f6; }
-.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.name { font-weight: 600; }
-.muted { color: var(--muted); font-size: 12px; }
-.badge { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; border: 1px solid transparent; margin: 0 4px 2px 0; }
-.badge-new { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
-.badge-watch { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
-.role-defend { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
-.role-part { background: #dbeafe; color: #1e3a8a; border-color: #93c5fd; }
-.role-opp { background: #f3f1ec; color: #44403c; border-color: #e7e2da; font-weight: 500; }
-.role-unk { background: #fff; color: #6b6863; border-color: #d6d2cb; font-weight: 500; border-style: dashed; }
-.m2m.past { color: var(--warn); font-weight: 700; }
-.m2m.soon { font-weight: 700; }
-.approx { color: var(--warn); }
-.cards { display: none; flex-direction: column; gap: 8px; }
-.card { text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer; }
-.card-top { display: flex; justify-content: space-between; gap: 8px; }
-.backdrop { position: fixed; inset: 0; background: rgba(26,26,26,.35); z-index: 30; }
-.detail, .dialog { position: fixed; z-index: 40; background: #fff; overflow: auto; }
-.detail { top: 0; right: 0; height: 100%; width: min(460px, 100%); border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgba(0,0,0,.12); padding: 18px 18px 40px; }
-.dialog { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 24px)); max-height: min(86vh, 760px); border-radius: 12px; border: 1px solid var(--line); padding: 18px; }
-.detail h2, .dialog h2 { margin: 0 36px 8px 0; font-size: 18px; }
-.close-x { position: absolute; top: 10px; right: 10px; border: 0; background: transparent; font-size: 20px; cursor: pointer; padding: 4px 8px; }
-.kv { display: grid; grid-template-columns: 120px 1fr; gap: 4px 8px; font-size: 13px; margin: 8px 0; }
-.kv dt { color: var(--muted); }
-.callout { background: #fff7ed; border: 1px solid #fdba74; border-radius: 8px; padding: 8px 10px; font-size: 13px; }
-.lenders, .chain { margin: 4px 0 8px; padding-left: 18px; }
-.chain button { background: transparent; border: 0; color: #1d4ed8; cursor: pointer; padding: 0; text-align: left; }
-.src a { color: #1d4ed8; }
-.personal { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 10px; }
-.personal textarea, .dialog textarea, .dialog input { width: 100%; border: 1px solid #d6d2cb; border-radius: 8px; padding: 8px; }
-.field { margin: 8px 0; }
-.field span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
-.footer, .history { color: #8a857d; font-size: 12px; margin-top: 18px; }
-.history summary { cursor: pointer; color: var(--muted); }
-.err { background: #fef2f2; color: #991b1b; padding: 8px 10px; border-radius: 8px; }
-#toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 8px 12px; border-radius: 8px; z-index: 60; }
-#toast:empty { display: none; }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-@media (max-width: 900px) {
-  .kpis { grid-template-columns: 1fr 1fr; }
-  .dash { grid-template-columns: 1fr; }
-}
-@media (max-width: 700px) {
-  .kpis { grid-template-columns: 1fr; }
-  .deal-table { display: none; }
-  .cards { display: flex; }
-  .detail { width: 100%; }
-  .unknown-col { width: 100%; }
-  .chart-row { flex-direction: column; }
-}
-
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #f8f7f4;
+    color: #1a1a1a;
+    line-height: 1.45;
+    font-size: 14px;
+  }
+  button, input, select { font-family: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
+  .skip { position: absolute; left: 12px; top: -40px; background: #fff; padding: 8px 12px; z-index: 50; }
+  .skip:focus { top: 8px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px 60px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: #6b6863; font-size: 13px; margin: 0 0 16px; }
+  .panel {
+    background: #ffffff;
+    border: 1px solid #e8e5df;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .panel h2 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 16px 0 10px;
+    color: #2a2a2a;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .panel h2:first-child { margin-top: 0; }
+  .stats { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 8px; }
+  .stat {
+    background: #ffffff;
+    border: 1px solid #e8e5df;
+    border-radius: 10px;
+    padding: 12px 16px;
+    flex: 1;
+    min-width: 160px;
+  }
+  .stat .label { color: #6b6863; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .stat .value { font-size: 20px; font-weight: 600; }
+  .stat .sub { font-size: 11px; color: #8a857d; margin: 2px 0 0; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chip {
+    background: #ffffff;
+    border: 1px solid #d6d2cb;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    color: #2a2a2a;
+  }
+  .chip:hover { border-color: #b8b3aa; }
+  .chip.active { background: #1a1a1a; border-color: #1a1a1a; color: #ffffff; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .build-tag { color: #9c9890; font-size: 11px; }
+  .badge-syn { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
+  .badge-lbo { background: #fff0e6; color: #8a3d10; border-color: #f5cfb6; }
+  .badge-refi { background: #ecf7ed; color: #1f5e2a; border-color: #c4e2c8; }
+  .badge-re { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
+  .badge-export, .badge-project, .badge-intermediated { background: #eef0ff; color: #303a8a; border-color: #c8cef5; }
+  .conf-100 { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
+  .conf-75  { background: #eefbe9; color: #2f7a3c; border-color: #c8e8bd; }
+  .conf-50  { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
+  .conf-25  { background: #fdeee0; color: #9a4a12; border-color: #f3cda3; }
+  .conf-0   { background: #f0f0f0; color: #555; border-color: #d0d0d0; }
+  .wb-incumbent { background: #d1fae5; color: #065f46; border-color: #6ee7b7; font-weight: 600; }
+  .wb-participant { background: #fef3c7; color: #78350f; border-color: #fcd34d; font-weight: 500; }
+  .wb-opportunity { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 600; }
+  .wb-unknown { background: #f3f4f6; color: #4b5563; border-color: #d1d5db; }
+  .urg-live { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 600; }
+  .urg-imminent { background: #ffedd5; color: #9a3412; border-color: #fdba74; font-weight: 500; }
+  .urg-approaching { background: #fef9c3; color: #713f12; border-color: #fde047; }
+  .urg-distant { background: #f3f4f6; color: #4b5563; border-color: #d1d5db; }
+  .urg-far { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; }
+  .urg-past { background: #1f2937; color: #f3f4f6; border-color: #374151; }
+  .urg-unknown { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; }
+  .st-outstanding { background: #e6f6ec; color: #166534; border-color: #b9e0c4; }
+  .st-refinanced { background: #eef4ff; color: #1d3a8a; border-color: #c8d8f5; }
+  .st-repaid { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+  .st-not_a_bank_loan { background: #fff7e0; color: #8a5a00; border-color: #f0dfa3; }
+  .st-memo { background: #f3edff; color: #4a2890; border-color: #d8c8f5; }
+  .coal-toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin-top: 12px; font-size: 12px; color: #6b6863; }
+  .csv-btn {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .csv-btn:hover { background: #333; }
+  .list-bar { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 8px; }
+  .list-bar h2 { margin: 0; }
+  .list-bar .sub { margin: 4px 0 0; }
+  select.filter, #lenderFilter {
+    width: min(420px, 100%);
+    padding: 8px 12px;
+    font-size: 13px;
+    border: 1px solid #d6d2cb;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .table-scroll { overflow-x: auto; }
+  table.deals { width: 100%; min-width: 1080px; border-collapse: collapse; font-size: 12px; background: #fff; }
+  table.deals th, table.deals td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid #f0ede7; }
+  table.deals th { background: #f3f1ec; font-weight: 600; color: #2a2a2a; }
+  table.deals tr.near td { background: #f4faf6; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .borrower-name { font-weight: 500; }
+  .clamp {
+    color: #6b6863;
+    font-size: 11px;
+    margin-top: 3px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .conf-label { margin-left: 4px; font-size: 11px; color: #3f3f3f; }
+  .m-past { color: #9a3412; font-weight: 700; }
+  .m-soon { font-weight: 700; }
+  .empty-msg { padding: 16px; color: #6b7280; font-style: italic; font-size: 13px; }
+  .err { color: #b91c1c; font-size: 12px; margin: 0 0 12px; }
+  a { color: #1d4ed8; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .footer { color: #8a857d; font-size: 11px; margin-top: 24px; padding-top: 12px; border-top: 1px solid #e8e5df; }
+  @media (max-width: 720px) {
+    .wrap { padding: 12px 12px 40px; }
+    .stat { min-width: 140px; }
+  }
 </style>
 </head>
 <body>
 <a class="skip" href="#list">Skip to the list</a>
 <div class="wrap">
-  <header class="top">
-    <div>
-      <h1>Czech corporate loans — refinancing tracker</h1>
-      <p class="asof" id="asofLine"></p>
-    </div>
-    <div class="search">
-      <input id="q" type="search" placeholder="Search borrower, group, lender…  (/)" aria-label="Search borrower, group, purpose or lender" autocomplete="off" />
-      <button type="button" class="lead-btn" id="leadBtn">+ Lead</button>
-    </div>
-  </header>
-  <div class="sticky">
-    <div id="filters"></div>
-    <div class="chips" id="chips" aria-label="Active filters"></div>
-  </div>
-  <div id="errors" class="err" hidden></div>
-  <div class="kpis" id="kpis"></div>
-  <div class="dash">
-    <section class="panel" id="chart" aria-label="Maturity timeline"></section>
-    <section class="panel" id="news" aria-label="New since last visit"></section>
-  </div>
-  <section id="list">
-    <div class="list-head" id="listHead"></div>
-    <div id="tableWrap"></div>
-    <div class="cards" id="cards"></div>
-    <div id="leads" hidden></div>
-  </section>
-  <details class="history">
-    <summary>What changed in each build</summary>
-    <div id="history"></div>
-  </details>
-  <p class="footer">Compiled from public sources (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie and issuer press releases). Coverage is incomplete: private club deals are not in the data. WB role tags are working labels on a public page, not confirmation of a lender role. Personal notes, the Watching star and leads stay in this browser. This is not investment advice.</p>
-</div>
-<div id="backdrop" class="backdrop" hidden></div>
-<aside id="detail" class="detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle" hidden></aside>
-<div id="leadDialog" class="dialog" role="dialog" aria-modal="true" aria-labelledby="leadTitle" hidden>
-  <button type="button" class="close-x" id="leadCancel" aria-label="Close">×</button>
-  <h2 id="leadTitle">New lead</h2>
-  <p class="muted">Template for a LinkedIn tip. Saved in this browser only. You can also open a prefilled GitHub issue.</p>
-  <form id="leadForm">
-    <label class="field"><span>Borrower</span><input name="borrower" required placeholder="Company from the post" /></label>
-    <label class="field"><span>Amount, as in the source</span><input name="amount" placeholder="e.g. EUR 200 million, or n/d" /></label>
-    <label class="field"><span>When</span><input name="when" placeholder="date, month, or year only" /></label>
-    <label class="field"><span>Lenders</span><input name="lenders" placeholder="who is said to be financing" /></label>
-    <label class="field"><span>What the tip says</span><textarea name="purpose" rows="3" placeholder="purpose: refinancing, acquisition, real estate…"></textarea></label>
-    <label class="field"><span>Link to the post</span><input name="source" placeholder="https://" /></label>
-    <label class="field"><span>Note</span><textarea name="note" rows="2"></textarea></label>
-    <label class="field"><span>Status</span>
-      <select name="status">
-        <option value="new">New</option>
-        <option value="checking">Checking</option>
-        <option value="confirmed">Confirmed</option>
-        <option value="rejected">Rejected</option>
-      </select>
-    </label>
-    <div class="actions">
-      <button type="submit" class="primary">Save lead</button>
-      <button type="button" class="textbtn" data-act="open-github-issue">Open issue template</button>
-    </div>
-  </form>
-</div>
-<div id="toast" role="status" aria-live="polite"></div>
+  <h1>Czech corporate loans — refi pipeline</h1>
+  <p class="sub" id="asofLine"></p>
+  <p class="err" id="errors" hidden></p>
+  <div class="stats" id="stats"></div>
+  <p class="sub" id="statsNote"></p>
 
-<script>
+  <div class="panel">
+    <h2>Sort</h2>
+    <div class="filters" id="sortChips"></div>
+    <h2>Filter by company</h2>
+    <select class="filter" id="companyFilter" aria-label="Filter by company"></select>
+    <h2>Filter by group</h2>
+    <select class="filter" id="groupFilter" aria-label="Filter by group"></select>
+    <h2>Filter by lender</h2>
+    <input id="lenderFilter" type="search" placeholder="Lender name contains…" autocomplete="off" aria-label="Filter by lender" />
+    <h2>Filter by deal type</h2>
+    <div class="filters" id="typeFilters"></div>
+    <h2>Filter by year</h2>
+    <div class="filters" id="yearFilters"></div>
+    <label class="coal-toggle"><input type="checkbox" id="coalCheck" /> Include coal and thermal-coal mining (off by default)</label>
+  </div>
+
+  <div class="panel" id="list">
+    <div class="list-bar">
+      <div>
+        <h2 id="listHeading">All tracked rows</h2>
+        <p class="sub" id="listNote"></p>
+      </div>
+      <button type="button" class="csv-btn" id="csvBtn">Export CSV</button>
+    </div>
+    <div class="table-scroll" id="table"></div>
+  </div>
+
+  <p class="footer">Compiled from public sources (Reuters, EIB, Property Forum, Dentons, A&amp;O Shearman, White &amp; Case, Clifford Chance, Kinstellar, CEE Legal Matters, Baker McKenzie and issuer press releases). Coverage is incomplete: private club deals are not in the data. WB role tags are working labels on a public page, not confirmation of a lender role. This is not investment advice.</p>
+</div>
+<script type="module">
+import { compareDefault, NEAR_TERM_MONTHS } from "./default-order.js";
+
 // ---- Curated baseline deal list (2021 – Oct 2026) ----
 // Each deal: borrower, type, amount, currency, value_eur (EUR millions), lenders, date, year,
 // purpose, source, confidence, tenor_y, wb_status, coal_excluded, tenor_inferred?
@@ -727,63 +725,10 @@ function applyRowFacts() {
 applyRowFacts();
 
 const DATA_AS_OF = "2026-10-24";
-const BUILD = "2026-10-25.2";
-const VISIT_KEY = "cz_loans_last_visit";
-const VISIT_SNAP = "cz_loans_visit_snapshot";
-const PERSONAL_KEY = "cz_loans_personal_v1";
-const LEADS_KEY = "cz_loans_leads_v1";
-const FIRST_VISIT_BASELINE = "2026-10-23";
+const BUILD = "2026-10-26.1";
+const NOW = new Date();
+const TODAY = new Date(Date.UTC(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()));
 const LEGACY_FILTER_KEYS = ["cz_loans_lender_v1","cz_loans_filter_v2","cz_loans_year_filter_v1","cz_loans_view_v1","cz_loans_coal_filter_v1","cz_loans_company_v2","cz_loans_group_v1","cz_loans_sort_v1"];
-
-const CHANGELOG = [
-  { build: "2026-10-25.2", date: "2026-10-25", text: "Full English interface: labels, filters, maturity wording, exports, empty states and the lead form. Proper names are unchanged." },
-  { build: "2026-10-25.1", date: "2026-10-25", text: "Dashboard with headline figures and a maturity timeline, one action table, a 12 to 36 month window, filters in the URL, a deal detail panel, a Fill in maturity list, and leads plus personal notes stored in the browser." },
-  { build: "2026-10-24.1", date: "2026-10-24", text: "New rows: CGNI / GasNet club, Trigea retail parks, Hotusa hotels, Magna MedTech." },
-  { build: "2026-10-23.1", date: "2026-10-23", text: "Added deals and contractual maturities, including Dr. Max, the Eurowag Club and AmRest." },
-];
-
-const ADDED_ON = {
-  "Czech Gas Networks Investments (CGNI / GasNet, ČEZ 55.21%)": "2026-10-24",
-  "Trigea nemovitostní fond (Retail Park Ostrava + Retail Park Haná)": "2026-10-24",
-  "Hotusa Group (Aurea Legends + Exe City Park Praha)": "2026-10-24",
-  "Magna MedTech Group (EMMA Capital)": "2026-10-24",
-  "Dr. Max Group / Dr. Max Funding CR (Penta)": "2026-10-23",
-  "Crestyl (Dock In Office Park, Prague 8)": "2026-10-23",
-  "Aupark a.s. (Aupark Shopping Centre, Bratislava)": "2026-10-23",
-  "Florentinum ASSET a.s. (CITIC Europe Holdings)": "2026-10-23",
-  "AmRest Holdings SE": "2026-10-23",
-  "GLP Capital Partners / Ares (logistics portfolios, CZ+PL+HU)": "2026-10-23",
-  "Českomoravská Nemovitostní (Crystal + Blox, Prague)": "2026-10-23",
-  "W.A.G. Payment Solutions (Eurowag) — Club Finance": "2026-10-23",
-  "REICO Long Lease (Logistics Park Rokycany)": "2026-10-23",
-  "Smarty Brands Group": "2026-10-23",
-  "BigBoard Praha (BigBoard Group)": "2026-10-23",
-  "CIMEX Group (Vyšehrad Garden, Vista House, Garden Eleven — Prague offices)": "2026-10-23",
-};
-
-const TYPE_LABEL = {
-  "Syndicated": "Syndicated",
-  "Acquisition/LBO": "Acquisition",
-  "Refinancing": "Refinancing",
-  "Real Estate": "Real estate",
-  "Export Finance": "Export finance",
-  "Project/Infra": "Project / infra",
-  "Intermediated": "Intermediated",
-};
-const STATUS_LABEL = { outstanding: "Live", refinanced: "Refinanced", repaid: "Repaid", not_a_bank_loan: "Not a loan", memo: "Memo" };
-const INST_LABEL = { bank_loan: "Bank loan", bond: "Bond", equity: "Equity", preferred_equity: "Preferred equity", ma_ev: "M&A / enterprise value", mixed: "Mixed", mezzanine: "Mezzanine" };
-const CONF_LABEL = { Confirmed: "Confirmed", Likely: "Likely", Inferred: "Inferred" };
-const LEAD_STATUS = { new: "New", checking: "Checking", confirmed: "Confirmed", rejected: "Rejected" };
-const SORT_LABEL = {
-  months: "Months to maturity",
-  "months-desc": "Months to maturity (desc)",
-  amount: "Amount",
-  "amount-desc": "Amount (desc)",
-  borrower: "Borrower",
-  "borrower-desc": "Borrower (desc)",
-  maturity: "Maturity",
-  "maturity-desc": "Maturity (desc)",
-};
 
 const DEAL_GROUPS = {
   "Accolade": ["Accolade"],
@@ -822,7 +767,6 @@ const DEAL_GROUPS = {
   "Solek": ["Solek", "SOLEK"],
   "Trigea": ["Trigea"],
 };
-
 function dealGroup(borrower) {
   for (const [grp, patterns] of Object.entries(DEAL_GROUPS)) {
     if (patterns.some(p => borrower.includes(p))) return grp;
@@ -835,50 +779,6 @@ function companyKey(borrower) {
   head = head.replace(/\s+(a\.s\.|s\.r\.o\.|GmbH|Ltd\.?|N\.V\.|S\.A\.|SE|plc|AG|Holding|Holdings|Group|fondy|fond|SICAV|s\.r\.l\.)\.?$/gi, "").trim();
   return head.replace(/\s+/g, " ");
 }
-
-function backfillAddedOn() {
-  DEALS.forEach(d => {
-    if (d.added_on) return;
-    if (ADDED_ON[d.borrower]) d.added_on = ADDED_ON[d.borrower];
-    else if (d.signed_iso && /^\d{4}-\d{2}-\d{2}$/.test(d.signed_iso)) d.added_on = d.signed_iso;
-    else d.added_on = (d.year || 2021) + "-07-01";
-  });
-}
-
-const NOW = new Date();
-const TODAY = new Date(Date.UTC(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()));
-function todayISO() {
-  return NOW.getFullYear() + "-" + String(NOW.getMonth() + 1).padStart(2, "0") + "-" + String(NOW.getDate()).padStart(2, "0");
-}
-const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-function fmtDate(iso) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
-  if (!m) return iso || "";
-  return Number(m[3]) + " " + MONTHS_EN[Number(m[2]) - 1] + " " + m[1];
-}
-function fmtNum(n) {
-  return Math.round(n).toLocaleString("en-GB");
-}
-function fmtBn(eurM) {
-  const v = (eurM || 0) / 1000;
-  const digits = Math.abs(v) >= 10 ? 1 : 2;
-  return v.toLocaleString("en-GB", { minimumFractionDigits: digits, maximumFractionDigits: digits }) + " bn EUR";
-}
-function esc(s) {
-  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-function safeUrl(url) {
-  try {
-    const u = new URL(url);
-    if (u.protocol === "http:" || u.protocol === "https:") return u.href;
-  } catch (e) { /* not a url */ }
-  return "";
-}
-function domainOf(url) {
-  try { return new URL(url).hostname.replace(/^www\./, ""); }
-  catch (e) { return url || ""; }
-}
-
 const MONTH_INDEX = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
 function monthIndex(name) {
   if (!name) return null;
@@ -980,41 +880,6 @@ function displayAmount(d) {
   const n = isHuntLoan(d) ? bankCommitmentEur(d) : (d.value_eur || 0);
   return n ? n : 0;
 }
-function needsDate(d) {
-  const info = maturityInfo(d);
-  return !info.date || info.approximate;
-}
-function confirmedMaturity(d) {
-  const info = maturityInfo(d);
-  return !!(info.date && !info.approximate && info.basis !== "est5");
-}
-function inRefiWindow(d, months) {
-  if (!isHuntLoan(d)) return false;
-  const m = monthsTo(maturityInfo(d));
-  return m != null && m >= -3 && m <= months;
-}
-function quarterKey(date) {
-  return date.getUTCFullYear() + "Q" + (Math.floor(date.getUTCMonth() / 3) + 1);
-}
-function quarterLabel(key) {
-  const m = /^(\d{4})Q([1-4])$/.exec(key || "");
-  return m ? m[1] + " Q" + m[2] : key;
-}
-function addMonthsUTC(date, n) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + n, 1));
-}
-function enumerateQuarters() {
-  const start = addMonthsUTC(TODAY, -3);
-  const q0m = Math.floor(start.getUTCMonth() / 3) * 3;
-  let cursor = new Date(Date.UTC(start.getUTCFullYear(), q0m, 1));
-  const out = [];
-  for (let i = 0; i < 22; i++) {
-    const q = Math.floor(cursor.getUTCMonth() / 3) + 1;
-    out.push({ key: cursor.getUTCFullYear() + "Q" + q, year: cursor.getUTCFullYear(), q, start: new Date(cursor) });
-    cursor = addMonthsUTC(cursor, 3);
-  }
-  return out;
-}
 function certaintyPct(d) {
   let score = 0;
   if (d.confidence === "Confirmed") score += 25;
@@ -1029,108 +894,174 @@ function certaintyPct(d) {
   if (d.tenor_inferred) score = Math.min(score, 75);
   return score;
 }
-function verifyHints(d) {
+
+
+const TYPE_BADGE = {
+  "Syndicated": "badge-syn",
+  "Acquisition/LBO": "badge-lbo",
+  "Refinancing": "badge-refi",
+  "Real Estate": "badge-re",
+  "Export Finance": "badge-export",
+  "Project/Infra": "badge-project",
+  "Intermediated": "badge-intermediated",
+};
+const TYPE_LABEL = {
+  "Syndicated": "Syndicated",
+  "Acquisition/LBO": "Acquisition",
+  "Refinancing": "Refinancing",
+  "Real Estate": "Real estate",
+  "Export Finance": "Export finance",
+  "Project/Infra": "Project / infra",
+  "Intermediated": "Intermediated",
+};
+const STATUS_META = {
+  outstanding: { cls: "st-outstanding", text: "Outstanding" },
+  refinanced: { cls: "st-refinanced", text: "Refinanced" },
+  repaid: { cls: "st-repaid", text: "Repaid" },
+  not_a_bank_loan: { cls: "st-not_a_bank_loan", text: "Not a bank loan" },
+  memo: { cls: "st-memo", text: "Memo" },
+};
+const INST_LABEL = {
+  bank_loan: "Bank loan",
+  bond: "Bond",
+  equity: "Equity",
+  preferred_equity: "Preferred equity",
+  ma_ev: "M&A / enterprise value",
+  mixed: "Mixed",
+  mezzanine: "Mezzanine",
+};
+const WB_META = {
+  incumbent: { cls: "wb-incumbent", text: "Incumbent" },
+  participant: { cls: "wb-participant", text: "Participant" },
+  opportunity: { cls: "wb-opportunity", text: "Opportunity" },
+  unknown: { cls: "wb-unknown", text: "Unverified" },
+};
+const URGENCY_META = {
+  live: { cls: "urg-live", text: "Live" },
+  imminent: { cls: "urg-imminent", text: "Imminent" },
+  approaching: { cls: "urg-approaching", text: "Approaching" },
+  distant: { cls: "urg-distant", text: "Distant" },
+  far: { cls: "urg-far", text: "Far" },
+  past: { cls: "urg-past", text: "Past" },
+  unknown: { cls: "urg-unknown", text: "Unknown" },
+};
+
+function todayISO() {
+  return NOW.getFullYear() + "-" + String(NOW.getMonth() + 1).padStart(2, "0") + "-" + String(NOW.getDate()).padStart(2, "0");
+}
+function esc(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function fmtBn(eurM) {
+  const v = (eurM || 0) / 1000;
+  const digits = Math.abs(v) >= 10 ? 1 : 2;
+  return v.toLocaleString("en-GB", { minimumFractionDigits: digits, maximumFractionDigits: digits }) + " bn EUR";
+}
+function fmtDate(iso) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
+  if (!m) return iso || "";
+  return Number(m[3]) + " " + months[Number(m[2]) - 1] + " " + m[1];
+}
+function safeUrl(url) {
+  try {
+    const u = new URL(url);
+    if (u.protocol === "http:" || u.protocol === "https:") return u.href;
+  } catch (e) { /* not a url */ }
+  return "";
+}
+function monthsOf(d) { return monthsTo(maturityInfo(d)); }
+function nearTermMonths() {
+  return NEAR_TERM_MONTHS;
+}
+function isNearTerm(d) {
+  const m = monthsOf(d);
+  return m != null && m >= 0 && m <= nearTermMonths();
+}
+function urgencyOf(d) {
+  const m = monthsOf(d);
+  if (m == null) return "unknown";
+  if (m < 0) return "past";
+  if (m <= 12) return "live";
+  if (m <= 18) return "imminent";
+  if (m <= 24) return "approaching";
+  if (m <= 36) return "distant";
+  return "far";
+}
+function maturityShort(d) {
   const info = maturityInfo(d);
-  const hints = [];
-  if (!info.date) hints.push("Maturity cannot be derived. Add a signing date and tenor, or the contractual date.");
-  else if (info.approximate) hints.push("The source gives only an approximate signing date. Maturity is the midpoint of that period plus tenor, and is marked approximate.");
-  if (d.tenor_inferred) hints.push("Tenor is not in the source. The 5-year estimate is not a contractual date.");
-  if (info.date && info.basis !== "contractual") hints.push("Confirm the contractual maturity date before a client call.");
-  if (certaintyPct(d) < 100) hints.push("Certainty " + certaintyPct(d) + "%. Not every parameter is confirmed: source, amount, lenders, date.");
-  return hints;
+  if (!info.date) return "unknown";
+  const ym = ymOf(info.date);
+  if (info.basis === "contractual") return ym;
+  if (info.approximate) return ym + " approx";
+  if (info.basis === "est5") return ym + " est.";
+  return ym;
 }
-function lenderLines(text) {
-  const src = String(text || "");
-  const parts = [];
-  let buf = "", depth = 0;
-  const push = () => { const t = buf.trim().replace(/^[&/+]\s*/, ""); if (t) parts.push(t); buf = ""; };
-  for (const ch of src) {
-    if (ch === "(") depth++;
-    if (ch === ")" && depth) depth--;
-    if (depth === 0 && (ch === ";" || ch === "+" || ch === ",")) { push(); continue; }
-    buf += ch;
-  }
-  push();
-  return parts.length ? parts : (src.trim() ? [src.trim()] : []);
+function amountIsEstimate(d) {
+  const amt = (d.amount || "").toLowerCase();
+  if (/n\/d|est\.|estimated|\bunknown\b|\blikely\b|~|approx|up to /.test(amt)) return true;
+  if (d.confidence !== "Confirmed") return true;
+  const bank = d.bank_value_eur != null ? d.bank_value_eur : d.value_eur;
+  if (!bank) return true;
+  return false;
 }
-function sourcesOf(d) {
-  if (Array.isArray(d.sources) && d.sources.length) {
-    return d.sources.map(s => typeof s === "string" ? { url: s, date: d.date } : { url: s.url || s.href || "", date: s.date || d.date, label: s.label || "" });
-  }
-  if (d.source) return [{ url: d.source, date: d.date }];
-  return [];
-}
-function successorParts(d) {
-  if (!d.successor) return [];
-  return d.successor.split("+").map(raw => raw.trim()).filter(Boolean).map(id => {
-    if (id.startsWith("ext:")) return { ext: true, label: id.slice(4).replace(/-/g, " ") };
-    const hit = DEALS.find(x => x.id === id);
-    return { ext: false, id, label: hit ? hit.borrower : id, missing: !hit };
+function euroBuckets(deals) {
+  const b = {
+    disclosed: { n: 0, eur: 0 },
+    estimate: { n: 0, eur: 0 },
+    excluded: { n: 0, eur: 0, slices: 0 },
+    closed: { n: 0, eur: 0 },
+    memo: { n: 0 },
+  };
+  deals.forEach(d => {
+    if (d.separate_facility === false) { b.memo.n += 1; return; }
+    const status = d.status || "outstanding";
+    if (status === "not_a_bank_loan") {
+      b.excluded.n += 1;
+      b.excluded.eur += d.value_eur || 0;
+      return;
+    }
+    if (status === "refinanced" || status === "repaid") {
+      b.closed.n += 1;
+      b.closed.eur += d.value_eur || 0;
+      return;
+    }
+    const bank = d.bank_value_eur != null ? d.bank_value_eur : (d.value_eur || 0);
+    const non = d.nonloan_value_eur || 0;
+    if (amountIsEstimate(d)) { b.estimate.n += 1; b.estimate.eur += bank; }
+    else { b.disclosed.n += 1; b.disclosed.eur += bank; }
+    if (non) { b.excluded.eur += non; b.excluded.slices += 1; }
   });
-}
-function predecessors(id) {
-  return DEALS.filter(d => (d.successor || "").split("+").map(s => s.trim()).includes(id));
-}
-function loanCount(n) {
-  return n + " " + (n === 1 ? "loan" : "loans");
-}
-function shortName(borrower) {
-  const head = String(borrower || "").split("(")[0].trim();
-  const first = head.split(/\s+/)[0] || head;
-  const paren = /\(([^)]+)\)/.exec(borrower || "");
-  const generic = /^(czech|the|new|group|international)$/i.test(first);
-  if (paren && (generic || head.split(/\s+/).length >= 4)) {
-    const alias = paren[1].split(/[\/,]/)[0].trim();
-    if (/^[A-Z0-9]{2,10}$/.test(alias)) return alias;
-  }
-  return first;
+  return b;
 }
 
 function defaults() {
-  return { window: 18, role: "all", type: "", group: "", year: "", confirmed: false, fresh: false, watch: false, coal: false, view: "action", quarter: "", q: "", sort: "months", lead: "open" };
+  return { sort: "priority", type: "", year: "", group: "", company: "", lender: "", coal: false };
 }
 function readState() {
   const p = new URLSearchParams(location.hash.replace(/^#/, ""));
   const s = defaults();
-  const windowMonths = Number(p.get("window"));
-  if ([12, 18, 24, 36].includes(windowMonths)) s.window = windowMonths;
-  const role = p.get("role");
-  if (role === "all" || role === "defend" || role === "opportunity") s.role = role;
-  s.type = p.get("type") || "";
-  if (s.type && !TYPE_LABEL[s.type]) s.type = "";
-  s.group = p.get("group") || "";
-  s.year = p.get("year") || "";
-  s.confirmed = p.get("confirmed") === "1";
-  s.fresh = p.get("fresh") === "1";
-  s.watch = p.get("watch") === "1";
-  s.coal = p.get("coal") === "1";
-  const view = p.get("view");
-  if (view === "action" || view === "all" || view === "missing" || view === "leads") s.view = view;
-  s.quarter = p.get("quarter") || "";
-  s.q = p.get("q") || "";
   const sort = p.get("sort");
-  if (["months","months-desc","amount","amount-desc","borrower","borrower-desc","maturity","maturity-desc"].includes(sort)) s.sort = sort;
-  const lead = p.get("lead");
-  if (["open","all","new","checking","confirmed","rejected"].includes(lead)) s.lead = lead;
+  if (sort === "az" || sort === "amount") s.sort = sort;
+  const type = p.get("type") || "";
+  if (TYPE_LABEL[type]) s.type = type;
+  s.year = /^\d{4}$/.test(p.get("year") || "") ? p.get("year") : "";
+  s.group = p.get("group") || "";
+  s.company = p.get("company") || "";
+  s.lender = p.get("lender") || "";
+  s.coal = p.get("coal") === "1";
   return s;
 }
 function writeHash() {
   const p = new URLSearchParams();
   const d = defaults();
-  if (state.window !== d.window) p.set("window", String(state.window));
-  if (state.role !== d.role) p.set("role", state.role);
-  if (state.type) p.set("type", state.type);
-  if (state.group) p.set("group", state.group);
-  if (state.year) p.set("year", state.year);
-  if (state.confirmed) p.set("confirmed", "1");
-  if (state.fresh) p.set("fresh", "1");
-  if (state.watch) p.set("watch", "1");
-  if (state.coal) p.set("coal", "1");
-  if (state.view !== d.view) p.set("view", state.view);
-  if (state.quarter) p.set("quarter", state.quarter);
-  if (state.q) p.set("q", state.q);
   if (state.sort !== d.sort) p.set("sort", state.sort);
-  if (state.view === "leads" && state.lead !== d.lead) p.set("lead", state.lead);
+  if (state.type) p.set("type", state.type);
+  if (state.year) p.set("year", state.year);
+  if (state.group) p.set("group", state.group);
+  if (state.company) p.set("company", state.company);
+  if (state.lender) p.set("lender", state.lender);
+  if (state.coal) p.set("coal", "1");
   const next = p.toString();
   const cur = location.hash.replace(/^#/, "");
   if (cur === next) return;
@@ -1141,608 +1072,148 @@ function setState(patch) {
   writeHash();
   render();
 }
-function isDirty() {
-  const d = defaults();
-  return Object.keys(d).some(k => state[k] !== d[k]);
-}
-
 let state = defaults();
-let lastVisit = FIRST_VISIT_BASELINE;
-let firstVisit = false;
-let personal = {};
-let leads = [];
-let detailId = "";
-let leadOpen = false;
-let lastFocus = null;
 
-function loadStore() {
-  LEGACY_FILTER_KEYS.forEach(k => localStorage.removeItem(k));
-  try { personal = JSON.parse(localStorage.getItem(PERSONAL_KEY) || "{}") || {}; }
-  catch (e) { personal = {}; }
-  try { leads = JSON.parse(localStorage.getItem(LEADS_KEY) || "[]") || []; }
-  catch (e) { leads = []; }
-  if (!Array.isArray(leads)) leads = [];
-  const had = localStorage.getItem(VISIT_KEY);
-  let snap = sessionStorage.getItem(VISIT_SNAP);
-  if (!snap) {
-    snap = had || FIRST_VISIT_BASELINE;
-    sessionStorage.setItem(VISIT_SNAP, snap);
-    localStorage.setItem(VISIT_KEY, todayISO());
-    firstVisit = !had;
-  }
-  lastVisit = snap;
-}
-function savePersonal() { localStorage.setItem(PERSONAL_KEY, JSON.stringify(personal)); }
-function saveLeads() { localStorage.setItem(LEADS_KEY, JSON.stringify(leads)); }
-function effectiveRole(d) {
-  const over = personal[d.id] && personal[d.id].role;
-  return over || d.wb_status || "unknown";
-}
-function isDefend(role) { return role === "incumbent" || role === "participant"; }
-function isNew(d) { return !!d.added_on && d.added_on > lastVisit; }
-function isStar(d) { return !!(personal[d.id] && personal[d.id].star); }
-function roleMeta(role) {
-  if (role === "incumbent") return { cls: "role-defend", text: "Incumbent" };
-  if (role === "participant") return { cls: "role-part", text: "Participant" };
-  if (role === "opportunity") return { cls: "role-opp", text: "Opportunity" };
-  return { cls: "role-unk", text: "Unverified" };
-}
-function textHit(d, q) {
-  const n = q.trim().toLowerCase();
-  if (!n) return true;
-  const blob = [d.borrower, dealGroup(d.borrower) || "", d.purpose || "", d.lenders || "", d.amount || ""].join("\n").toLowerCase();
-  return blob.includes(n);
-}
-function passCommon(d) {
+function passFilters(d) {
   if (!state.coal && d.coal_excluded) return false;
   if (state.type && d.type !== state.type) return false;
+  if (state.year && String(d.year) !== String(state.year)) return false;
   if (state.group) {
     const g = dealGroup(d.borrower);
     if (state.group === "__ungrouped__") { if (g) return false; }
     else if (g !== state.group) return false;
   }
-  if (state.q && !textHit(d, state.q)) return false;
-  if (state.watch && !isStar(d)) return false;
-  if (state.fresh && !isNew(d)) return false;
-  if (state.confirmed && !confirmedMaturity(d)) return false;
-  if (state.year) {
-    const info = maturityInfo(d);
-    if (!info.date || String(info.date.getUTCFullYear()) !== String(state.year)) return false;
-  }
+  if (state.company && companyKey(d.borrower) !== state.company) return false;
+  if (state.lender && !(d.lenders || "").toLowerCase().includes(state.lender.trim().toLowerCase())) return false;
   return true;
 }
-function population() { return DEALS.filter(passCommon); }
-function effectiveSort() {
-  if (state.view === "missing" && state.sort === "months") return "amount-desc";
-  return state.sort;
-}
 function sortRows(rows) {
-  const mode = effectiveSort();
-  const desc = mode.endsWith("-desc");
-  const key = desc ? mode.slice(0, -5) : mode;
-  const dir = desc ? -1 : 1;
-  return rows.slice().sort((a, b) => {
-    if (key === "borrower") return dir * a.borrower.localeCompare(b.borrower, "en", { sensitivity: "base" });
-    if (key === "amount") return dir * (displayAmount(a) - displayAmount(b)) || a.borrower.localeCompare(b.borrower, "en");
-    if (key === "maturity") {
-      const ia = maturityInfo(a), ib = maturityInfo(b);
-      if (!ia.date && !ib.date) return 0;
-      if (!ia.date) return 1;
-      if (!ib.date) return -1;
-      return dir * (ia.date - ib.date);
-    }
-    const ma = monthsTo(maturityInfo(a)), mb = monthsTo(maturityInfo(b));
-    if (ma == null && mb == null) return 0;
-    if (ma == null) return 1;
-    if (mb == null) return -1;
-    return dir * (ma - mb);
-  });
-}
-function beforeRole() {
-  const rows = population();
-  if (state.view === "missing") return rows.filter(d => isHuntLoan(d) && needsDate(d));
-  if (state.view === "all" || (state.view === "action" && state.q && !state.quarter)) return rows;
-  if (state.view === "leads") return [];
-  let hunt = rows.filter(isHuntLoan);
-  if (state.quarter) {
-    hunt = hunt.filter(d => {
-      const info = maturityInfo(d);
-      return info.date && !info.approximate && quarterKey(info.date) === state.quarter;
-    });
-  } else {
-    hunt = hunt.filter(d => inRefiWindow(d, state.window));
+  const arr = rows.slice();
+  if (state.sort === "az") {
+    arr.sort((a, b) => a.borrower.localeCompare(b.borrower, "en", { sensitivity: "base" }));
+    return arr;
   }
-  return hunt;
+  if (state.sort === "amount") {
+    arr.sort((a, b) => (displayAmount(b) - displayAmount(a)) || a.borrower.localeCompare(b.borrower, "en", { sensitivity: "base" }));
+    return arr;
+  }
+  arr.sort((a, b) => compareDefault(
+    { name: a.borrower, months: monthsOf(a), year: a.year },
+    { name: b.borrower, months: monthsOf(b), year: b.year }
+  ));
+  return arr;
 }
-function applyRole(rows) {
-  if (state.role === "defend") return rows.filter(d => isDefend(effectiveRole(d)));
-  if (state.role === "opportunity") return rows.filter(d => effectiveRole(d) === "opportunity");
-  return rows;
-}
-function tableRows() { return sortRows(applyRole(beforeRole())); }
+function visibleRows() { return sortRows(DEALS.filter(passFilters)); }
 
-function kpiRows() {
-  return DEALS.filter(d => {
-    if (!state.coal && d.coal_excluded) return false;
-    if (state.type && d.type !== state.type) return false;
-    if (state.group) {
-      const g = dealGroup(d.borrower);
-      if (state.group === "__ungrouped__") { if (g) return false; }
-      else if (g !== state.group) return false;
-    }
-    if (state.q && !textHit(d, state.q)) return false;
-    if (state.watch && !isStar(d)) return false;
-    if (state.fresh && !isNew(d)) return false;
-    if (state.year) {
-      const info = maturityInfo(d);
-      if (!info.date || String(info.date.getUTCFullYear()) !== String(state.year)) return false;
-    }
-    return isHuntLoan(d);
-  });
+function renderSubtitle() {
+  document.getElementById("asofLine").innerHTML =
+    "Czech and CEE corporate facilities. On a fresh load, rows maturing within " + nearTermMonths() +
+    " months and not yet matured are listed first, nearest maturity first. The house bank is labelled WB. Data as of " +
+    esc(fmtDate(DATA_AS_OF)) + " <span class=\"build-tag\">· build " + esc(BUILD) + " · " + DEALS.length + " deals</span>.";
 }
-
-function render() {
-  renderAsOf();
-  renderFilters();
-  renderKpis();
-  renderChart();
-  renderNews();
-  renderList();
-  renderHistory();
-  if (detailId) fillDetail();
-  const q = document.getElementById("q");
-  if (q && q.value !== state.q && document.activeElement !== q) q.value = state.q;
+function renderStats() {
+  const filtered = DEALS.filter(passFilters);
+  const near = filtered.filter(isNearTerm);
+  const nearLoans = near.filter(isHuntLoan);
+  const defend = nearLoans.filter(d => d.wb_status === "incumbent" || d.wb_status === "participant");
+  const opp = nearLoans.filter(d => d.wb_status === "opportunity");
+  const buckets = euroBuckets(filtered);
+  const sum = rows => rows.reduce((s, d) => s + bankCommitmentEur(d), 0);
+  document.getElementById("stats").innerHTML = [
+    `<div class="stat"><div class="label">Within ${nearTermMonths()} months</div><div class="value">${near.length}</div><div class="sub">${nearLoans.length} outstanding bank loans · ${fmtBn(sum(nearLoans))}</div></div>`,
+    `<div class="stat" style="border-left:3px solid #166534"><div class="label">WB defend</div><div class="value">${defend.length}</div><div class="sub">${fmtBn(sum(defend))} incumbent or participant</div></div>`,
+    `<div class="stat" style="border-left:3px solid #b91c1c"><div class="label">WB opportunity</div><div class="value">${opp.length}</div><div class="sub">${fmtBn(sum(opp))} outstanding bank loans</div></div>`,
+    `<div class="stat"><div class="label">Disclosed bank commitments</div><div class="value">${fmtBn(buckets.disclosed.eur)}</div><div class="sub">${buckets.disclosed.n} outstanding, named amount</div></div>`,
+    `<div class="stat"><div class="label">Estimates</div><div class="value">${fmtBn(buckets.estimate.eur)}</div><div class="sub">${buckets.estimate.n} outstanding bank loans, est. or n/d</div></div>`,
+    `<div class="stat"><div class="label">Excluded non-loans</div><div class="value">${fmtBn(buckets.excluded.eur)}</div><div class="sub">${buckets.excluded.n} non-loan rows${buckets.excluded.slices ? " + " + buckets.excluded.slices + " bond slice" : ""}</div></div>`,
+  ].join("");
+  const coal = state.coal ? "coal included" : "coal excluded";
+  document.getElementById("statsNote").textContent =
+    "Figures follow the current filters (" + coal + "). Closed facilities (refinanced or repaid): " +
+    buckets.closed.n + " rows, " + fmtBn(buckets.closed.eur) + ", outside the three commitment figures. " +
+    (buckets.memo.n ? buckets.memo.n + " memo row omitted (the draw is already inside another facility). " : "") +
+    "The 18-month figures are rows that have not matured yet.";
 }
-
-function renderAsOf() {
-  const fresh = DEALS.filter(isNew);
-  const el = document.getElementById("asofLine");
-  const when = firstVisit ? "first open, counted from " + fmtDate(FIRST_VISIT_BASELINE) : "since " + fmtDate(lastVisit);
-  el.textContent = "Data as of " + fmtDate(DATA_AS_OF) + " · build " + BUILD + " · " + DEALS.length + " deals · " + fresh.length + " new since last visit (" + when + ")";
+function chip(kind, value, label, active) {
+  return `<button type="button" class="chip${active ? " active" : ""}" data-act="${kind}" data-value="${esc(value)}">${esc(label)}</button>`;
 }
-
 function renderFilters() {
-  const pre = beforeRole();
-  const nAll = pre.length;
-  const nDef = pre.filter(d => isDefend(effectiveRole(d))).length;
-  const nOpp = pre.filter(d => effectiveRole(d) === "opportunity").length;
-  const years = Array.from(new Set(DEALS.map(d => { const i = maturityInfo(d); return i.date ? i.date.getUTCFullYear() : null; }).filter(Boolean))).sort((a, b) => a - b);
-  const groups = Object.keys(DEAL_GROUPS).sort((a, b) => a.localeCompare(b, "en"));
-  const windowBtns = [12, 18, 24, 36].map(n =>
-    `<button type="button" data-act="window" data-value="${n}" aria-pressed="${state.window === n}">${n} m</button>`
+  document.getElementById("sortChips").innerHTML = [
+    chip("sort", "priority", "Maturity (18 months first)", state.sort === "priority"),
+    chip("sort", "az", "Borrower A → Z", state.sort === "az"),
+    chip("sort", "amount", "Amount (largest first)", state.sort === "amount"),
+  ].join("");
+  document.getElementById("typeFilters").innerHTML = [chip("type", "", "All", !state.type)].concat(
+    Object.keys(TYPE_LABEL).map(t => chip("type", t, TYPE_LABEL[t], state.type === t))
   ).join("");
-  const roleBtns = [
-    ["all", "All (" + nAll + ")"],
-    ["defend", "Defend (" + nDef + ")"],
-    ["opportunity", "Opportunity (" + nOpp + ")"],
-  ].map(([v, lab]) => `<button type="button" data-act="role" data-value="${v}" aria-pressed="${state.role === v}">${lab}</button>`).join("");
-  const types = Object.keys(TYPE_LABEL).map(t => `<option value="${esc(t)}" ${state.type === t ? "selected" : ""}>${esc(TYPE_LABEL[t])}</option>`).join("");
-  const groupOpts = groups.map(g => `<option value="${esc(g)}" ${state.group === g ? "selected" : ""}>${esc(g)}</option>`).join("");
-  const yearOpts = years.map(y => `<option value="${y}" ${String(state.year) === String(y) ? "selected" : ""}>${y}</option>`).join("");
-  const missingN = population().filter(d => isHuntLoan(d) && needsDate(d)).length;
-  const tabs = [
-    ["action", "Action list"],
-    ["all", "All rows"],
-    ["missing", "Fill in maturity (" + missingN + ")"],
-    ["leads", "Leads (" + leads.filter(l => l.status !== "rejected").length + ")"],
-  ].map(([v, lab]) => `<button type="button" class="tab" role="tab" data-act="view" data-value="${v}" aria-selected="${state.view === v}">${lab}</button>`).join("");
-  document.getElementById("filters").innerHTML = `
-    <div class="toolbar">
-      <div class="seg" role="group" aria-label="Refinancing window">${windowBtns}</div>
-      <div class="seg" role="group" aria-label="WB role">${roleBtns}</div>
-      <label class="sel">Type <select data-filter="type" aria-label="Deal type"><option value="">all</option>${types}</select></label>
-      <label class="sel">Group <select data-filter="group" aria-label="Group"><option value="">all</option><option value="__ungrouped__" ${state.group === "__ungrouped__" ? "selected" : ""}>ungrouped</option>${groupOpts}</select></label>
-      <label class="sel">Maturity year <select data-filter="year" aria-label="Maturity year"><option value="">all</option>${yearOpts}</select></label>
-      <button type="button" class="toggle" data-act="toggle" data-key="confirmed" aria-pressed="${state.confirmed}">Confirmed dates only</button>
-      <button type="button" class="toggle" data-act="toggle" data-key="fresh" aria-pressed="${state.fresh}">New since last visit</button>
-      <button type="button" class="toggle" data-act="toggle" data-key="watch" aria-pressed="${state.watch}">Watching</button>
-      <button type="button" class="toggle" data-act="toggle" data-key="coal" aria-pressed="${state.coal}">Include coal</button>
-    </div>
-    <div class="views" role="tablist" aria-label="List view">${tabs}</div>`;
-  renderChips();
-}
-function renderChips() {
-  const chips = [];
-  const add = (key, label) => chips.push(`<span class="chip">${esc(label)} <button type="button" data-act="clear" data-key="${key}" aria-label="Remove filter ${esc(label)}">×</button></span>`);
-  if (state.window !== 18) add("window", "Window " + state.window + " m");
-  if (state.role === "defend") add("role", "Role: Defend");
-  if (state.role === "opportunity") add("role", "Role: Opportunity");
-  if (state.type) add("type", "Type: " + (TYPE_LABEL[state.type] || state.type));
-  if (state.group) add("group", "Group: " + (state.group === "__ungrouped__" ? "ungrouped" : state.group));
-  if (state.year) add("year", "Maturity " + state.year);
-  if (state.confirmed) add("confirmed", "Confirmed dates only");
-  if (state.fresh) add("fresh", "New since last visit");
-  if (state.watch) add("watch", "Watching");
-  if (state.coal) add("coal", "Include coal");
-  if (state.view !== "action") add("view", state.view === "all" ? "All rows" : state.view === "missing" ? "Fill in maturity" : "Leads");
-  if (state.quarter) add("quarter", "Quarter " + quarterLabel(state.quarter));
-  if (state.q) add("q", "Search: " + state.q);
-  if (state.sort !== "months") add("sort", "Sort: " + (SORT_LABEL[state.sort] || state.sort));
-  if (state.view === "leads" && state.lead !== "open") add("lead", "Lead status: " + (LEAD_STATUS[state.lead] || state.lead));
-  const clear = `<button type="button" class="textbtn" data-act="clear-all" ${isDirty() ? "" : "disabled"}>Clear all</button>`;
-  document.getElementById("chips").innerHTML = chips.join("") + clear;
-}
-function clearKey(key) {
-  const d = defaults();
-  const patch = {};
-  patch[key] = d[key];
-  if (key === "q") {
-    const input = document.getElementById("q");
-    if (input) input.value = "";
-  }
-  setState(patch);
-}
-
-function renderKpis() {
-  const rows = kpiRows().filter(d => !state.confirmed || confirmedMaturity(d));
-  const inWin = rows.filter(d => inRefiWindow(d, state.window));
-  const approx = inWin.filter(d => maturityInfo(d).approximate);
-  const solid = inWin.filter(d => !maturityInfo(d).approximate);
-  const defend = inWin.filter(d => isDefend(effectiveRole(d)));
-  const defendEur = defend.reduce((s, d) => s + bankCommitmentEur(d), 0);
-  const missing = kpiRows().filter(needsDate);
-  const missingEur = missing.reduce((s, d) => s + bankCommitmentEur(d), 0);
-  const fresh = DEALS.filter(isNew);
-  const biggest = defend.slice().sort((a, b) => bankCommitmentEur(b) - bankCommitmentEur(a))[0];
-  const defendSub = biggest ? shortName(biggest.borrower) + " " + fmtBn(bankCommitmentEur(biggest)) : "none in the window";
-  const freshSub = fresh.slice(0, 4).map(d => shortName(d.borrower)).join(", ") || "none";
-  const winEur = inWin.reduce((s, d) => s + bankCommitmentEur(d), 0);
-  const cards = [
-    ["win", "In the refi window (" + state.window + " m)", loanCount(inWin.length), fmtBn(winEur) + " · " + solid.length + " with a month, " + approx.length + " approximate"],
-    ["defend", "WB defend book (" + state.window + " m)", loanCount(defend.length), defendSub + (defend.length > 1 ? " · total " + fmtBn(defendEur) : "")],
-    ["missing", "No known maturity", loanCount(missing.length), fmtBn(missingEur) + ", to fill in"],
-    ["fresh", "New since last visit", String(fresh.length), freshSub],
-  ];
-  document.getElementById("kpis").innerHTML = cards.map(([id, label, value, sub]) =>
-    `<button type="button" class="kpi" data-act="kpi" data-kpi="${id}"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div><p class="sub">${esc(sub)}</p></button>`
+  const years = Array.from(new Set(DEALS.map(d => d.year).filter(Boolean))).sort((a, b) => b - a);
+  document.getElementById("yearFilters").innerHTML = [chip("year", "", "All", !state.year)].concat(
+    years.map(y => chip("year", String(y), String(y), state.year === String(y)))
   ).join("");
-}
-
-function renderChart() {
-  const base = kpiRows();
-  const rows = state.confirmed ? base.filter(d => confirmedMaturity(d)) : base;
-  const quarters = enumerateQuarters();
-  const map = {};
-  quarters.forEach(q => { map[q.key] = { defend: 0, opp: 0, n: 0 }; });
-  let unknownN = 0, unknownEur = 0, later = 0;
-  base.filter(needsDate).forEach(d => { unknownN++; unknownEur += bankCommitmentEur(d); });
-  rows.forEach(d => {
-    const info = maturityInfo(d);
-    const eur = bankCommitmentEur(d);
-    if (!info.date || info.approximate) return;
-    const bucket = map[quarterKey(info.date)];
-    if (!bucket) { later += eur; return; }
-    bucket.n++;
-    if (isDefend(effectiveRole(d))) bucket.defend += eur;
-    else bucket.opp += eur;
-  });
-  const max = Math.max(1, ...quarters.map(q => map[q.key].defend + map[q.key].opp));
-  const plotPx = 190;
-  let shadeFrom = -1, shadeTo = -1;
-  quarters.forEach((q, i) => {
-    const m = (q.start.getUTCFullYear() - TODAY.getUTCFullYear()) * 12 + (q.start.getUTCMonth() - TODAY.getUTCMonth());
-    if (m + 2 >= -3 && m <= state.window) {
-      if (shadeFrom < 0) shadeFrom = i;
-      shadeTo = i;
-    }
-  });
-  const bars = quarters.map(q => {
-    const b = map[q.key];
-    const hd = Math.round((b.defend / max) * plotPx);
-    const ho = Math.round((b.opp / max) * plotPx);
-    const label = quarterLabel(q.key) + ": defend " + fmtNum(b.defend) + " m EUR, opportunity " + fmtNum(b.opp) + " m EUR, " + loanCount(b.n);
-    return `<button type="button" class="bar" data-act="quarter" data-quarter="${q.key}" aria-label="${esc(label)}" aria-pressed="${state.quarter === q.key}"><span class="stack"><span class="sego" style="height:${ho}px"></span><span class="segd" style="height:${hd}px"></span></span></button>`;
-  }).join("");
-  const labels = quarters.map(q => `<span>${q.q === 1 ? q.year : ""}</span>`).join("");
-  const shade = shadeFrom >= 0
-    ? `<div class="shade" style="left:${(shadeFrom / quarters.length) * 100}%;width:${((shadeTo - shadeFrom + 1) / quarters.length) * 100}%"><span class="shade-label">refi window ${state.window} m</span></div>`
-    : "";
-  const summary = "Maturities by quarter. Unknown maturity: " + loanCount(unknownN) + ", " + fmtBn(unknownEur) + ".";
-  const range = rangeStrip(base.filter(needsDate));
-  document.getElementById("chart").innerHTML = `
-    <h2>Maturities by quarter (EUR m)</h2>
-    <div class="legend"><span><i class="sw segd"></i>WB defend book</span><span><i class="sw sego"></i>opportunity</span></div>
-    <div class="chart-row">
-      <div class="chart-scroll">
-        <div class="plot" role="group" aria-label="${esc(summary)}">${shade}<div class="bars">${bars}</div><div class="qlabels">${labels}</div></div>
-        ${range}
-      </div>
-      <button type="button" class="unknown-col" data-act="unknown" aria-label="Unknown maturity, ${unknownN} loans, open the Fill in maturity list">
-        <span>Unknown</span>
-        <strong>${unknownN}</strong>
-        <span>${esc(fmtBn(unknownEur))}</span>
-      </button>
-    </div>
-    <p class="range-note">Bars count only maturities with a month in the source. Loans with only a signing year sit in the Unknown column and on the radar at the period midpoint, marked approximate.${later ? " Beyond the axis: " + esc(fmtBn(later)) + "." : ""}</p>`;
-}
-function rangeStrip(rows) {
-  if (!rows.length) return "";
-  const counts = {};
-  rows.forEach(d => {
-    const info = maturityInfo(d);
-    const from = info.signingYear || d.year;
-    if (!from) return;
-    const to = info.date ? info.date.getUTCFullYear() : from + (Number(d.tenor_y) || 0);
-    for (let y = from; y <= to; y++) counts[y] = (counts[y] || 0) + 1;
-  });
-  const years = Object.keys(counts).map(Number).sort((a, b) => a - b);
-  if (!years.length) return "";
-  const max = Math.max(...years.map(y => counts[y]));
-  const bars = years.map(y => `<button type="button" data-act="range-year" data-year="${y}" style="height:${Math.max(4, Math.round((counts[y] / max) * 46))}px" aria-label="Span ${y}: ${loanCount(counts[y])}"></button>`).join("");
-  const labs = years.map(y => `<span>${String(y).slice(2)}</span>`).join("");
-  return `<div class="range"><div class="range-note">Year span (signing date plus tenor), loans still to date</div><div class="range-bars">${bars}</div><div class="range-years">${labs}</div></div>`;
-}
-
-function renderNews() {
-  const fresh = DEALS.filter(isNew).sort((a, b) => (b.added_on || "").localeCompare(a.added_on || ""));
-  const items = fresh.slice(0, 8).map(d => {
-    const amt = displayAmount(d) ? fmtNum(displayAmount(d)) + " m EUR" : "amount not disclosed";
-    const sentence = String(d.purpose || "").split(/(?<=\.)\s/)[0].slice(0, 140);
-    return `<button type="button" class="news-item" data-act="open" data-id="${esc(d.id)}"><div class="when">${esc(d.date || fmtDate(d.added_on))}</div><div class="what">${esc(shortName(d.borrower))} · ${esc(amt)}</div><div class="muted">${esc(sentence)}</div></button>`;
-  }).join("");
-  const empty = firstVisit
-    ? "First open in this browser. Additions are counted from the build of " + fmtDate(FIRST_VISIT_BASELINE) + "."
-    : "Nothing new since the last visit on " + fmtDate(lastVisit) + ".";
-  document.getElementById("news").innerHTML = `
-    <h2>New since last visit</h2>
-    ${items || `<p class="muted">${esc(empty)}</p>`}
-    <button type="button" class="textbtn" data-act="mark-seen">Mark as read</button>`;
-}
-
-function ariaSort(key) {
-  const mode = effectiveSort();
-  if (mode === key) return "ascending";
-  if (mode === key + "-desc") return "descending";
-  return "none";
-}
-function th(key, label, cls) {
-  return `<th class="${cls || ""}" scope="col" aria-sort="${ariaSort(key)}"><button type="button" data-act="sort" data-sort="${key}">${label}</button></th>`;
+  const groups = Object.keys(DEAL_GROUPS).sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+  const groupSel = document.getElementById("groupFilter");
+  groupSel.innerHTML = `<option value="">All groups</option><option value="__ungrouped__">Ungrouped</option>` +
+    groups.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join("");
+  groupSel.value = state.group;
+  const companies = Array.from(new Set(DEALS.map(d => companyKey(d.borrower)).filter(Boolean)))
+    .sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+  const companySel = document.getElementById("companyFilter");
+  companySel.innerHTML = `<option value="">All companies</option>` +
+    companies.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  if ([...companySel.options].some(o => o.value === state.company)) companySel.value = state.company;
+  const lender = document.getElementById("lenderFilter");
+  if (document.activeElement !== lender && lender.value !== state.lender) lender.value = state.lender;
+  document.getElementById("coalCheck").checked = state.coal;
 }
 function rowHtml(d) {
-  const info = maturityInfo(d);
-  const role = roleMeta(effectiveRole(d));
-  const local = personal[d.id] && personal[d.id].role;
-  const m = monthsTo(info);
-  const mCls = m == null ? "" : m < 0 ? "past" : m <= 12 ? "soon" : "";
-  const mTxt = m == null ? "—" : (m < 0 ? "−" + Math.abs(m) : String(m));
-  const mNote = m == null ? "" : m < 0 ? "past maturity" : m === 0 ? "this month" : "";
-  const amt = displayAmount(d);
-  const src = sourcesOf(d)[0];
-  const href = src ? safeUrl(src.url) : "";
-  const badges = (isNew(d) ? `<span class="badge badge-new">NEW</span>` : "") + (isStar(d) ? `<span class="badge badge-watch">Watching</span>` : "");
-  const status = d.separate_facility === false ? "memo" : (d.status || "outstanding");
-  const statusBit = status === "outstanding" ? "" : `<div class="muted">${esc(STATUS_LABEL[status] || status)}</div>`;
-  const approxCls = info.approximate || !info.date ? "approx" : "";
-  const range = (state.view === "missing" || info.approximate) && rangeText(d) ? `<div class="muted">span ${esc(rangeText(d))}</div>` : "";
-  const srcCell = href
-    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(domainOf(href))}</a>`
-    : "—";
-  return `<tr data-act="open" data-id="${esc(d.id)}" tabindex="0">
-    <td><div class="name">${esc(d.borrower)}</div>${badges}${statusBit}</td>
-    <td class="${approxCls}">${esc(maturityText(d))}${range}</td>
-    <td class="num"><span class="m2m ${mCls}">${mTxt}</span>${mNote ? `<div class="muted">${mNote}</div>` : ""}</td>
-    <td><span class="badge ${role.cls}" ${local ? `title="Local override in this browser"` : ""}>${esc(role.text)}</span></td>
-    <td class="num">${amt ? esc(fmtNum(amt)) : "n/d"}</td>
-    <td class="src">${srcCell}</td>
+  const m = monthsOf(d);
+  const statusKey = d.separate_facility === false ? "memo" : (d.status || "outstanding");
+  const status = STATUS_META[statusKey] || STATUS_META.outstanding;
+  const inst = INST_LABEL[d.instrument] || d.instrument || "";
+  const wb = WB_META[d.wb_status] || WB_META.unknown;
+  const urg = URGENCY_META[urgencyOf(d)] || URGENCY_META.unknown;
+  const pct = certaintyPct(d);
+  const href = safeUrl(d.source || "");
+  const note = [d.status_note || "", d.successor ? "Successor: " + d.successor : ""].filter(Boolean).join(" — ");
+  const mCls = m == null ? "" : m < 0 ? "m-past" : m <= 12 ? "m-soon" : "";
+  const mTxt = m == null ? "—" : String(m);
+  return `<tr class="${isNearTerm(d) ? "near" : ""}" data-borrower="${esc(d.borrower)}" data-maturity="${esc(maturityShort(d))}" data-months="${m == null ? "" : m}">
+    <td><div class="borrower-name">${esc(d.borrower)}</div><div class="clamp" title="${esc(d.purpose || "")}">${esc(d.purpose || "")}</div></td>
+    <td><span class="badge ${TYPE_BADGE[d.type] || ""}">${esc(TYPE_LABEL[d.type] || d.type || "")}</span></td>
+    <td><span class="badge ${status.cls}" title="${esc(note)}">${esc(status.text)}${inst ? " · " + esc(inst) : ""}</span></td>
+    <td><span class="badge ${urg.cls}">${esc(urg.text)}</span></td>
+    <td><span class="badge ${wb.cls}">${esc(wb.text)}</span></td>
+    <td>${esc(d.amount || "n/d")}</td>
+    <td title="${esc(maturityText(d))}">${esc(maturityShort(d))}</td>
+    <td class="num ${mCls}">${mTxt}</td>
+    <td><div class="clamp" title="${esc(d.lenders || "")}">${esc(d.lenders || "—")}</div></td>
+    <td><span class="badge conf-${pct}" title="Share of source, amount, lenders and date that is confirmed. An inferred tenor caps the score at 75%.">${pct}%</span><span class="conf-label">${esc(d.confidence || "")}</span></td>
+    <td>${href ? `<a href="${esc(href)}" target="_blank" rel="noopener">link</a>` : "—"}</td>
   </tr>`;
 }
-function cardHtml(d) {
-  const role = roleMeta(effectiveRole(d));
-  const amt = displayAmount(d);
-  return `<button type="button" class="card" data-act="open" data-id="${esc(d.id)}">
-    <div class="card-top"><span class="name">${esc(d.borrower)}</span><span>${amt ? esc(fmtNum(amt)) + " m EUR" : "n/d"}</span></div>
-    <div class="${maturityInfo(d).approximate ? "approx" : ""}">${esc(maturityText(d))}</div>
-    <div style="margin-top:6px"><span class="badge ${role.cls}">${esc(role.text)}</span>${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}</div>
-  </button>`;
-}
-function renderList() {
-  const head = document.getElementById("listHead");
-  const table = document.getElementById("tableWrap");
-  const cards = document.getElementById("cards");
-  const leadsEl = document.getElementById("leads");
-  if (state.view === "leads") {
-    head.innerHTML = `<h2>Leads</h2>`;
-    table.innerHTML = "";
-    cards.innerHTML = "";
-    leadsEl.hidden = false;
-    renderLeads();
-    return;
-  }
-  leadsEl.hidden = true;
-  leadsEl.innerHTML = "";
-  const rows = tableRows();
-  const titles = { action: state.quarter ? "Quarter " + quarterLabel(state.quarter) : "Action list", all: "All rows", missing: "Fill in maturity" };
-  const sub = state.view === "action" && state.q && !state.quarter
-    ? "Search covers the full list, not only the refinancing window."
-    : state.view === "action" && !state.quarter
-    ? "Live bank loans inside a " + state.window + "-month window, including 3 months past maturity. Approximate dates are marked."
-    : state.view === "missing"
-      ? "Live loans with no maturity month in the source, sorted by amount. The span is the signing date plus tenor."
-      : "Every tracked row, including repaid facilities and non-loan items.";
-  head.innerHTML = `<div><h2 id="listTitle">${esc(titles[state.view] || "List")} <span class="muted">(${rows.length})</span></h2><p class="muted" style="margin:2px 0 0">${esc(sub)}</p></div>
-    <div class="actions">
-      <button type="button" data-act="csv">CSV</button>
-      <button type="button" data-act="ics">Calendar (.ics, ${state.window} m window)</button>
-      <button type="button" data-act="mail">Copy for email</button>
-    </div>`;
+function renderTable() {
+  const rows = visibleRows();
+  const near = rows.filter(isNearTerm).length;
+  document.getElementById("listHeading").textContent = "All tracked rows (" + rows.length + ")";
+  document.getElementById("listNote").textContent = state.sort === "priority"
+    ? near + " " + (near === 1 ? "row matures" : "rows mature") + " within " + nearTermMonths() + " months and " + (near === 1 ? "is" : "are") + " listed first, nearest maturity first. Later, past and unknown maturities follow."
+    : "Sorted by " + (state.sort === "az" ? "borrower" : "amount") + ". Choose Maturity to put the next " + nearTermMonths() + " months back at the top.";
+  document.getElementById("csvBtn").textContent = "Export " + rows.length + " rows to CSV";
+  const table = document.getElementById("table");
   if (!rows.length) {
-    table.innerHTML = `<p class="muted">Nothing matches these filters.</p>`;
-    cards.innerHTML = "";
+    table.innerHTML = `<p class="empty-msg">Nothing matches these filters.</p>`;
     return;
   }
-  table.innerHTML = `<table class="deal-table"><thead><tr>
-    ${th("borrower", "Borrower")}
-    ${th("maturity", "Maturity and basis")}
-    ${th("months", "Months", "num")}
-    <th scope="col">WB role</th>
-    ${th("amount", "Amount EUR m", "num")}
-    <th scope="col">Source</th>
+  table.innerHTML = `<table class="deals"><thead><tr>
+    <th>Borrower</th><th>Type</th><th>Status</th><th>Urgency</th><th>WB</th>
+    <th>Amount</th><th>Maturity</th><th class="num">Months</th><th>Lenders</th><th>Certainty</th><th>Source</th>
   </tr></thead><tbody>${rows.map(rowHtml).join("")}</tbody></table>`;
-  cards.innerHTML = rows.map(cardHtml).join("");
 }
-
-function renderLeads() {
-  const visible = leads.filter(l => {
-    if (state.lead === "all" || state.lead === "open") return state.lead === "all" ? true : l.status !== "rejected";
-    return l.status === state.lead;
-  });
-  const filters = [["open", "Open"], ["all", "All"], ["new", "New"], ["checking", "Checking"], ["confirmed", "Confirmed"], ["rejected", "Rejected"]];
-  const bar = filters.map(([v, lab]) => `<button type="button" class="toggle" data-act="lead" data-value="${v}" aria-pressed="${state.lead === v}">${lab}</button>`).join("");
-  const cards = visible.map(l => {
-    const href = safeUrl(l.source || "");
-    const opts = Object.keys(LEAD_STATUS).map(k => `<option value="${k}" ${l.status === k ? "selected" : ""}>${LEAD_STATUS[k]}</option>`).join("");
-    return `<article class="panel" style="margin-bottom:8px">
-      <div class="card-top"><strong>${esc(l.borrower || "Unnamed")}</strong><span class="muted">${esc(fmtDate(l.created_on))}</span></div>
-      <p>${esc(l.amount || "amount not disclosed")} · ${esc(l.when || "date not stated")}</p>
-      <p>${esc(l.purpose || "")}</p>
-      <p class="muted">${esc(l.lenders || "")}</p>
-      ${href ? `<p class="src"><a href="${esc(href)}" target="_blank" rel="noopener">${esc(domainOf(href))}</a></p>` : ""}
-      ${l.note ? `<p>${esc(l.note)}</p>` : ""}
-      <div class="actions">
-        <label class="sel">Status <select data-lead="${esc(l.id)}" class="lead-status">${opts}</select></label>
-        <button type="button" data-act="lead-issue" data-id="${esc(l.id)}">Copy issue</button>
-        <button type="button" data-act="lead-del" data-id="${esc(l.id)}">Delete</button>
-      </div>
-    </article>`;
-  }).join("");
-  document.getElementById("leads").innerHTML = `
-    <div class="toolbar" style="margin-bottom:8px">${bar}
-      <button type="button" class="textbtn" data-act="leads-json">Export JSON</button>
-      <button type="button" class="textbtn" data-act="leads-csv">Export CSV</button>
-      <label class="textbtn">Load JSON<input type="file" id="leadImport" accept="application/json" hidden></label>
-    </div>
-    ${cards || `<p class="muted">No leads yet. + Lead saves a LinkedIn tip in this browser only.</p>`}`;
-}
-
-function openDetail(id) {
-  const d = DEALS.find(x => x.id === id);
-  if (!d) return;
-  if (leadOpen) { leadOpen = false; document.getElementById("leadDialog").hidden = true; }
-  lastFocus = document.activeElement;
-  detailId = id;
-  document.getElementById("backdrop").hidden = false;
-  const panel = document.getElementById("detail");
-  panel.hidden = false;
-  fillDetail();
-  const close = panel.querySelector(".close-x");
-  if (close) close.focus();
-}
-function closeDetail() {
-  detailId = "";
-  document.getElementById("detail").hidden = true;
-  document.getElementById("backdrop").hidden = leadOpen;
-  if (lastFocus && lastFocus.focus) lastFocus.focus();
-}
-function fillDetail() {
-  const d = DEALS.find(x => x.id === detailId);
-  const panel = document.getElementById("detail");
-  if (!d) { panel.hidden = true; return; }
-  const info = maturityInfo(d);
-  const role = effectiveRole(d);
-  const meta = roleMeta(role);
-  const hints = verifyHints(d);
-  const lenders = lenderLines(d.lenders);
-  const chain = successorParts(d);
-  const prev = predecessors(d.id);
-  const sources = sourcesOf(d);
-  const pers = personal[d.id] || {};
-  const status = d.separate_facility === false ? "memo" : (d.status || "outstanding");
-  const amt = displayAmount(d);
-  const chainHtml = chain.map(p => p.ext || p.missing
-    ? `<li>${esc(p.label)}${p.missing ? " (not in the data)" : ""}</li>`
-    : `<li><button type="button" data-act="open" data-id="${esc(p.id)}">${esc(p.label)}</button></li>`
-  ).join("");
-  const prevHtml = prev.map(p => `<li><button type="button" data-act="open" data-id="${esc(p.id)}">${esc(p.borrower)}</button></li>`).join("");
-  const srcHtml = sources.map(s => {
-    const href = safeUrl(s.url);
-    const label = href ? domainOf(href) : (s.label || s.url || "source");
-    return `<li>${href ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>` : esc(label)} <span class="muted">${esc(s.date || "")}</span></li>`;
-  }).join("");
-  const roleOpts = [["", "as in the published data (" + roleMeta(d.wb_status || "unknown").text + ")"], ["incumbent", "Incumbent"], ["participant", "Participant"], ["opportunity", "Opportunity"], ["unknown", "Unverified"]];
-  panel.innerHTML = `
-    <button type="button" class="close-x" data-act="close-detail" aria-label="Close detail">×</button>
-    <h2 id="detailTitle">${esc(d.borrower)}</h2>
-    <div>${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}<span class="badge">${esc(TYPE_LABEL[d.type] || d.type)}</span><span class="badge">${esc(STATUS_LABEL[status] || status)}</span><span class="badge ${meta.cls}">${esc(meta.text)}</span>${isStar(d) ? `<span class="badge badge-watch">Watching</span>` : ""}</div>
-    <dl class="kv">
-      <dt>Amount</dt><dd>${amt ? esc(fmtNum(amt)) + " m EUR" : "n/d"}</dd>
-      <dt>Amount in source</dt><dd>${esc(d.amount || "—")}</dd>
-      <dt>Maturity</dt><dd class="${info.approximate || !info.date ? "approx" : ""}">${esc(maturityText(d))}</dd>
-      <dt>Months</dt><dd>${monthsTo(info) == null ? "—" : (monthsTo(info) < 0 ? "−" + Math.abs(monthsTo(info)) : String(monthsTo(info)))}</dd>
-      <dt>Span</dt><dd>${esc(rangeText(d) || "—")}</dd>
-      <dt>Group</dt><dd>${esc(dealGroup(d.borrower) || "ungrouped")}</dd>
-      <dt>Instrument</dt><dd>${esc(INST_LABEL[d.instrument] || d.instrument || "—")}</dd>
-      <dt>Certainty</dt><dd>${certaintyPct(d)}% · ${esc(CONF_LABEL[d.confidence] || d.confidence || "")}</dd>
-      <dt>Added</dt><dd>${esc(fmtDate(d.added_on))}</dd>
-    </dl>
-    ${hints.length ? `<div class="callout"><strong>What to verify</strong><ul>${hints.map(h => `<li>${esc(h)}</li>`).join("")}</ul></div>` : ""}
-    ${d.status_note ? `<h3>Status note</h3><p>${esc(d.status_note)}</p>` : ""}
-    <h3>Purpose</h3><p>${esc(d.purpose || "—")}</p>
-    <h3>Lenders</h3><ul class="lenders">${lenders.map(x => `<li>${esc(x)}</li>`).join("") || "<li>—</li>"}</ul>
-    <h3>Successors</h3>${chainHtml ? `<ul class="chain">${chainHtml}</ul>` : `<p class="muted">No successor in the data.</p>`}
-    <h3>Predecessors</h3>${prevHtml ? `<ul class="chain">${prevHtml}</ul>` : `<p class="muted">No predecessor in the data.</p>`}
-    <h3>Sources</h3><ul class="src">${srcHtml || "<li>—</li>"}</ul>
-    <div class="personal">
-      <h3>Personal layer</h3>
-      <p class="muted">Role, note and Watching stay in this browser. They are not saved on the public page.</p>
-      <div class="field"><span>Local WB role</span>
-        <select id="personalRole">${roleOpts.map(([v, lab]) => `<option value="${v}" ${ (pers.role || "") === v ? "selected" : ""}>${esc(lab)}</option>`).join("")}</select>
-      </div>
-      <label class="field"><input type="checkbox" id="personalStar" ${pers.star ? "checked" : ""}/> Watching</label>
-      <div class="field"><span>Note</span><textarea id="personalNote" rows="3">${esc(pers.note || "")}</textarea></div>
-      <button type="button" class="textbtn" data-act="personal-json">Export personal layer (JSON)</button>
-    </div>`;
-}
-
-function openLead() {
-  if (detailId) { detailId = ""; document.getElementById("detail").hidden = true; }
-  leadOpen = true;
-  lastFocus = document.activeElement;
-  document.getElementById("backdrop").hidden = false;
-  const dlg = document.getElementById("leadDialog");
-  dlg.hidden = false;
-  const form = document.getElementById("leadForm");
-  form.reset();
-  form.elements.borrower.focus();
-}
-function closeLead() {
-  leadOpen = false;
-  document.getElementById("leadDialog").hidden = true;
-  if (!detailId) document.getElementById("backdrop").hidden = true;
-  if (lastFocus && lastFocus.focus) lastFocus.focus();
-}
-function leadFromForm() {
-  const form = document.getElementById("leadForm");
-  const data = Object.fromEntries(new FormData(form).entries());
-  return {
-    id: "lead-" + Date.now().toString(36),
-    borrower: String(data.borrower || "").trim(),
-    amount: String(data.amount || "").trim(),
-    when: String(data.when || "").trim(),
-    lenders: String(data.lenders || "").trim(),
-    purpose: String(data.purpose || "").trim(),
-    source: String(data.source || "").trim(),
-    note: String(data.note || "").trim(),
-    status: data.status || "new",
-    created_on: todayISO(),
-  };
-}
-function issueMarkdown(l) {
-  return [
-    "### LinkedIn tip",
-    "",
-    "- Borrower: " + (l.borrower || ""),
-    "- Amount: " + (l.amount || ""),
-    "- When: " + (l.when || ""),
-    "- Lenders: " + (l.lenders || ""),
-    "- What the tip says: " + (l.purpose || ""),
-    "- Link: " + (l.source || ""),
-    "- Status: " + (LEAD_STATUS[l.status] || l.status || ""),
-    "- Note: " + (l.note || ""),
-  ].join("\n");
-}
-function githubIssueUrl(l) {
-  const title = "LinkedIn tip: " + (l.borrower || "new lead");
-  return "https://github.com/zabranda/loantracker/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(issueMarkdown(l));
+function render() {
+  renderSubtitle();
+  renderStats();
+  renderFilters();
+  renderTable();
 }
 
 function csvEscape(value) {
@@ -1751,271 +1222,64 @@ function csvEscape(value) {
   return s;
 }
 function dealsToCsv(rows) {
-  const head = ["Borrower","Type","Status","Instrument","Successor","Maturity basis","Maturity","Approximate","Months","WB role","Amount EUR m","Amount in source","Lenders","Purpose","Source","Added","Certainty %"];
+  const head = ["Borrower","Type","Status","Instrument","Maturity","Months","WB role","Amount","Value EUR m","Lenders","Purpose","Source"];
   const lines = [head.join(",")];
   rows.forEach(d => {
-    const info = maturityInfo(d);
     const status = d.separate_facility === false ? "memo" : (d.status || "");
+    const m = monthsOf(d);
     lines.push([
-      d.borrower, d.type, status, d.instrument || "", d.successor || "",
-      info.basis, info.date ? ymOf(info.date) : "", info.approximate ? "yes" : "no",
-      monthsTo(info) == null ? "" : monthsTo(info), effectiveRole(d), displayAmount(d) || "",
-      d.amount, d.lenders, d.purpose, d.source || "", d.added_on || "", certaintyPct(d),
+      d.borrower, d.type, status, d.instrument || "", maturityShort(d), m == null ? "" : m,
+      (WB_META[d.wb_status] || WB_META.unknown).text, d.amount || "", d.value_eur || "",
+      d.lenders || "", d.purpose || "", d.source || "",
     ].map(csvEscape).join(","));
   });
   return lines.join("\n");
 }
-function downloadText(filename, mime, text) {
-  const blob = new Blob([text], { type: mime });
+function downloadCsv() {
+  const rows = visibleRows();
+  const blob = new Blob(["\uFEFF" + dealsToCsv(rows)], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
+  a.href = url;
+  a.download = "loans-" + todayISO() + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-function icsEscape(s) {
-  return String(s || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
-}
-function icsDate(date) {
-  return date.getUTCFullYear() + String(date.getUTCMonth() + 1).padStart(2, "0") + String(date.getUTCDate()).padStart(2, "0");
-}
-function buildIcs(rows) {
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//loantracker//maturities//EN", "CALSCALE:GREGORIAN"];
-  rows.forEach(d => {
-    const info = maturityInfo(d);
-    if (!info.date) return;
-    const start = addMonthsUTC(info.date, -state.window);
-    const common = "STATUS:CONFIRMED";
-    const desc = icsEscape(maturityText(d) + ". " + (d.borrower || ""));
-    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-window@loantracker", "DTSTART;VALUE=DATE:" + icsDate(start), "SUMMARY:" + icsEscape("Refi window opens (" + state.window + " m): " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
-    lines.push("BEGIN:VEVENT", "UID:" + d.id + "-maturity@loantracker", "DTSTART;VALUE=DATE:" + icsDate(info.date), "SUMMARY:" + icsEscape("Maturity: " + shortName(d.borrower)), "DESCRIPTION:" + desc, common, "END:VEVENT");
-  });
-  lines.push("END:VCALENDAR");
-  return lines.join("\r\n");
-}
-async function copyMail(rows) {
-  const headers = ["Borrower", "Maturity", "Months", "WB role", "Amount EUR m", "Source"];
-  const body = rows.map(d => {
-    const info = maturityInfo(d);
-    const src = sourcesOf(d)[0];
-    return [d.borrower, maturityText(d), monthsTo(info) == null ? "" : monthsTo(info), roleMeta(effectiveRole(d)).text, displayAmount(d) || "", src ? domainOf(src.url) : ""];
-  });
-  const plain = [headers.join("\t"), ...body.map(r => r.join("\t"))].join("\n");
-  const html = "<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><thead><tr>" + headers.map(h => "<th>" + esc(h) + "</th>").join("") + "</tr></thead><tbody>" +
-    body.map(r => "<tr>" + r.map(c => "<td>" + esc(c) + "</td>").join("") + "</tr>").join("") + "</tbody></table>";
-  try {
-    if (navigator.clipboard && window.ClipboardItem) {
-      await navigator.clipboard.write([new ClipboardItem({
-        "text/html": new Blob([html], { type: "text/html" }),
-        "text/plain": new Blob([plain], { type: "text/plain" }),
-      })]);
-    } else {
-      await navigator.clipboard.writeText(plain);
-    }
-    toast("Table copied to the clipboard.");
-  } catch (e) {
-    toast("Clipboard is not available.");
-  }
-}
-function leadsToCsv(rows) {
-  const head = ["id","created_on","status","borrower","amount","when","lenders","purpose","source","note"];
-  return [head.join(","), ...rows.map(l => head.map(k => csvEscape(l[k])).join(","))].join("\n");
-}
-let toastTimer;
-function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.textContent = ""; }, 2400);
-}
-function renderHistory() {
-  document.getElementById("history").innerHTML = CHANGELOG.map(c =>
-    `<p><strong>${esc(c.build)}</strong> · ${esc(fmtDate(c.date))}<br>${esc(c.text)}</p>`
-  ).join("");
-}
-
-let searchTimer = 0;
-function onClick(e) {
-  const el = e.target.closest("[data-act]");
-  if (!el) return;
-  if (e.target.closest("a")) return;
-  const act = el.dataset.act;
-  if (act === "window") setState({ window: Number(el.dataset.value) });
-  else if (act === "role") setState({ role: el.dataset.value });
-  else if (act === "view") {
-    const patch = { view: el.dataset.value };
-    if (el.dataset.value !== "action") patch.quarter = "";
-    if (el.dataset.value === "missing") patch.sort = "amount-desc";
-    setState(patch);
-  }
-  else if (act === "toggle") setState({ [el.dataset.key]: !state[el.dataset.key] });
-  else if (act === "clear") clearKey(el.dataset.key);
-  else if (act === "clear-all") {
-    const input = document.getElementById("q");
-    if (input) input.value = "";
-    state = defaults();
-    writeHash();
-    render();
-  } else if (act === "sort") {
-    const key = el.dataset.sort;
-    let next;
-    if (state.sort === key) next = key + "-desc";
-    else if (state.sort === key + "-desc") next = key;
-    else next = key === "amount" ? "amount-desc" : key;
-    if (state.view === "missing" && key === "amount") next = state.sort === "amount-desc" ? "amount" : "amount-desc";
-    setState({ sort: next });
-  } else if (act === "open") openDetail(el.dataset.id);
-  else if (act === "close-detail") closeDetail();
-  else if (act === "quarter") setState({ quarter: el.dataset.quarter, view: "action" });
-  else if (act === "unknown") setState({ view: "missing", quarter: "", confirmed: false, sort: "amount-desc" });
-  else if (act === "range-year") setState({ view: "missing", quarter: "", confirmed: false });
-  else if (act === "kpi") {
-    const k = el.dataset.kpi;
-    if (k === "win") setState({ view: "action", quarter: "", role: "all" });
-    else if (k === "defend") setState({ view: "action", quarter: "", role: "defend" });
-    else if (k === "missing") setState({ view: "missing", quarter: "", confirmed: false, sort: "amount-desc" });
-    else if (k === "fresh") setState({ view: "all", fresh: true, quarter: "" });
-  } else if (act === "mark-seen") {
-    const today = todayISO();
-    sessionStorage.setItem(VISIT_SNAP, today);
-    localStorage.setItem(VISIT_KEY, today);
-    lastVisit = today;
-    firstVisit = false;
-    render();
-  } else if (act === "csv") downloadText("loans-" + todayISO() + ".csv", "text/csv;charset=utf-8", "\uFEFF" + dealsToCsv(tableRows()));
-  else if (act === "ics") downloadText("maturities-" + todayISO() + ".ics", "text/calendar;charset=utf-8", buildIcs(tableRows()));
-  else if (act === "mail") copyMail(tableRows());
-  else if (act === "lead") setState({ lead: el.dataset.value });
-  else if (act === "leads-json") downloadText("leads.json", "application/json", JSON.stringify(leads, null, 2));
-  else if (act === "leads-csv") downloadText("leads.csv", "text/csv;charset=utf-8", "\uFEFF" + leadsToCsv(leads));
-  else if (act === "lead-del") {
-    leads = leads.filter(l => l.id !== el.dataset.id);
-    saveLeads();
-    render();
-  } else if (act === "lead-issue") {
-    const l = leads.find(x => x.id === el.dataset.id);
-    if (!l) return;
-    navigator.clipboard.writeText(issueMarkdown(l)).then(() => toast("Issue text copied to the clipboard.")).catch(() => toast("Clipboard is not available."));
-  } else if (act === "personal-json") downloadText("personal-layer.json", "application/json", JSON.stringify(personal, null, 2));
-  else if (act === "open-github-issue") {
-    const l = leadFromForm();
-    if (!l.borrower) { toast("Enter a borrower."); return; }
-    window.open(githubIssueUrl(l), "_blank", "noopener");
-  }
-}
-function onChange(e) {
-  const t = e.target;
-  if (t.dataset && t.dataset.filter) {
-    setState({ [t.dataset.filter]: t.value });
-    return;
-  }
-  if (t.classList && t.classList.contains("lead-status")) {
-    const lead = leads.find(l => l.id === t.dataset.lead);
-    if (lead) { lead.status = t.value; saveLeads(); render(); }
-    return;
-  }
-  if (t.id === "personalRole") {
-    const rec = personal[detailId] || {};
-    if (t.value) rec.role = t.value; else delete rec.role;
-    personal[detailId] = rec;
-    savePersonal();
-    render();
-    return;
-  }
-  if (t.id === "personalStar") {
-    const rec = personal[detailId] || {};
-    rec.star = t.checked;
-    personal[detailId] = rec;
-    savePersonal();
-    render();
-    return;
-  }
-  if (t.id === "leadImport") {
-    const file = t.files && t.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const data = JSON.parse(String(reader.result || ""));
-        if (!Array.isArray(data)) throw new Error("not array");
-        leads = data;
-        saveLeads();
-        render();
-        toast("Leads loaded.");
-      } catch (err) { toast("Could not read the file."); }
-    };
-    reader.readAsText(file);
-  }
-}
-function onInput(e) {
-  if (e.target.id === "q") {
-    state.q = e.target.value;
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => { writeHash(); render(); }, 160);
-    return;
-  }
-  if (e.target.id === "personalNote") {
-    const rec = personal[detailId] || {};
-    rec.note = e.target.value;
-    personal[detailId] = rec;
-    savePersonal();
-  }
-}
-function onKey(e) {
-  const tag = (e.target.tagName || "").toLowerCase();
-  const typing = tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable;
-  if (e.key === "/" && !typing) {
-    e.preventDefault();
-    document.getElementById("q").focus();
-    return;
-  }
-  if (e.key === "Escape") {
-    if (leadOpen) closeLead();
-    else if (detailId) closeDetail();
-    return;
-  }
-  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("tr[data-act='open']")) {
-    e.preventDefault();
-    openDetail(e.target.dataset.id);
-  }
 }
 
 function init() {
-  backfillAddedOn();
-  loadStore();
+  LEGACY_FILTER_KEYS.forEach(k => localStorage.removeItem(k));
   state = readState();
   const err = document.getElementById("errors");
-  if (ROW_FACT_ERRORS.length) {
+  const problems = ROW_FACT_ERRORS.slice();
+  if (problems.length) {
     err.hidden = false;
-    err.textContent = "Row links do not match: " + ROW_FACT_ERRORS.join("; ");
+    err.textContent = problems.join("; ");
   }
-  document.body.addEventListener("click", onClick);
-  document.body.addEventListener("change", onChange);
-  document.body.addEventListener("input", onInput);
-  document.addEventListener("keydown", onKey);
+  document.body.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-act]");
+    if (!el) return;
+    const act = el.dataset.act;
+    const value = el.dataset.value || "";
+    if (act === "sort") setState({ sort: value === "az" || value === "amount" ? value : "priority" });
+    else if (act === "type") setState({ type: value });
+    else if (act === "year") setState({ year: value });
+  });
+  document.getElementById("groupFilter").addEventListener("change", (e) => setState({ group: e.target.value }));
+  document.getElementById("companyFilter").addEventListener("change", (e) => setState({ company: e.target.value }));
+  document.getElementById("lenderFilter").addEventListener("input", (e) => {
+    state.lender = e.target.value;
+    writeHash();
+    renderStats();
+    renderTable();
+  });
+  document.getElementById("coalCheck").addEventListener("change", (e) => setState({ coal: e.target.checked }));
+  document.getElementById("csvBtn").addEventListener("click", downloadCsv);
   window.addEventListener("hashchange", () => { state = readState(); render(); });
-  document.getElementById("leadBtn").addEventListener("click", openLead);
-  document.getElementById("leadForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const lead = leadFromForm();
-    if (!lead.borrower) { toast("Enter a borrower."); return; }
-    leads.unshift(lead);
-    saveLeads();
-    closeLead();
-    setState({ view: "leads", lead: "open" });
-    toast("Lead saved in this browser.");
-  });
-  document.getElementById("leadCancel").addEventListener("click", closeLead);
-  document.getElementById("backdrop").addEventListener("click", () => {
-    if (leadOpen) closeLead();
-    if (detailId) closeDetail();
-  });
-  const q = document.getElementById("q");
-  q.value = state.q;
   render();
 }
 init();
-
 </script>
 </body>
 </html>
