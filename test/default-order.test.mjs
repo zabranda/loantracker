@@ -53,7 +53,7 @@ test("the page uses this order and no longer ships the removed tools", () => {
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
   assert.match(html, /from "\.\/default-order\.js"/);
   assert.match(html, /compareDefault\(/);
-  assert.match(html, /2026-10-26\.1/);
+  assert.match(html, /2026-11-01\.1/);
   assert.equal(html.includes("Copy for email"), false);
   assert.equal(html.includes("text/calendar"), false);
   assert.equal(html.includes('id="chart"'), false);
