@@ -643,6 +643,16 @@ const DEALS = [
 
   // NKO Partners stated the EUR 155m split to CEE Legal Matters after the CMS lender note. Tenor was not stated.
   { borrower: "Magna MedTech Group (EMMA Capital)", type: "Syndicated", amount: "€155m (€85m senior term + €70m RCF)", currency: "EUR", value_eur: 155, lenders: "Club of banks led by Česká spořitelna (other lenders not disclosed); CMS advised the lenders; NKO Partners advised Magna MedTech", date: "8 Oct 2026", year: 2026, purpose: "Increase of existing Magna Pharmacia financing plus new financing for Magna MedTech Group (SEE healthcare distribution; annual turnover above €230m). Tenor not disclosed — 5y placeholder", source: "https://ceelegalmatters.com/countries/czech-republic/cms-advises-lenders-on-financing-for-emma-capitals-magna-medtech/", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-10-08", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
+
+  // ===== Round 16 additions (Nov 2026 sweep) =====
+  // Park Ostrov North — next built-to-suit phase (~46,500 sqm GLA), Dolní Žďár u Ostrova, Karlovy Vary region, former Škoda Transportation brownfield. Maturity 2032 is disclosed, so the tenor is not inferred.
+  { borrower: "Accolade (Park Ostrov North)", type: "Real Estate", amount: "€37.9m development + investment loan (green loan)", currency: "EUR", value_eur: 38, lenders: "Česká spořitelna (agent, 50%) + WB (50%, green loan coordinator)", date: "Oct 2026", year: 2026, purpose: "Development & investment financing of next built-to-suit phase of Park Ostrov North; BREEAM New Construction target, completion planned Mar 2027", source: "https://www.linkedin.com/posts/cms-czech-republic_accoladefinancing-of-development-of-new-activity-7518223228415373313-Y4DK", confidence: "Confirmed", tenor_y: 6, signed_iso: "2026-10-16", wb_status: "participant", coal_excluded: false },
+
+  // Brno Airport Park — 4 buildings, >107,800 sqm GLA, BREEAM Excellent. Five-year term disclosed by Accolade, so the tenor is not inferred. Typed Refinancing, matching Accolade's earlier park refinancings.
+  { borrower: "Accolade (Brno Airport Park)", type: "Refinancing", amount: "€82.34m club facility", currency: "EUR", value_eur: 82, lenders: "Club of Czech banks: Česká spořitelna (lead) + WB", date: "Aug 2026", year: 2026, purpose: "Refinancing of existing indebtedness; supports continued operation and development of the park", source: "https://cms.law/en/cze/news-information/cms-advises-accolade-group-on-refinancing-of-brno-airport-park", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-08-04", wb_status: "participant", coal_excluded: false },
+
+  // GEVORKYAN, a.s. — Slovak powder-metallurgy manufacturer, Vlkanová, listed on the Prague Stock Exchange. EUR bond due 30 Oct 2031; classified as a bond in ROW_FACTS.
+  { borrower: "GEVORKYAN, a.s.", type: "Refinancing", amount: "€30m 7.39% fixed-rate bonds due 30 Oct 2031 (ISIN CZ0003588287)", currency: "EUR", value_eur: 30, lenders: "Bond investors (PSE Regulated Market listing)", date: "30 Oct 2026", year: 2026, purpose: "Refinances €30m 4.5% bonds maturing Nov 2026", source: "https://www.pse.cz/en/detail/CZ0003588287", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-10-30", wb_status: "opportunity", coal_excluded: false },
 ];
 
 // Rows that are not a plain outstanding bank loan, plus ids other rows point at.
@@ -694,6 +704,7 @@ const ROW_FACTS = [
   { borrower: "W.A.G. Payment Solutions (Eurowag)", amount: "€285m RCF", year: 2021, id: "eurowag-2021-10-rcf", status: "refinanced", instrument: "bank_loan", successor: "eurowag-2026-01-club", status_note: "IPO-era RCF. The live facility is the Club Finance line maturing 31 Mar 2029." },
   { borrower: "W.A.G. Payment Solutions (Eurowag) — Club Finance", amount: "€715m committed lines (€150m TL A + €180m TL B + €50m incr. I + €33.5m incr. II + €285m auxiliary + €16.5m incr. IV drawn 2 Jan 2026)", year: 2026, id: "eurowag-2026-01-club", status: "outstanding", instrument: "bank_loan", maturity_ym: "2029-03", status_note: "Contractual maturity 31 Mar 2029, set by the 6 Jun 2024 amendment. €16.5m incremental drawn 2 Jan 2026." },
   { borrower: "AmRest Holdings SE", amount: "€800m facilities novated", year: 2026, id: "amrest-2026-07-novation", status: "outstanding", instrument: "bank_loan", maturity_ym: "2031-06", status_note: "Novation extends maturity to June 2031 (2Q 2026 investor presentation; the regulatory notice says 2031)." },
+  { borrower: "GEVORKYAN, a.s.", amount: "€30m 7.39% fixed-rate bonds due 30 Oct 2031 (ISIN CZ0003588287)", year: 2026, id: "gevorkyan-2026-10-bond", status: "not_a_bank_loan", instrument: "bond", status_note: "EUR bond listed on the Prague Stock Exchange Regulated Market. Refinances the €30m 4.5% bonds maturing Nov 2026." },
 ];
 const ROW_FACT_ERRORS = [];
 function applyRowFacts() {
@@ -724,8 +735,8 @@ function applyRowFacts() {
 }
 applyRowFacts();
 
-const DATA_AS_OF = "2026-10-24";
-const BUILD = "2026-10-26.1";
+const DATA_AS_OF = "2026-10-31";
+const BUILD = "2026-11-01.1";
 const NOW = new Date();
 const TODAY = new Date(Date.UTC(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()));
 const LEGACY_FILTER_KEYS = ["cz_loans_lender_v1","cz_loans_filter_v2","cz_loans_year_filter_v1","cz_loans_view_v1","cz_loans_coal_filter_v1","cz_loans_company_v2","cz_loans_group_v1","cz_loans_sort_v1"];

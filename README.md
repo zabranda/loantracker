@@ -44,7 +44,7 @@ Single `index.html` plus `default-order.js`. No build step and no runtime
 dependencies. The list is a compact native table (borrower, type, status,
 urgency, WB role, amount, maturity, months, lenders, certainty, source),
 the same shape as the pipeline page before the 25 Oct 2026 dashboard.
-Build tag `2026-10-26.1`. The interface, filters and deal notes are in
+Build tag `2026-11-01.1`. The interface, filters and deal notes are in
 English. Proper names of borrowers, places, banks and registries stay in
 their original form. The house bank is labelled WB.
 
