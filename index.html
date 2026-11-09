@@ -125,9 +125,13 @@
     background: #fff;
   }
   .table-scroll { overflow-x: auto; }
-  table.deals { width: 100%; min-width: 1080px; border-collapse: collapse; font-size: 12px; background: #fff; }
+  table.deals { width: 100%; min-width: 1080px; table-layout: fixed; border-collapse: collapse; font-size: 12px; background: #fff; }
   table.deals th, table.deals td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid #f0ede7; }
   table.deals th { background: #f3f1ec; font-weight: 600; color: #2a2a2a; }
+  table.deals .badge { white-space: normal; max-width: 100%; }
+  td.source-col { font-size: 11px; line-height: 1.45; }
+  td.source-col a { white-space: normal; }
+  .src-sep { color: #8a857d; }
   table.deals tr.near td { background: #f4faf6; }
   .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .borrower-name { font-weight: 500; }
@@ -199,6 +203,7 @@ import { compareDefault, NEAR_TERM_MONTHS } from "./default-order.js";
 // ---- Curated baseline deal list (2021 – Oct 2026) ----
 // Each deal: borrower, type, amount, currency, value_eur (EUR millions), lenders, date, year,
 // purpose, source, confidence, tenor_y, wb_status, coal_excluded, tenor_inferred?
+// Optional sources[] lists further URLs for the same deal. source stays the primary URL.
 // status / instrument / successor are filled from ROW_FACTS (default: outstanding bank loan).
 // A year-only signing date uses a flagged mid-period approximation so the loan can enter the refi radar.
 // tenor_inferred marks a 5y CRE (or other) tenor used because none was disclosed.
@@ -601,7 +606,7 @@ const DEALS = [
 
   // Dr. Max Group €1.86bn 7y refinancing — issuer release 1 Jul 2026 (page dated 7 Jul 2026).
   // Second source: https://ceelegalmatters.com/news/deals-and-cases/a-o-shearman-advises-dr-max-on-eur-1-86-billion-refinancing/
-  { borrower: "Dr. Max Group / Dr. Max Funding CR (Penta)", type: "Refinancing", amount: "€1,860m (€1,400m term loans + €50m RCF + €55m ancillary limits + €350m accordion)", currency: "EUR", value_eur: 1860, lenders: "19-bank club; UniCredit Bank Czech Republic and Slovakia and Komerční banka as coordinators, bookrunners and MLAs; UniCredit CZ&SK facility and security agent (other 17 banks not named)", date: "1 Jul 2026", year: 2026, purpose: "7y refinancing of existing indebtedness, plus liquidity for growth, selective M&A and general corporate purposes; strongly oversubscribed", source: "https://www.drmaxfundingcr.cz/en/news/dr-max-refinancing-2026-en", confidence: "Confirmed", tenor_y: 7, signed_iso: "2026-07-01", wb_status: "opportunity", coal_excluded: false },
+  { borrower: "Dr. Max Group / Dr. Max Funding CR (Penta)", type: "Refinancing", amount: "€1,860m (€1,400m term loans + €50m RCF + €55m ancillary limits + €350m accordion)", currency: "EUR", value_eur: 1860, lenders: "19-bank club; UniCredit Bank Czech Republic and Slovakia and Komerční banka as coordinators, bookrunners and MLAs; UniCredit CZ&SK facility and security agent (other 17 banks not named)", date: "1 Jul 2026", year: 2026, purpose: "7y refinancing of existing indebtedness, plus liquidity for growth, selective M&A and general corporate purposes; strongly oversubscribed", source: "https://www.drmaxfundingcr.cz/en/news/dr-max-refinancing-2026-en", sources: ["https://ceelegalmatters.com/news/deals-and-cases/a-o-shearman-advises-dr-max-on-eur-1-86-billion-refinancing/"], confidence: "Confirmed", tenor_y: 7, signed_iso: "2026-07-01", wb_status: "opportunity", coal_excluded: false },
 
   // Crestyl Dock In — distinct from the NR7 / Helaba revitalisation row.
   { borrower: "Crestyl (Dock In Office Park, Prague 8)", type: "Real Estate", amount: "€185m", currency: "EUR", value_eur: 185, lenders: "Deutsche Pfandbriefbank (pbb) and Helaba as joint lead arrangers (equal shares); pbb facility and security agent", date: "18 May 2026", year: 2026, purpose: "Medium-term refinancing of Dock In Office Park (~87,600 sqm, five phases, Prague 8). Tenor not disclosed — 5y inferred (CRE term loan)", source: "https://www.property-forum.eu/news/crestyl-secures-eur185-million-loan-for-prague-office-park-from-pbb-helaba/21512", confidence: "Confirmed", tenor_y: 5, signed_iso: "2026-05-18", wb_status: "opportunity", coal_excluded: false, tenor_inferred: true },
@@ -981,6 +986,44 @@ function safeUrl(url) {
   } catch (e) { /* not a url */ }
   return "";
 }
+function domainOf(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ""); }
+  catch (e) { return ""; }
+}
+// Every URL recorded for the deal: the primary source field, then any extra sources[].
+// Same URL twice is shown once. A non-URL note is kept as text. Nothing is invented.
+function sourcesOf(d) {
+  const raw = [];
+  if (d && d.source) raw.push(d.source);
+  if (d && Array.isArray(d.sources)) raw.push(...d.sources);
+  const seen = new Set();
+  const out = [];
+  raw.forEach(item => {
+    const url = typeof item === "string" ? item : (item && (item.url || item.href)) || "";
+    const label = typeof item === "string" ? "" : (item && item.label) || "";
+    const href = safeUrl(String(url || "").trim());
+    const name = String(label || (href ? domainOf(href) : url) || "").trim();
+    const key = href || name;
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    out.push({ href, name: name || "source" });
+  });
+  return out;
+}
+function sourceHtml(d) {
+  const sources = sourcesOf(d);
+  if (!sources.length) return "—";
+  const title = sources.map(s => s.href || s.name).join(" · ");
+  const label = name => esc(name).replace(/\./g, ".<wbr>");
+  const body = sources.map(s => s.href
+    ? `<a href="${esc(s.href)}" target="_blank" rel="noopener">${label(s.name)}</a>`
+    : label(s.name)
+  ).join('<span class="src-sep"> · </span>');
+  return `<div class="source-cell" title="${esc(title)}">${body}</div>`;
+}
+function sourceCsv(d) {
+  return sourcesOf(d).map(s => s.href || s.name).join(" · ");
+}
 function monthsOf(d) { return monthsTo(maturityInfo(d)); }
 function nearTermMonths() {
   return NEAR_TERM_MONTHS;
@@ -1188,7 +1231,6 @@ function rowHtml(d) {
   const wb = WB_META[d.wb_status] || WB_META.unknown;
   const urg = URGENCY_META[urgencyOf(d)] || URGENCY_META.unknown;
   const pct = certaintyPct(d);
-  const href = safeUrl(d.source || "");
   const note = [d.status_note || "", d.successor ? "Successor: " + d.successor : ""].filter(Boolean).join(" — ");
   const mCls = m == null ? "" : m < 0 ? "m-past" : m <= 12 ? "m-soon" : "";
   const mTxt = m == null ? "—" : String(m);
@@ -1203,7 +1245,7 @@ function rowHtml(d) {
     <td class="num ${mCls}">${mTxt}</td>
     <td><div class="clamp" title="${esc(d.lenders || "")}">${esc(d.lenders || "—")}</div></td>
     <td><span class="badge conf-${pct}" title="Share of source, amount, lenders and date that is confirmed. An inferred tenor caps the score at 75%.">${pct}%</span><span class="conf-label">${esc(d.confidence || "")}</span></td>
-    <td>${href ? `<a href="${esc(href)}" target="_blank" rel="noopener">link</a>` : "—"}</td>
+    <td class="source-col">${sourceHtml(d)}</td>
   </tr>`;
 }
 function renderTable() {
@@ -1219,7 +1261,10 @@ function renderTable() {
     table.innerHTML = `<p class="empty-msg">Nothing matches these filters.</p>`;
     return;
   }
-  table.innerHTML = `<table class="deals"><thead><tr>
+  table.innerHTML = `<table class="deals"><colgroup>
+    <col style="width:14%"><col style="width:8%"><col style="width:11%"><col style="width:8%"><col style="width:9%">
+    <col style="width:8%"><col style="width:7%"><col style="width:5%"><col style="width:9%"><col style="width:7%"><col style="width:14%">
+  </colgroup><thead><tr>
     <th>Borrower</th><th>Type</th><th>Status</th><th>Urgency</th><th>WB</th>
     <th>Amount</th><th>Maturity</th><th class="num">Months</th><th>Lenders</th><th>Certainty</th><th>Source</th>
   </tr></thead><tbody>${rows.map(rowHtml).join("")}</tbody></table>`;
@@ -1245,7 +1290,7 @@ function dealsToCsv(rows) {
     lines.push([
       d.borrower, d.type, status, d.instrument || "", maturityShort(d), m == null ? "" : m,
       (WB_META[d.wb_status] || WB_META.unknown).text, d.amount || "", d.value_eur || "",
-      d.lenders || "", d.purpose || "", d.source || "",
+      d.lenders || "", d.purpose || "", sourceCsv(d),
     ].map(csvEscape).join(","));
   });
   return lines.join("\n");
